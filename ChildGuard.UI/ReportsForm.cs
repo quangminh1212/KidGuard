@@ -29,11 +29,15 @@ public partial class ReportsForm : Form
         {
             MessageBox.Show(this, $"Không tìm thấy log: {path}", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Information);
             lblSummary.Text = "Summary: none";
+            _lastCounts = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+            pnlChart.Invalidate();
             return;
         }
         var counts = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
         var total = 0;
-        var filter = cmbType.SelectedItem?.ToString();
+        var typeFilter = cmbType.SelectedItem?.ToString();
+        var procFilter = (txtProcFilter.Text ?? string.Empty).Trim();
+        bool hasProcFilter = procFilter.Length > 0;
         foreach (var line in File.ReadLines(path))
         {
             try
@@ -41,12 +45,34 @@ public partial class ReportsForm : Form
                 using var doc = JsonDocument.Parse(line);
                 var root = doc.RootElement;
                 var type = root.GetProperty("type").GetString() ?? "?";
-                if (filter != null && filter != "All" && !string.Equals(type, filter, StringComparison.OrdinalIgnoreCase)) continue;
-                var ts = root.GetProperty("timestamp").GetString();
-                var data = root.GetProperty("data").ToString();
-                grid.Rows.Add(ts, type, data);
+                if (typeFilter != null && typeFilter != "All" && !string.Equals(type, typeFilter, StringComparison.OrdinalIgnoreCase)) continue;
+                var ts = root.GetProperty("timestamp").GetString() ?? string.Empty;
+                var dataElem = root.GetProperty("data");
+                if (hasProcFilter)
+                {
+                    string? pn = null;
+                    if (dataElem.ValueKind == JsonValueKind.Object && dataElem.TryGetProperty("processName", out var pnElem))
+                    {
+                        pn = pnElem.GetString();
+                    }
+                    if (string.IsNullOrEmpty(pn) || pn?.IndexOf(procFilter, StringComparison.OrdinalIgnoreCase) < 0) continue;
+                }
+                var dataStr = dataElem.ToString();
+                grid.Rows.Add(ts, type, dataStr);
                 total++;
-                counts[type] = counts.TryGetValue(type, out var c) ? c+1 : 1;
+                // grouping key: by hour or by type
+                if (chkByHour.Checked)
+                {
+                    if (DateTimeOffset.TryParse(ts, out var dto))
+                    {
+                        var label = dto.ToLocalTime().ToString("HH:00");
+                        counts[label] = counts.TryGetValue(label, out var c) ? c+1 : 1;
+                    }
+                }
+                else
+                {
+                    counts[type] = counts.TryGetValue(type, out var c) ? c+1 : 1;
+                }
             }
             catch { }
         }
