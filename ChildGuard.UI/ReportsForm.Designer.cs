@@ -7,6 +7,8 @@ partial class ReportsForm
     private System.Windows.Forms.ComboBox cmbType = null!;
     private System.Windows.Forms.Button btnLoad = null!;
     private System.Windows.Forms.DataGridView grid = null!;
+    private System.Windows.Forms.Label lblSummary = null!;
+    private System.Windows.Forms.Button btnExport = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -22,6 +24,8 @@ partial class ReportsForm
         this.btnLoad = new System.Windows.Forms.Button();
         this.grid = new System.Windows.Forms.DataGridView();
         ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
+        this.lblSummary = new System.Windows.Forms.Label();
+        this.btnExport = new System.Windows.Forms.Button();
         this.SuspendLayout();
         // dtp
         this.dtp.Location = new System.Drawing.Point(16, 16);
@@ -50,10 +54,25 @@ partial class ReportsForm
         this.grid.Columns.Add("Timestamp", "Timestamp");
         this.grid.Columns.Add("Type", "Type");
         this.grid.Columns.Add("Data", "Data");
+        // lblSummary
+        this.lblSummary.AutoSize = true;
+        this.lblSummary.Location = new System.Drawing.Point(16, 444);
+        this.lblSummary.Name = "lblSummary";
+        this.lblSummary.Size = new System.Drawing.Size(88, 15);
+        this.lblSummary.Text = "Summary: none";
+        // btnExport
+        this.btnExport.Location = new System.Drawing.Point(680, 16);
+        this.btnExport.Name = "btnExport";
+        this.btnExport.Size = new System.Drawing.Size(96, 23);
+        this.btnExport.Text = "Export CSV";
+        this.btnExport.UseVisualStyleBackColor = true;
+        this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
         // Form
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 460);
+        this.ClientSize = new System.Drawing.Size(800, 470);
+        this.Controls.Add(this.lblSummary);
         this.Controls.Add(this.grid);
+        this.Controls.Add(this.btnExport);
         this.Controls.Add(this.btnLoad);
         this.Controls.Add(this.cmbType);
         this.Controls.Add(this.dtp);
