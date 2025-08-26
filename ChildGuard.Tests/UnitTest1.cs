@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ChildGuard.Core.Models;
 using ChildGuard.Core.Sinks;
 
@@ -16,7 +17,9 @@ public class CoreModelsTests
 
         Assert.True(File.Exists(tmp));
         var content = await File.ReadAllTextAsync(tmp);
-        Assert.Contains("\"ActiveWindow\"", content);
-        Assert.Contains("\"Title\"", content);
+        using var doc = JsonDocument.Parse(content);
+        var root = doc.RootElement;
+        Assert.Equal("ActiveWindow", root.GetProperty("type").GetString());
+        Assert.Equal("Title", root.GetProperty("data").GetProperty("title").GetString());
     }
 }
