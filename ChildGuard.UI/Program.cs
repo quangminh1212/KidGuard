@@ -8,9 +8,31 @@ static class Program
     [STAThread]
     static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
-        Application.Run(new Form1());
+        bool openSettings = false, openReports = false;
+        var args = Environment.GetCommandLineArgs();
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (string.Equals(args[i], "--open", StringComparison.OrdinalIgnoreCase) && i+1 < args.Length)
+            {
+                var v = args[i+1].ToLowerInvariant();
+                if (v == "settings") openSettings = true;
+                if (v == "reports") openReports = true;
+                i++;
+            }
+        }
+        var f = new Form1();
+        f.Shown += (s, e) =>
+        {
+            if (openSettings)
+            {
+                try { new SettingsForm().Show(f); } catch { }
+            }
+            if (openReports)
+            {
+                try { new ReportsForm().Show(f); } catch { }
+            }
+        };
+        Application.Run(f);
     }    
 }

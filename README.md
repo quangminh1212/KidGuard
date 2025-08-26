@@ -16,7 +16,9 @@ ________________________________________
 •	Từng làm phần mềm giám sát máy tính, bảo vệ trẻ em, chống gỡ/chống kill, self-defense.
 •	Có kinh nghiệm viết Windows Service, driver, hoặc từng làm antivirus, parental control, game launcher lock... 
 •	Tư duy hệ thống, bảo mật, hiệu năng tốt.
-# ChildGuard
+# ChildGuard  
+
+[![Release](https://github.com/quangminh1212/ChildGuard/actions/workflows/release.yml/badge.svg)](https://github.com/quangminh1212/ChildGuard/actions/workflows/release.yml)
 
 Ứng dụng Windows (.NET 8, WinForms) để giám sát hoạt động và áp dụng chính sách bảo vệ trẻ em trên máy tính. Hỗ trợ Quiet Hours, chặn ứng dụng theo lịch, ghi log JSONL, báo cáo trực quan, tự khởi động linh hoạt, và UI song ngữ Anh/Việt với theme Sáng/Tối.
 
@@ -113,11 +115,33 @@ powershell -ExecutionPolicy Bypass -File scripts\uninstall_agent_autostart.ps1
 
 ---
 
+## Troubleshooting
+
+- Không tạo được Scheduled Task (Access Denied / 0x41306):
+  - Thử lại chế độ Current User trong installer hoặc dùng lệnh `ensure_agent_autostart.ps1 -Mode current`
+  - Nếu vẫn bị chặn, script sẽ fallback tự động sang HKCU\Run; kiểm tra khóa `HKCU:Software\Microsoft\Windows\CurrentVersion\Run` tên `ChildGuardAgent`
+- PowerShell ExecutionPolicy chặn script:
+  - Chạy các script kèm `-ExecutionPolicy Bypass` hoặc mở PowerShell với quyền phù hợp
+- Inno Setup không có ISCC.exe trong PATH:
+  - Cài Inno Setup 6, sau đó chạy lại `scripts/build_installer.ps1` hoặc thêm đường dẫn ISCC vào PATH
+- UI không hiện lên phía trước:
+  - Chạy `scripts/bring_ui_front.ps1` để đưa cửa sổ UI ra foreground
+- Không ghi log hoặc không thấy file config:
+  - Kiểm tra quyền ghi tại `C:/ProgramData/ChildGuard` hoặc `%LOCALAPPDATA%/ChildGuard`
+
 ## Screenshots
 
 - Ảnh giao diện chính (ví dụ):
 
 ![Main UI](docs/screenshots/childguard_ui_main.png)
+
+- Settings:
+
+![Settings](docs/screenshots/childguard_settings.png)
+
+- Reports:
+
+![Reports](docs/screenshots/childguard_reports.png)
 
 - Tạo nhanh ảnh chụp UI (dev):
 ```
