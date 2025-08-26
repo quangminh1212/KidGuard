@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.Hooking", "Child
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.Tests", "ChildGuard.Tests\ChildGuard.Tests.csproj", "{BECAB314-03CE-43FC-8CDF-908800B6F4B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.Agent", "ChildGuard.Agent\ChildGuard.Agent.csproj", "{41B547E3-D322-4599-908A-B09D5DF1D7E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{BECAB314-03CE-43FC-8CDF-908800B6F4B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BECAB314-03CE-43FC-8CDF-908800B6F4B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BECAB314-03CE-43FC-8CDF-908800B6F4B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41B547E3-D322-4599-908A-B09D5DF1D7E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41B547E3-D322-4599-908A-B09D5DF1D7E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41B547E3-D322-4599-908A-B09D5DF1D7E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41B547E3-D322-4599-908A-B09D5DF1D7E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,16 @@
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.csproj.AssemblyReference.cache
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.GeneratedMSBuildEditorConfig.editorconfig
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.AssemblyInfoInputs.cache
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.AssemblyInfo.cs
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.csproj.CoreCompileInputs.cache
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.sourcelink.json
+C:\VF\ChildGuard\ChildGuard.Hooking\bin\Release\net8.0-windows\ChildGuard.Hooking.deps.json
+C:\VF\ChildGuard\ChildGuard.Hooking\bin\Release\net8.0-windows\ChildGuard.Hooking.dll
+C:\VF\ChildGuard\ChildGuard.Hooking\bin\Release\net8.0-windows\ChildGuard.Hooking.pdb
+C:\VF\ChildGuard\ChildGuard.Hooking\bin\Release\net8.0-windows\ChildGuard.Core.dll
+C:\VF\ChildGuard\ChildGuard.Hooking\bin\Release\net8.0-windows\ChildGuard.Core.pdb
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGua.7CD4C142.Up2Date
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.dll
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\refint\ChildGuard.Hooking.dll
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ChildGuard.Hooking.pdb
+C:\VF\ChildGuard\ChildGuard.Hooking\obj\Release\net8.0-windows\ref\ChildGuard.Hooking.dll

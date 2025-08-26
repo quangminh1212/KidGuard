@@ -1,0 +1,50 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "ChildGuard.UI/1.0.0": {
+        "dependencies": {
+          "ChildGuard.Core": "1.0.0",
+          "ChildGuard.Hooking": "1.0.0"
+        },
+        "runtime": {
+          "ChildGuard.UI.dll": {}
+        }
+      },
+      "ChildGuard.Core/1.0.0": {
+        "runtime": {
+          "ChildGuard.Core.dll": {}
+        }
+      },
+      "ChildGuard.Hooking/1.0.0": {
+        "dependencies": {
+          "ChildGuard.Core": "1.0.0"
+        },
+        "runtime": {
+          "ChildGuard.Hooking.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ChildGuard.UI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ChildGuard.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ChildGuard.Hooking/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

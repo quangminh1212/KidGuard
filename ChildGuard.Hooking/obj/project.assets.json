@@ -1,15 +1,33 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0-windows7.0": {
+      "ChildGuard.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/ChildGuard.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ChildGuard.Core.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "ChildGuard.Core/1.0.0": {
+      "type": "project",
+      "path": "../ChildGuard.Core/ChildGuard.Core.csproj",
+      "msbuildProject": "../ChildGuard.Core/ChildGuard.Core.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0-windows7.0": [
+      "ChildGuard.Core >= 1.0.0"
+    ]
   },
   "packageFolders": {
-    "C:\\Users\\GHC\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\GHC\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -20,16 +38,12 @@
       "packagesPath": "C:\\Users\\GHC\\.nuget\\packages\\",
       "outputPath": "C:\\VF\\ChildGuard\\ChildGuard.Hooking\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
         "C:\\Users\\GHC\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net8.0"
+        "net8.0-windows"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -37,9 +51,13 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
-          "projectReferences": {}
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "projectReferences": {
+            "C:\\VF\\ChildGuard\\ChildGuard.Core\\ChildGuard.Core.csproj": {
+              "projectPath": "C:\\VF\\ChildGuard\\ChildGuard.Core\\ChildGuard.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -54,8 +72,8 @@
       }
     },
     "frameworks": {
-      "net8.0": {
-        "targetAlias": "net8.0",
+      "net8.0-windows7.0": {
+        "targetAlias": "net8.0-windows",
         "imports": [
           "net461",
           "net462",
