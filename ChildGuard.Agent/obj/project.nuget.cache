@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "r21nT2lNOdA=",
+  "success": true,
+  "projectFilePath": "C:\\VF\\ChildGuard\\ChildGuard.Agent\\ChildGuard.Agent.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\GHC\\.nuget\\packages\\system.codedom\\8.0.0\\system.codedom.8.0.0.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\system.management\\8.0.0\\system.management.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

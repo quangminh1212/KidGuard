@@ -1,0 +1,12 @@
+C:\VF\ChildGuard\ChildGuard.Core\bin\Release\net8.0\ChildGuard.Core.deps.json
+C:\VF\ChildGuard\ChildGuard.Core\bin\Release\net8.0\ChildGuard.Core.dll
+C:\VF\ChildGuard\ChildGuard.Core\bin\Release\net8.0\ChildGuard.Core.pdb
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ChildGuard.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ChildGuard.Core.AssemblyInfoInputs.cache
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ChildGuard.Core.AssemblyInfo.cs
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ChildGuard.Core.csproj.CoreCompileInputs.cache
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ChildGuard.Core.sourcelink.json
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ChildGuard.Core.dll
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\refint\ChildGuard.Core.dll
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ChildGuard.Core.pdb
+C:\VF\ChildGuard\ChildGuard.Core\obj\Release\net8.0\ref\ChildGuard.Core.dll
