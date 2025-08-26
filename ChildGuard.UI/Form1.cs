@@ -18,6 +18,12 @@ public partial class Form1 : Form
         _hookManager.OnEvent += OnActivity;
     }
 
+    private void mnuSettings_Click(object? sender, EventArgs e)
+    {
+        using var dlg = new SettingsForm();
+        dlg.ShowDialog(this);
+    }
+
     private void OnActivity(ActivityEvent evt)
     {
         if (evt.Data is InputActivitySummary s)
