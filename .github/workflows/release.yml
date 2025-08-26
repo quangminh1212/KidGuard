@@ -44,6 +44,11 @@ jobs:
         run: |
           scripts/build_installer.ps1 -Configuration Release -Rid win-x64 -Version "${{ steps.vars.outputs.version }}"
 
+      - name: Build portable zip
+        shell: pwsh
+        run: |
+          scripts/build_portable.ps1 -Configuration Release -Rid win-x64 -Version "${{ steps.vars.outputs.version }}"
+
       - name: Create GitHub Release and upload asset
         uses: softprops/action-gh-release@v2
         with:
@@ -53,4 +58,5 @@ jobs:
           prerelease: false
           files: |
             dist/ChildGuardSetup_*.exe
+            dist/ChildGuard_Portable_*.zip
 
