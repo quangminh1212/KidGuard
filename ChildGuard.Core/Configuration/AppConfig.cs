@@ -27,4 +27,7 @@ public class AppConfig
 
     // Maximum total size of logs directory in MB (best-effort cleanup). 0 or negative = unlimited.
     public int LogMaxSizeMB { get; set; } = 200;
+
+    // Advanced time-based rules (per day-of-week windows)
+    public PolicyRule[] PolicyRules { get; set; } = Array.Empty<PolicyRule>();
 }
