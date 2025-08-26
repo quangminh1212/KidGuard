@@ -298,10 +298,13 @@ public partial class Form1 : Form
         bool inQuiet = IsInQuietHours(DateTime.Now);
 
         // Simple policy enforcement: block configured processes by name (case-insensitive)
-        if (_config.BlockedProcesses?.Length > 0 && !string.IsNullOrWhiteSpace(procName))
+        if (!string.IsNullOrWhiteSpace(procName))
         {
             var pn = procName.ToLowerInvariant();
-            bool isBlocked = _config.BlockedProcesses.Any(x => string.Equals(x.Trim().TrimEnd(".exe".ToCharArray()).ToLowerInvariant(), pn));
+            bool explicitBlocked = _config.BlockedProcesses?.Any(x => string.Equals(x.Trim().TrimEnd(".exe".ToCharArray()).ToLowerInvariant(), pn)) == true;
+            bool hasAllowList = _config.AllowedProcessesDuringQuietHours != null && _config.AllowedProcessesDuringQuietHours.Length > 0;
+            bool allowedDuringQuiet = !hasAllowList || (_config.AllowedProcessesDuringQuietHours?.Any(x => string.Equals(x.Trim().TrimEnd(".exe".ToCharArray()).ToLowerInvariant(), pn)) == true);
+            bool isBlocked = explicitBlocked || (inQuiet && hasAllowList && !allowedDuringQuiet);
             if (isBlocked)
             {
                 var now = DateTime.UtcNow;

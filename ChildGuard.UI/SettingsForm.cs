@@ -26,6 +26,10 @@ public partial class SettingsForm : Form
         // Quiet hours
         dtStart.Value = ParseTimeOrDefault(_config.QuietHoursStart, new DateTime(2000,1,1,21,0,0));
         dtEnd.Value = ParseTimeOrDefault(_config.QuietHoursEnd, new DateTime(2000,1,1,6,30,0));
+        // Allowed during Quiet Hours
+        txtAllowedQuiet.Text = _config.AllowedProcessesDuringQuietHours is { Length: >0 }
+            ? string.Join(Environment.NewLine, _config.AllowedProcessesDuringQuietHours)
+            : string.Empty;
         // Retention
         numRetention.Value = Math.Max(1, _config.LogRetentionDays);
         // Block close warning seconds
@@ -60,6 +64,15 @@ public partial class SettingsForm : Form
         // Quiet hours
         _config.QuietHoursStart = dtStart.Value.ToString("HH:mm");
         _config.QuietHoursEnd = dtEnd.Value.ToString("HH:mm");
+        // Allowed during Quiet Hours
+        var allowLines = (txtAllowedQuiet.Text ?? string.Empty)
+            .Split(new[]{"\r\n","\n"}, StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => x.Length>0)
+            .Select(x => x.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ? x[..^4] : x)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        _config.AllowedProcessesDuringQuietHours = allowLines;
         // Retention
         _config.LogRetentionDays = (int)numRetention.Value;
         // Warning seconds and max size

@@ -6,6 +6,8 @@ namespace ChildGuard.UI;
 
 public partial class ReportsForm : Form
 {
+    private Dictionary<string,int> _lastCounts = new(StringComparer.OrdinalIgnoreCase);
+
     public ReportsForm()
     {
         InitializeComponent();
@@ -50,6 +52,35 @@ public partial class ReportsForm : Form
         }
         var parts = counts.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}:{kv.Value}");
         lblSummary.Text = $"Summary: total={total} | " + string.Join(" | ", parts);
+        _lastCounts = counts;
+        pnlChart.Invalidate();
+    }
+
+    private void pnlChart_Paint(object? sender, PaintEventArgs e)
+    {
+        var g = e.Graphics;
+        g.Clear(SystemColors.Control);
+        if (_lastCounts == null || _lastCounts.Count == 0) return;
+        var rect = e.ClipRectangle;
+        int n = _lastCounts.Count;
+        int idx = 0;
+        int max = Math.Max(1, _lastCounts.Values.Max());
+        int barWidth = Math.Max(20, rect.Width / Math.Max(1,n) - 10);
+        foreach (var kv in _lastCounts.OrderBy(k => k.Key))
+        {
+            int x = rect.Left + 10 + idx * (barWidth + 10);
+            int h = (int)( (kv.Value / (float)max) * (rect.Height - 30));
+            int y = rect.Bottom - 20 - h;
+            using var brush = new SolidBrush(Color.FromArgb(80, 120, 200));
+            g.FillRectangle(brush, new Rectangle(x, y, barWidth, h));
+            using var pen = new Pen(Color.DodgerBlue, 1);
+            g.DrawRectangle(pen, new Rectangle(x, y, barWidth, h));
+            var label = kv.Key;
+            var size = g.MeasureString(label, this.Font);
+            g.DrawString(label, this.Font, Brushes.Black, x, rect.Bottom - 18);
+            g.DrawString(kv.Value.ToString(), this.Font, Brushes.Black, x, y - 16);
+            idx++;
+        }
     }
 
     private void btnExport_Click(object? sender, EventArgs e)
