@@ -330,6 +330,16 @@ public partial class Form1 : Form
                         }
                         var cts = new CancellationTokenSource();
                         _pendingClose[pid] = cts;
+                        // Show countdown UI on the UI thread
+                        try
+                        {
+                            this.BeginInvoke(new Action(() =>
+                            {
+                                using var frm = new CountdownForm(procName, warnSec, cts, () => { TryCloseProcess(pid); try { cts.Cancel(); } catch { } });
+                                frm.Show(this);
+                            }));
+                        }
+                        catch { }
                         _ = Task.Run(async () =>
                         {
                             try
@@ -399,16 +409,24 @@ public partial class Form1 : Form
         if (!TimeSpan.TryParseExact(_config.QuietHoursStart, @"hh\:mm", CultureInfo.InvariantCulture, out var start)) return false;
         if (!TimeSpan.TryParseExact(_config.QuietHoursEnd, @"hh\:mm", CultureInfo.InvariantCulture, out var end)) return false;
         var t = localNow.TimeOfDay;
-        if (start <= end)
+        bool inPrimary = start <= end ? (t >= start && t <= end) : (t >= start || t <= end);
+        if (inPrimary) return true;
+        // Additional windows
+        if (_config.AdditionalQuietWindows is { Length: >0 })
         {
-            // e.g., 21:00-23:00
-            return t >= start && t <= end;
+            foreach (var w in _config.AdditionalQuietWindows)
+            {
+                var s = w?.Trim();
+                if (string.IsNullOrWhiteSpace(s)) continue;
+                var parts = s.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (parts.Length != 2) continue;
+                if (!TimeSpan.TryParseExact(parts[0], @"hh\:mm", CultureInfo.InvariantCulture, out var s1)) continue;
+                if (!TimeSpan.TryParseExact(parts[1], @"hh\:mm", CultureInfo.InvariantCulture, out var s2)) continue;
+                bool inWin = s1 <= s2 ? (t >= s1 && t <= s2) : (t >= s1 || t <= s2);
+                if (inWin) return true;
+            }
         }
-        else
-        {
-            // overnight, e.g., 21:00-06:00
-            return t >= start || t <= end;
-        }
+        return false;
     }
 
     [DllImport("user32.dll")]

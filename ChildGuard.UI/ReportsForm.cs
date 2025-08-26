@@ -18,28 +18,27 @@ public partial class ReportsForm : Form
         cmbType.Items.AddRange(new object[]{"All","Keyboard","Mouse","ActiveWindow","ProcessStart","ProcessStop","UsbDeviceChange"});
         cmbType.SelectedIndex = 0;
         dtp.Value = DateTime.Today;
+        dtpTo.Value = DateTime.Today;
     }
 
     private void btnLoad_Click(object? sender, EventArgs e)
     {
         grid.Rows.Clear();
         var cfg = ConfigManager.Load(out _);
-        var path = Path.Combine(cfg.DataDirectory, "logs", $"events-{dtp.Value:yyyyMMdd}.jsonl");
-        if (!File.Exists(path))
-        {
-            MessageBox.Show(this, $"Không tìm thấy log: {path}", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            lblSummary.Text = "Summary: none";
-            _lastCounts = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
-            pnlChart.Invalidate();
-            return;
-        }
+        var startDate = dtp.Value.Date;
+        var endDate = dtpTo.Value.Date;
+        if (endDate < startDate) endDate = startDate;
         var counts = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
         var total = 0;
         var typeFilter = cmbType.SelectedItem?.ToString();
         var procFilter = (txtProcFilter.Text ?? string.Empty).Trim();
         bool hasProcFilter = procFilter.Length > 0;
-        foreach (var line in File.ReadLines(path))
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
         {
+            var path = Path.Combine(cfg.DataDirectory, "logs", $"events-{date:yyyyMMdd}.jsonl");
+            if (!File.Exists(path)) continue;
+            foreach (var line in File.ReadLines(path))
+            {
             try
             {
                 using var doc = JsonDocument.Parse(line);
@@ -76,6 +75,7 @@ public partial class ReportsForm : Form
             }
             catch { }
         }
+        }
         var parts = counts.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}:{kv.Value}");
         lblSummary.Text = $"Summary: total={total} | " + string.Join(" | ", parts);
         _lastCounts = counts;
@@ -106,6 +106,23 @@ public partial class ReportsForm : Form
             g.DrawString(label, this.Font, Brushes.Black, x, rect.Bottom - 18);
             g.DrawString(kv.Value.ToString(), this.Font, Brushes.Black, x, y - 16);
             idx++;
+        }
+    }
+
+    private void btnExportChart_Click(object? sender, EventArgs e)
+    {
+        using var sfd = new SaveFileDialog { Filter = "PNG Image (*.png)|*.png|All files (*.*)|*.*", FileName = $"childguard_chart_{DateTime.Now:yyyyMMdd_HHmmss}.png" };
+        if (sfd.ShowDialog(this) != DialogResult.OK) return;
+        try
+        {
+            using var bmp = new Bitmap(pnlChart.Width, pnlChart.Height);
+            pnlChart.DrawToBitmap(bmp, new Rectangle(Point.Empty, pnlChart.Size));
+            bmp.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Png);
+            MessageBox.Show(this, "Đã xuất biểu đồ PNG.", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Lỗi export chart: {ex.Message}", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 

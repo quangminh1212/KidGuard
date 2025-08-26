@@ -66,6 +66,31 @@ public partial class CountdownForm : Form
         TryCloseForm();
     }
 
+    private async void btnDelay_Click(object? sender, EventArgs e)
+    {
+        await DelayAndClose(TimeSpan.FromMinutes(5), "Đã hoãn 5 phút");
+    }
+
+    private async void btnDelay10_Click(object? sender, EventArgs e)
+    {
+        await DelayAndClose(TimeSpan.FromMinutes(10), "Đã hoãn 10 phút");
+    }
+
+    private async void btnDelay30_Click(object? sender, EventArgs e)
+    {
+        await DelayAndClose(TimeSpan.FromMinutes(30), "Đã hoãn 30 phút");
+    }
+
+    private async Task DelayAndClose(TimeSpan span, string message)
+    {
+        try { _cts.Cancel(); } catch { }
+        lblCountdown.Text = message;
+        try { _timer.Stop(); } catch { }
+        await Task.Delay(span);
+        try { _onCloseNow(); } catch { }
+        TryCloseForm();
+    }
+
     private void TryCloseForm()
     {
         try { _timer.Stop(); } catch { }

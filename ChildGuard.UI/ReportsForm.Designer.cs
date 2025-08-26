@@ -13,6 +13,9 @@ partial class ReportsForm
     private System.Windows.Forms.Label lblProcFilter = null!;
     private System.Windows.Forms.TextBox txtProcFilter = null!;
     private System.Windows.Forms.CheckBox chkByHour = null!;
+    private System.Windows.Forms.Button btnExportChart = null!;
+    private System.Windows.Forms.DateTimePicker dtpTo = null!;
+    private System.Windows.Forms.Label lblTo = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -34,6 +37,9 @@ partial class ReportsForm
         this.lblProcFilter = new System.Windows.Forms.Label();
         this.txtProcFilter = new System.Windows.Forms.TextBox();
         this.chkByHour = new System.Windows.Forms.CheckBox();
+        this.btnExportChart = new System.Windows.Forms.Button();
+        this.dtpTo = new System.Windows.Forms.DateTimePicker();
+        this.lblTo = new System.Windows.Forms.Label();
         this.SuspendLayout();
         // dtp
         this.dtp.Location = new System.Drawing.Point(16, 16);
@@ -97,9 +103,29 @@ partial class ReportsForm
         this.chkByHour.Size = new System.Drawing.Size(86, 19);
         this.chkByHour.Text = "Group by hour";
         this.chkByHour.UseVisualStyleBackColor = true;
+        // btnExportChart
+        this.btnExportChart.Location = new System.Drawing.Point(680, 44);
+        this.btnExportChart.Name = "btnExportChart";
+        this.btnExportChart.Size = new System.Drawing.Size(96, 23);
+        this.btnExportChart.Text = "Export Chart";
+        this.btnExportChart.UseVisualStyleBackColor = true;
+        this.btnExportChart.Click += new System.EventHandler(this.btnExportChart_Click);
+        // lblTo
+        this.lblTo.AutoSize = true;
+        this.lblTo.Location = new System.Drawing.Point(16, 76);
+        this.lblTo.Name = "lblTo";
+        this.lblTo.Size = new System.Drawing.Size(21, 15);
+        this.lblTo.Text = "To";
+        // dtpTo
+        this.dtpTo.Location = new System.Drawing.Point(44, 72);
+        this.dtpTo.Name = "dtpTo";
+        this.dtpTo.Size = new System.Drawing.Size(200, 23);
         // Form
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 630);
+        this.ClientSize = new System.Drawing.Size(800, 660);
+        this.Controls.Add(this.dtpTo);
+        this.Controls.Add(this.lblTo);
+        this.Controls.Add(this.btnExportChart);
         this.Controls.Add(this.chkByHour);
         this.Controls.Add(this.txtProcFilter);
         this.Controls.Add(this.lblProcFilter);
