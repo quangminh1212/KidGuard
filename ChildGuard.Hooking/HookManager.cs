@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading.Channels;
 using ChildGuard.Core.Configuration;
 using ChildGuard.Core.Models;
 
@@ -16,7 +14,7 @@ public sealed class HookManager : IDisposable
     private long _keyPressCount;
     private long _mouseEventCount;
 
-    public event Action<ActivityEvent>? OnEvent;
+    public event Action<ChildGuard.Core.Models.ActivityEvent>? OnEvent;
 
     public bool Start(AppConfig config)
     {
@@ -87,7 +85,7 @@ public sealed class HookManager : IDisposable
         {
             // For privacy, do NOT record the specific key. Only count events.
             Interlocked.Increment(ref _keyPressCount);
-            OnEvent?.Invoke(new ActivityEvent(DateTimeOffset.Now, ActivityEventType.Keyboard, new InputActivitySummary(_keyPressCount, _mouseEventCount)));
+            OnEvent?.Invoke(new ChildGuard.Core.Models.ActivityEvent(DateTimeOffset.Now, ActivityEventType.Keyboard, new InputActivitySummary(_keyPressCount, _mouseEventCount)));
         }
         return Native.CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
     }
@@ -97,7 +95,7 @@ public sealed class HookManager : IDisposable
         if (nCode >= 0)
         {
             Interlocked.Increment(ref _mouseEventCount);
-            OnEvent?.Invoke(new ActivityEvent(DateTimeOffset.Now, ActivityEventType.Mouse, new InputActivitySummary(_keyPressCount, _mouseEventCount)));
+            OnEvent?.Invoke(new ChildGuard.Core.Models.ActivityEvent(DateTimeOffset.Now, ActivityEventType.Mouse, new InputActivitySummary(_keyPressCount, _mouseEventCount)));
         }
         return Native.CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
     }

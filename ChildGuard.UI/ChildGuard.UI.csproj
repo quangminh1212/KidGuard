@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChildGuard.Core\ChildGuard.Core.csproj" />
+    <ProjectReference Include="..\ChildGuard.Hooking\ChildGuard.Hooking.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
