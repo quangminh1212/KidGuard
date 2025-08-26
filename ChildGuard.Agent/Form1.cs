@@ -34,19 +34,26 @@ public partial class Form1 : Form
         // Ẩn cửa sổ, chỉ chạy dưới khay hệ thống
         this.Hide();
         this.ShowInTaskbar = false;
+        LoadOrInitConfig();
         activeWindowTimer.Start();
     }
 
-    private AppConfig LoadConfig() => new AppConfig
+    private AppConfig _config = new();
+    private string _configPath = string.Empty;
+
+    private void LoadOrInitConfig()
     {
-        EnableInputMonitoring = true, // bật mặc định cho Agent
-        EnableActiveWindowTracking = true,
-        DataDirectory = "C:/ProgramData/ChildGuard"
-    };
+        _config = ConfigManager.Load(out _configPath);
+        // Ensure DataDirectory aligns with chosen config root if empty
+        if (string.IsNullOrWhiteSpace(_config.DataDirectory))
+        {
+            _config.DataDirectory = Path.GetDirectoryName(_configPath) ?? ConfigManager.GetLocalAppDataDir();
+        }
+    }
 
     private string GetLogPath()
     {
-        var dir = Path.Combine(LoadConfig().DataDirectory, "logs");
+        var dir = Path.Combine(_config.DataDirectory, "logs");
         Directory.CreateDirectory(dir);
         return Path.Combine(dir, $"events-{DateTime.UtcNow:yyyyMMdd}.jsonl");
     }
@@ -56,11 +63,13 @@ public partial class Form1 : Form
         if (_cts != null) return;
         _cts = new CancellationTokenSource();
         _sink = new JsonlFileEventSink(GetLogPath());
+        // Refresh config on start (in case changed)
+        LoadOrInitConfig();
         _writerTask = Task.Run(() => WriterLoopAsync(_cts.Token));
 
         // Hooking
         _hookManager.OnEvent += evt => _queue.Writer.TryWrite(evt);
-        _hookManager.Start(LoadConfig());
+        _hookManager.Start(_config);
 
         // Process WMI watchers
         try
@@ -163,7 +172,7 @@ public partial class Form1 : Form
     private void activeWindowTimer_Tick(object? sender, EventArgs e)
     {
         if (!IsHandleCreated) return;
-        if (!LoadConfig().EnableActiveWindowTracking) return;
+        if (!_config.EnableActiveWindowTracking) return;
         var h = GetForegroundWindow();
         if (h == IntPtr.Zero) return;
         if (h == _lastWindow) return;
