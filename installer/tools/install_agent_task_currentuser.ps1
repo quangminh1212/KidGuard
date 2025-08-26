@@ -11,8 +11,8 @@ if (-not $ExePath -or -not (Test-Path $ExePath)) {
 if (!(Test-Path $ExePath)) { throw "Agent exe not found at $ExePath" }
 
 $ru = "$env:USERNAME"
-Write-Host "Creating Scheduled Task '$TaskName' for user $ru -> $ExePath"
-$exists = schtasks.exe /Query /TN $TaskName 2>$null
+Write-Host "Creating Scheduled Task '${TaskName}' for user ${ru} -> $ExePath"
+$null = schtasks.exe /Query /TN $TaskName 2>$null
 if ($LASTEXITCODE -eq 0) {
   schtasks.exe /Change /TN $TaskName /TR ('"' + $ExePath + '"') | Out-Null
 } else {

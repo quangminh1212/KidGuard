@@ -26,13 +26,13 @@ catch {
   Write-Info "Register for group failed: $($_.Exception.Message). Falling back to current user."
   $ru = "$env:USERNAME"
   try {
-    $existing = schtasks.exe /Query /TN $TaskName 2>$null
+    $null = schtasks.exe /Query /TN $TaskName 2>$null
     if ($LASTEXITCODE -eq 0) {
       schtasks.exe /Change /TN $TaskName /TR ('"' + $ExePath + '"') | Out-Null
     } else {
       schtasks.exe /Create /F /SC ONLOGON /RL LIMITED /RU $ru /TN $TaskName /TR ('"' + $ExePath + '"') | Out-Null
     }
-    Write-Info "Registered scheduled task for current user $ru: $TaskName -> $ExePath"
+    Write-Info "Registered scheduled task for current user ${ru}: $TaskName -> $ExePath"
   } catch {
     throw $_
   }
