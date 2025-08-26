@@ -29,11 +29,16 @@ Set-Content -Path $iss -Value $issContent -Encoding UTF8
 $possible = @(
   (Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'),
   (Join-Path ${env:ProgramFiles} 'Inno Setup 6\ISCC.exe'),
+  (Join-Path ${env:LocalAppData} 'Programs\Inno Setup 6\ISCC.exe'),
   'iscc.exe'
 )
 $ISCC = $null
 foreach ($p in $possible) {
-  if (Get-Command $p -ErrorAction SilentlyContinue) { $ISCC = $p; break }
+  if (Test-Path $p) { $ISCC = $p; break }
+}
+if (-not $ISCC) {
+  $cmd = Get-Command 'iscc.exe' -ErrorAction SilentlyContinue
+  if ($cmd) { $ISCC = $cmd.Source }
 }
 if (-not $ISCC) {
   Write-Warning "Inno Setup Compiler (ISCC.exe) not found. Please install Inno Setup 6 and ensure ISCC.exe is in PATH."
@@ -42,7 +47,7 @@ if (-not $ISCC) {
 }
 
 Write-Host "Compiling installer with $ISCC ..."
-& $ISCC /Qp $iss | Write-Host
+& "$ISCC" /Qp "$iss" | Write-Host
 
 # Move output to dist
 $pattern = Join-Path $root 'installer\Output\ChildGuardSetup_*.exe'
