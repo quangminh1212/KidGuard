@@ -13,6 +13,8 @@ partial class Form1
     private System.Windows.Forms.Button btnStop = null!;
     private System.Windows.Forms.CheckBox chkEnableInput = null!;
     private System.Windows.Forms.Timer uiTimer = null!;
+    private System.Windows.Forms.MenuStrip menuStrip1 = null!;
+    private System.Windows.Forms.ToolStripMenuItem mnuSettings = null!;
 
     /// <summary>
     ///  Clean up any resources being used.
@@ -42,6 +44,9 @@ partial class Form1
         this.btnStop = new System.Windows.Forms.Button();
         this.chkEnableInput = new System.Windows.Forms.CheckBox();
         this.uiTimer = new System.Windows.Forms.Timer(this.components);
+        this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+        this.mnuSettings = new System.Windows.Forms.ToolStripMenuItem();
+        this.menuStrip1.SuspendLayout();
         this.SuspendLayout();
         // 
         // lblKeys
@@ -97,20 +102,37 @@ partial class Form1
         this.uiTimer.Interval = 500;
         this.uiTimer.Tick += new System.EventHandler(this.uiTimer_Tick);
         // 
+        // menuStrip1
+        //
+        this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.mnuSettings });
+        this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+        this.menuStrip1.Name = "menuStrip1";
+        this.menuStrip1.Size = new System.Drawing.Size(340, 24);
+        this.menuStrip1.TabIndex = 5;
+        this.menuStrip1.Text = "menuStrip1";
+        // mnuSettings
+        this.mnuSettings.Name = "mnuSettings";
+        this.mnuSettings.Size = new System.Drawing.Size(61, 20);
+        this.mnuSettings.Text = "Settings";
+        this.mnuSettings.Click += new System.EventHandler(this.mnuSettings_Click);
         // Form1
         // 
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(340, 190);
+        this.Controls.Add(this.menuStrip1);
         this.Controls.Add(this.btnStop);
         this.Controls.Add(this.btnStart);
         this.Controls.Add(this.chkEnableInput);
         this.Controls.Add(this.lblMouse);
         this.Controls.Add(this.lblKeys);
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+        this.MainMenuStrip = this.menuStrip1;
         this.MaximizeBox = false;
         this.Name = "Form1";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "ChildGuard UI";
+        this.menuStrip1.ResumeLayout(false);
+        this.menuStrip1.PerformLayout();
         this.ResumeLayout(false);
         this.PerformLayout();
     }
