@@ -1,6 +1,8 @@
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
+using System.Text;
+using ChildGuard.Core.Abstractions;
 using ChildGuard.Core.Configuration;
 using ChildGuard.Core.Models;
 using ChildGuard.Core.Sinks;
@@ -174,9 +176,9 @@ public partial class Form1 : Form
 
     private static string GetWindowTitle(IntPtr hWnd)
     {
-        Span<char> buffer = stackalloc char[1024];
-        int len = GetWindowText(hWnd, buffer, buffer.Length);
-        return len > 0 ? new string(buffer.Slice(0, len)) : string.Empty;
+        var sb = new StringBuilder(1024);
+        int len = GetWindowText(hWnd, sb, sb.Capacity);
+        return len > 0 ? sb.ToString(0, len) : string.Empty;
     }
 
     private static (int Pid, string ProcessName) GetProcessInfo(IntPtr hWnd)
@@ -193,8 +195,8 @@ public partial class Form1 : Form
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern int GetWindowText(IntPtr hWnd, Span<char> text, int count);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
