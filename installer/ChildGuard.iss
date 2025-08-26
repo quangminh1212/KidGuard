@@ -2,7 +2,7 @@
 ; Requires: Build artifacts in ..\out\Agent and ..\out\Service (use scripts\build_installer.ps1)
 
 #define AppName "ChildGuard"
-#define AppVersion "1.0.0"
+#define AppVersion "1.0.1"
 #define AppPublisher "ChildGuard Team"
 #define AppUrl "https://example.local/childguard"
 
@@ -26,6 +26,7 @@ PrivilegesRequired=admin
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
+Name: "installservice"; Description: "Install Windows Service (recommended)"; Flags: unchecked
 Name: "agentforall"; Description: "Run Agent at logon for all users"; GroupDescription: "Agent autostart mode"; Flags: exclusive
 Name: "agentforcurrent"; Description: "Run Agent at logon for current user only"; GroupDescription: "Agent autostart mode"; Flags: exclusive
 
@@ -50,18 +51,19 @@ Name: "{group}\ChildGuard Agent"; Filename: "{app}\Agent\ChildGuard.Agent.exe"; 
 Name: "{group}\Uninstall ChildGuard"; Filename: "{uninstallexe}"
 
 [Run]
-; Install Windows service
-Filename: "sc.exe"; Parameters: "create ChildGuardService binPath= '""{app}\Service\ChildGuard.Service.exe""' start= auto DisplayName= 'ChildGuard Service'"; Flags: runhidden
-Filename: "sc.exe"; Parameters: "description ChildGuardService 'Child activity monitoring service'"; Flags: runhidden
-Filename: "sc.exe"; Parameters: "failure ChildGuardService reset= 86400 actions= restart/5000/restart/5000/restart/5000"; Flags: runhidden
-Filename: "sc.exe"; Parameters: "start ChildGuardService"; Flags: runhidden
+; Install Windows service (optional)
+Filename: "sc.exe"; Parameters: "create ChildGuardService binPath= '""{app}\Service\ChildGuard.Service.exe""' start= auto DisplayName= 'ChildGuard Service'"; Flags: runhidden; Tasks: installservice
+Filename: "sc.exe"; Parameters: "description ChildGuardService 'Child activity monitoring service'"; Flags: runhidden; Tasks: installservice
+Filename: "sc.exe"; Parameters: "failure ChildGuardService reset= 86400 actions= restart/5000/restart/5000/restart/5000"; Flags: runhidden; Tasks: installservice
+Filename: "sc.exe"; Parameters: "start ChildGuardService"; Flags: runhidden; Tasks: installservice
 ; Create scheduled task to run Agent at logon depending on selected task
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\install_agent_task_allusers.ps1""' -TaskName 'ChildGuardAgent' -ExePath '""{app}\Agent\ChildGuard.Agent.exe""'"; Flags: runhidden; Tasks: agentforall
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\install_agent_task_currentuser.ps1""' -TaskName 'ChildGuardAgent' -ExePath '""{app}\Agent\ChildGuard.Agent.exe""'"; Flags: runhidden; Tasks: agentforcurrent
 
 [UninstallRun]
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\uninstall_agent_task.ps1""' -TaskName 'ChildGuardAgent'"; Flags: runhidden
-Filename: "sc.exe"; Parameters: "stop ChildGuardService"; Flags: runhidden
-Filename: "sc.exe"; Parameters: "delete ChildGuardService"; Flags: runhidden
+Filename: "sc.exe"; Parameters: "stop ChildGuardService"; Flags: runhidden; Tasks: installservice
+Filename: "sc.exe"; Parameters: "delete ChildGuardService"; Flags: runhidden; Tasks: installservice
+
 
 
