@@ -23,6 +23,8 @@ Agent lifecycle:
 - Publish Agent: pwsh -File .\scripts\publish_agent.ps1
 - Install Agent autostart (current user): pwsh -File .\scripts\install_agent_autostart.ps1
 - Uninstall Agent autostart: pwsh -File .\scripts\uninstall_agent_autostart.ps1
+- Install Agent Scheduled Task (logon, per-user): pwsh -File .\scripts\install_agent_schtask.ps1
+- Uninstall Agent Scheduled Task: pwsh -File .\scripts\uninstall_agent_schtask.ps1
 
 ## Architecture and structure (big picture)
 - Windows Service (ChildGuard.Service):
