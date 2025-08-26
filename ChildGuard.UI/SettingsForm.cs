@@ -101,4 +101,18 @@ public partial class SettingsForm : Form
         DialogResult = DialogResult.Cancel;
         Close();
     }
+
+    private void btnOpenConfig_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_path)) _ = ConfigManager.Load(out _path);
+            if (!string.IsNullOrWhiteSpace(_path))
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo("notepad.exe", '"' + _path + '"') { UseShellExecute = true };
+                System.Diagnostics.Process.Start(psi);
+            }
+        }
+        catch { }
+    }
 }

@@ -304,7 +304,7 @@ public partial class Form1 : Form
             bool explicitBlocked = _config.BlockedProcesses?.Any(x => string.Equals(x.Trim().TrimEnd(".exe".ToCharArray()).ToLowerInvariant(), pn)) == true;
             bool hasAllowList = _config.AllowedProcessesDuringQuietHours != null && _config.AllowedProcessesDuringQuietHours.Length > 0;
             bool allowedDuringQuiet = !hasAllowList || (_config.AllowedProcessesDuringQuietHours?.Any(x => string.Equals(x.Trim().TrimEnd(".exe".ToCharArray()).ToLowerInvariant(), pn)) == true);
-            bool isBlocked = explicitBlocked || (inQuiet && hasAllowList && !allowedDuringQuiet);
+            bool isBlocked = explicitBlocked || (inQuiet && hasAllowList && !allowedDuringQuiet) || IsBlockedByPolicyRules(procName, DateTime.Now);
             if (isBlocked)
             {
                 var now = DateTime.UtcNow;
@@ -427,6 +427,65 @@ public partial class Form1 : Form
             }
         }
         return false;
+    }
+
+    private bool IsBlockedByPolicyRules(string procName, DateTime localNow)
+    {
+        if (_config.PolicyRules is not { Length: >0 }) return false;
+        var pn = procName.ToLowerInvariant();
+        var dow = localNow.DayOfWeek; // Sunday=0
+        bool AnyAllowLists = false;
+        var allowedUnion = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var blockedUnion = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var r in _config.PolicyRules)
+        {
+            if (r is null) continue;
+            // Check day
+            if (r.Days is { Length: >0 })
+            {
+                bool dayMatch = r.Days.Any(s => DayMatches(s, dow));
+                if (!dayMatch) continue;
+            }
+            // Check time
+            if (!TimeSpan.TryParseExact(r.Start, @"hh\:mm", CultureInfo.InvariantCulture, out var s1)) continue;
+            if (!TimeSpan.TryParseExact(r.End, @"hh\:mm", CultureInfo.InvariantCulture, out var s2)) continue;
+            var t = localNow.TimeOfDay;
+            bool inWin = s1 <= s2 ? (t >= s1 && t <= s2) : (t >= s1 || t <= s2);
+            if (!inWin) continue;
+            // Aggregate
+            if (r.Block is { Length: >0 })
+            {
+                foreach (var b in r.Block)
+                {
+                    var name = (b ?? string.Empty).Trim().TrimEnd(".exe".ToCharArray());
+                    if (name.Length>0) blockedUnion.Add(name);
+                }
+            }
+            if (r.Allow is { Length: >0 })
+            {
+                AnyAllowLists = true;
+                foreach (var a in r.Allow)
+                {
+                    var name = (a ?? string.Empty).Trim().TrimEnd(".exe".ToCharArray());
+                    if (name.Length>0) allowedUnion.Add(name);
+                }
+            }
+        }
+        if (blockedUnion.Contains(pn)) return true;
+        if (AnyAllowLists && !allowedUnion.Contains(pn)) return true;
+        return false;
+    }
+
+    private static bool DayMatches(string token, DayOfWeek dow)
+    {
+        if (string.IsNullOrWhiteSpace(token)) return true;
+        token = token.Trim().ToLowerInvariant();
+        // Support: mon,tue,wed,thu,fri,sat,sun; full names optional
+        string[] map = new[]{"sun","mon","tue","wed","thu","fri","sat"};
+        var idx = Array.IndexOf(map, token.Length>=3?token.Substring(0,3):token);
+        if (idx>=0) return (int)dow == (idx==0?0:idx);
+        // try full names
+        return dow.ToString().ToLowerInvariant().StartsWith(token);
     }
 
     [DllImport("user32.dll")]

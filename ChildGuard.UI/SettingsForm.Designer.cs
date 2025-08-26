@@ -23,6 +23,7 @@ partial class SettingsForm
     private System.Windows.Forms.NumericUpDown numMaxSize = null!;
     private System.Windows.Forms.Label lblAdditionalQuiet = null!;
     private System.Windows.Forms.TextBox txtAdditionalQuiet = null!;
+    private System.Windows.Forms.Button btnOpenConfig = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -56,6 +57,7 @@ partial class SettingsForm
         ((System.ComponentModel.ISupportInitialize)(this.numMaxSize)).BeginInit();
         this.lblAdditionalQuiet = new System.Windows.Forms.Label();
         this.txtAdditionalQuiet = new System.Windows.Forms.TextBox();
+        this.btnOpenConfig = new System.Windows.Forms.Button();
         this.SuspendLayout();
         // chkInput
         this.chkInput.AutoSize = true;
@@ -176,9 +178,17 @@ partial class SettingsForm
         this.lblPath.Name = "lblPath";
         this.lblPath.Size = new System.Drawing.Size(86, 15);
         this.lblPath.Text = "Config path: -";
+        // btnOpenConfig
+        this.btnOpenConfig.Location = new System.Drawing.Point(314, 562);
+        this.btnOpenConfig.Name = "btnOpenConfig";
+        this.btnOpenConfig.Size = new System.Drawing.Size(84, 27);
+        this.btnOpenConfig.Text = "Open config";
+        this.btnOpenConfig.UseVisualStyleBackColor = true;
+        this.btnOpenConfig.Click += new System.EventHandler(this.btnOpenConfig_Click);
         // SettingsForm
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(480, 600);
+        this.Controls.Add(this.btnOpenConfig);
         this.Controls.Add(this.lblPath);
         this.Controls.Add(this.txtAdditionalQuiet);
         this.Controls.Add(this.lblAdditionalQuiet);
