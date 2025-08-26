@@ -24,6 +24,12 @@ public partial class Form1 : Form
         dlg.ShowDialog(this);
     }
 
+    private void mnuReports_Click(object? sender, EventArgs e)
+    {
+        using var dlg = new ReportsForm();
+        dlg.ShowDialog(this);
+    }
+
     private void OnActivity(ActivityEvent evt)
     {
         if (evt.Data is InputActivitySummary s)
