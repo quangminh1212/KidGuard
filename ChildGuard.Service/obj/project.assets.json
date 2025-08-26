@@ -603,7 +603,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/8.0.6": {
+      "Microsoft.NET.ILLink.Tasks/8.0.19": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -1343,7 +1343,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/8.0.6": {
+      "Microsoft.NET.ILLink.Tasks/8.0.19": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -2384,10 +2384,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.NET.ILLink.Tasks/8.0.6": {
-      "sha512": "E+lDylsTeP4ZiDmnEkiJ5wobnGaIJzFhOgZppznJCb69UZgbh6G3cfv1pnLDLLBx6JAgl0kAlnINDeT3uCuczQ==",
+    "Microsoft.NET.ILLink.Tasks/8.0.19": {
+      "sha512": "IhHf+zeZiaE5EXRyxILd4qM+Hj9cxV3sa8MpzZgeEhpvaG3a1VEGF6UCaPFLO44Kua3JkLKluE0SWVamS50PlA==",
       "type": "package",
-      "path": "microsoft.net.illink.tasks/8.0.6",
+      "path": "microsoft.net.illink.tasks/8.0.19",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -2401,7 +2401,7 @@
         "build/Microsoft.NET.ILLink.Analyzers.props",
         "build/Microsoft.NET.ILLink.Tasks.props",
         "build/Microsoft.NET.ILLink.targets",
-        "microsoft.net.illink.tasks.8.0.6.nupkg.sha512",
+        "microsoft.net.illink.tasks.8.0.19.nupkg.sha512",
         "microsoft.net.illink.tasks.nuspec",
         "tools/net472/ILLink.Tasks.dll",
         "tools/net472/ILLink.Tasks.dll.config",
@@ -2665,11 +2665,12 @@
       "Microsoft.Extensions.Hosting >= 8.0.0",
       "Microsoft.Extensions.Hosting.WindowsServices >= 8.0.0",
       "Microsoft.Extensions.Logging.EventLog >= 8.0.0",
-      "Microsoft.NET.ILLink.Tasks >= 8.0.6"
+      "Microsoft.NET.ILLink.Tasks >= 8.0.19"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\GHC\\.nuget\\packages\\": {}
+    "C:\\Users\\GHC\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2680,8 +2681,12 @@
       "packagesPath": "C:\\Users\\GHC\\.nuget\\packages\\",
       "outputPath": "C:\\VF\\ChildGuard\\ChildGuard.Service\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
         "C:\\Users\\GHC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -2714,7 +2719,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0-windows7.0": {
@@ -2735,7 +2741,7 @@
           "Microsoft.NET.ILLink.Tasks": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[8.0.6, )",
+            "version": "[8.0.19, )",
             "autoReferenced": true
           }
         },
@@ -2755,7 +2761,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     },
     "runtimes": {
