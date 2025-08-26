@@ -33,7 +33,7 @@ public partial class SettingsForm : Form
     private static DateTime ParseTimeOrDefault(string? s, DateTime fallback)
     {
         if (string.IsNullOrWhiteSpace(s)) return fallback;
-        if (TimeSpan.TryParseExact(s, "hh\:mm", System.Globalization.CultureInfo.InvariantCulture, out var t))
+        if (TimeSpan.TryParseExact(s, @"hh\:mm", System.Globalization.CultureInfo.InvariantCulture, out var t))
         {
             return new DateTime(2000,1,1) + t;
         }

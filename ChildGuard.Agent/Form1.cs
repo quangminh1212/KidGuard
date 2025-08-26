@@ -269,8 +269,8 @@ public partial class Form1 : Form
     {
         if (string.IsNullOrWhiteSpace(_config.QuietHoursStart) || string.IsNullOrWhiteSpace(_config.QuietHoursEnd))
             return false;
-        if (!TimeSpan.TryParseExact(_config.QuietHoursStart, "hh\:mm", CultureInfo.InvariantCulture, out var start)) return false;
-        if (!TimeSpan.TryParseExact(_config.QuietHoursEnd, "hh\:mm", CultureInfo.InvariantCulture, out var end)) return false;
+        if (!TimeSpan.TryParseExact(_config.QuietHoursStart, @"hh\:mm", CultureInfo.InvariantCulture, out var start)) return false;
+        if (!TimeSpan.TryParseExact(_config.QuietHoursEnd, @"hh\:mm", CultureInfo.InvariantCulture, out var end)) return false;
         var t = localNow.TimeOfDay;
         if (start <= end)
         {
