@@ -44,7 +44,9 @@ Source: "..\out\Service\*"; DestDir: "{app}\Service"; Flags: recursesubdirs igno
 ; Tools scripts
 Source: "tools\install_agent_task_allusers.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "tools\install_agent_task_currentuser.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "tools\ensure_agent_autostart.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "tools\uninstall_agent_task.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "tools\uninstall_agent_run.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\ChildGuard Agent"; Filename: "{app}\Agent\ChildGuard.Agent.exe"; WorkingDir: "{app}\Agent"
@@ -56,14 +58,18 @@ Filename: "sc.exe"; Parameters: "create ChildGuardService binPath= '""{app}\Serv
 Filename: "sc.exe"; Parameters: "description ChildGuardService 'Child activity monitoring service'"; Flags: runhidden; Tasks: installservice
 Filename: "sc.exe"; Parameters: "failure ChildGuardService reset= 86400 actions= restart/5000/restart/5000/restart/5000"; Flags: runhidden; Tasks: installservice
 Filename: "sc.exe"; Parameters: "start ChildGuardService"; Flags: runhidden; Tasks: installservice
-; Create scheduled task to run Agent at logon depending on selected task
-Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\install_agent_task_allusers.ps1""' -TaskName 'ChildGuardAgent' -ExePath '""{app}\Agent\ChildGuard.Agent.exe""'"; Flags: runhidden; Tasks: agentforall
-Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\install_agent_task_currentuser.ps1""' -TaskName 'ChildGuardAgent' -ExePath '""{app}\Agent\ChildGuard.Agent.exe""'"; Flags: runhidden; Tasks: agentforcurrent
+; Ensure Agent autostart (with fallback to HKCU Run if task creation fails)
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\ensure_agent_autostart.ps1""' -Mode allusers -TaskName 'ChildGuardAgent' -ExePath '""{app}\Agent\ChildGuard.Agent.exe""'"; Flags: runhidden; Tasks: agentforall
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\ensure_agent_autostart.ps1""' -Mode current -TaskName 'ChildGuardAgent' -ExePath '""{app}\Agent\ChildGuard.Agent.exe""'"; Flags: runhidden; Tasks: agentforcurrent
 
 [UninstallRun]
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\uninstall_agent_task.ps1""' -TaskName 'ChildGuardAgent'"; Flags: runhidden
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\uninstall_agent_run.ps1""' -RunName 'ChildGuardAgent'"; Flags: runhidden
 Filename: "sc.exe"; Parameters: "stop ChildGuardService"; Flags: runhidden; Tasks: installservice
 Filename: "sc.exe"; Parameters: "delete ChildGuardService"; Flags: runhidden; Tasks: installservice
+
+
+
 
 
 
