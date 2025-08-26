@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChildGuard.Hooking")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+529cdb5e8e4456252f9d39b832fd5149d38fada8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d504cd4930c4c2fc6cee6810428cbc6122880c82")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChildGuard.Hooking")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChildGuard.Hooking")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
