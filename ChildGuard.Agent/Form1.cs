@@ -41,6 +41,8 @@ public partial class Form1 : Form
 
     private AppConfig _config = new();
     private string _configPath = string.Empty;
+    private FileSystemWatcher? _cfgWatcher;
+    private DateTime _lastCfgEventUtc = DateTime.MinValue;
 
     private void LoadOrInitConfig()
     {
@@ -50,6 +52,67 @@ public partial class Form1 : Form
         {
             _config.DataDirectory = Path.GetDirectoryName(_configPath) ?? ConfigManager.GetLocalAppDataDir();
         }
+        EnsureConfigWatcher();
+    }
+
+    private void EnsureConfigWatcher()
+    {
+        try
+        {
+            _cfgWatcher?.Dispose();
+            var dir = Path.GetDirectoryName(_configPath);
+            var file = Path.GetFileName(_configPath);
+            if (string.IsNullOrWhiteSpace(dir) || string.IsNullOrWhiteSpace(file)) return;
+            _cfgWatcher = new FileSystemWatcher(dir, file)
+            {
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.CreationTime | NotifyFilters.Size,
+                EnableRaisingEvents = true,
+                IncludeSubdirectories = false
+            };
+            _cfgWatcher.Changed += OnConfigChanged;
+            _cfgWatcher.Created += OnConfigChanged;
+            _cfgWatcher.Renamed += OnConfigRenamed;
+        }
+        catch { }
+    }
+
+    private void OnConfigRenamed(object sender, RenamedEventArgs e)
+    {
+        // Update path and reload
+        _configPath = e.FullPath;
+        OnConfigChanged(sender, EventArgs.Empty);
+    }
+
+    private void OnConfigChanged(object? sender, EventArgs e)
+    {
+        var now = DateTime.UtcNow;
+        if (now - _lastCfgEventUtc < TimeSpan.FromMilliseconds(500)) return; // debounce
+        _lastCfgEventUtc = now;
+        try
+        {
+            var old = _config;
+            _config = ConfigManager.Load(out _configPath);
+            if (string.IsNullOrWhiteSpace(_config.DataDirectory))
+            {
+                _config.DataDirectory = Path.GetDirectoryName(_configPath) ?? ConfigManager.GetLocalAppDataDir();
+            }
+            // Re-arm watcher if path changed
+            EnsureConfigWatcher();
+
+            // Apply runtime changes for input monitoring
+            if (old.EnableInputMonitoring != _config.EnableInputMonitoring)
+            {
+                if (_config.EnableInputMonitoring)
+                {
+                    _hookManager.Start(_config);
+                }
+                else
+                {
+                    _hookManager.Stop();
+                }
+            }
+        }
+        catch { }
     }
 
     private string GetLogPath()
