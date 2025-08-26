@@ -2,7 +2,7 @@
 ; Requires: Build artifacts in ..\out\Agent and ..\out\Service (use scripts\build_installer.ps1)
 
 #define AppName "ChildGuard"
-#define AppVersion "1.0.1"
+#define AppVersion "1.0.2"
 #define AppPublisher "ChildGuard Team"
 #define AppUrl "https://example.local/childguard"
 
@@ -67,6 +67,7 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Fil
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File '""{app}\tools\uninstall_agent_run.ps1""' -RunName 'ChildGuardAgent'"; Flags: runhidden
 Filename: "sc.exe"; Parameters: "stop ChildGuardService"; Flags: runhidden; Tasks: installservice
 Filename: "sc.exe"; Parameters: "delete ChildGuardService"; Flags: runhidden; Tasks: installservice
+
 
 
 
