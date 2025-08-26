@@ -9,6 +9,7 @@ partial class ReportsForm
     private System.Windows.Forms.DataGridView grid = null!;
     private System.Windows.Forms.Label lblSummary = null!;
     private System.Windows.Forms.Button btnExport = null!;
+    private System.Windows.Forms.Panel pnlChart = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -26,6 +27,7 @@ partial class ReportsForm
         ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
         this.lblSummary = new System.Windows.Forms.Label();
         this.btnExport = new System.Windows.Forms.Button();
+        this.pnlChart = new System.Windows.Forms.Panel();
         this.SuspendLayout();
         // dtp
         this.dtp.Location = new System.Drawing.Point(16, 16);
@@ -67,9 +69,15 @@ partial class ReportsForm
         this.btnExport.Text = "Export CSV";
         this.btnExport.UseVisualStyleBackColor = true;
         this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+        // pnlChart
+        this.pnlChart.Location = new System.Drawing.Point(16, 444);
+        this.pnlChart.Name = "pnlChart";
+        this.pnlChart.Size = new System.Drawing.Size(760, 120);
+        this.pnlChart.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlChart_Paint);
         // Form
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 470);
+        this.ClientSize = new System.Drawing.Size(800, 580);
+        this.Controls.Add(this.pnlChart);
         this.Controls.Add(this.lblSummary);
         this.Controls.Add(this.grid);
         this.Controls.Add(this.btnExport);

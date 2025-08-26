@@ -10,6 +10,8 @@ partial class SettingsForm
     private System.Windows.Forms.Label lblPath = null!;
     private System.Windows.Forms.TextBox txtBlocked = null!;
     private System.Windows.Forms.Label lblBlocked = null!;
+    private System.Windows.Forms.TextBox txtAllowedQuiet = null!;
+    private System.Windows.Forms.Label lblAllowedQuiet = null!;
     private System.Windows.Forms.DateTimePicker dtStart = null!;
     private System.Windows.Forms.DateTimePicker dtEnd = null!;
     private System.Windows.Forms.Label lblQuiet = null!;
@@ -36,6 +38,8 @@ partial class SettingsForm
         this.lblPath = new System.Windows.Forms.Label();
         this.txtBlocked = new System.Windows.Forms.TextBox();
         this.lblBlocked = new System.Windows.Forms.Label();
+        this.txtAllowedQuiet = new System.Windows.Forms.TextBox();
+        this.lblAllowedQuiet = new System.Windows.Forms.Label();
         this.dtStart = new System.Windows.Forms.DateTimePicker();
         this.dtEnd = new System.Windows.Forms.DateTimePicker();
         this.lblQuiet = new System.Windows.Forms.Label();
@@ -74,25 +78,36 @@ partial class SettingsForm
         this.txtBlocked.Multiline = true;
         this.txtBlocked.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
         this.txtBlocked.Size = new System.Drawing.Size(376, 100);
+        // lblAllowedQuiet
+        this.lblAllowedQuiet.AutoSize = true;
+        this.lblAllowedQuiet.Location = new System.Drawing.Point(22, 210);
+        this.lblAllowedQuiet.Name = "lblAllowedQuiet";
+        this.lblAllowedQuiet.Size = new System.Drawing.Size(300, 15);
+        this.lblAllowedQuiet.Text = "Allowed processes during Quiet Hours (one per line):";
+        // txtAllowedQuiet
+        this.txtAllowedQuiet.Location = new System.Drawing.Point(22, 228);
+        this.txtAllowedQuiet.Multiline = true;
+        this.txtAllowedQuiet.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+        this.txtAllowedQuiet.Size = new System.Drawing.Size(376, 80);
         // lblQuiet
         this.lblQuiet.AutoSize = true;
-        this.lblQuiet.Location = new System.Drawing.Point(22, 210);
+        this.lblQuiet.Location = new System.Drawing.Point(22, 316);
         this.lblQuiet.Name = "lblQuiet";
         this.lblQuiet.Size = new System.Drawing.Size(126, 15);
         this.lblQuiet.Text = "Quiet hours (local time):";
         // dtStart
         this.dtStart.Format = System.Windows.Forms.DateTimePickerFormat.Time;
         this.dtStart.ShowUpDown = true;
-        this.dtStart.Location = new System.Drawing.Point(22, 230);
+        this.dtStart.Location = new System.Drawing.Point(22, 336);
         this.dtStart.Width = 100;
         // dtEnd
         this.dtEnd.Format = System.Windows.Forms.DateTimePickerFormat.Time;
         this.dtEnd.ShowUpDown = true;
-        this.dtEnd.Location = new System.Drawing.Point(132, 230);
+        this.dtEnd.Location = new System.Drawing.Point(132, 336);
         this.dtEnd.Width = 100;
         // lblRetention
         this.lblRetention.AutoSize = true;
-        this.lblRetention.Location = new System.Drawing.Point(22, 262);
+        this.lblRetention.Location = new System.Drawing.Point(22, 368);
         this.lblRetention.Name = "lblRetention";
         this.lblRetention.Size = new System.Drawing.Size(187, 15);
         this.lblRetention.Text = "Log retention (days, >=1, default 14):";
@@ -100,11 +115,11 @@ partial class SettingsForm
         this.numRetention.Minimum = 1;
         this.numRetention.Maximum = 365;
         this.numRetention.Value = 14;
-        this.numRetention.Location = new System.Drawing.Point(215, 260);
+        this.numRetention.Location = new System.Drawing.Point(215, 366);
         this.numRetention.Width = 60;
         // lblCloseWarn
         this.lblCloseWarn.AutoSize = true;
-        this.lblCloseWarn.Location = new System.Drawing.Point(22, 292);
+        this.lblCloseWarn.Location = new System.Drawing.Point(22, 398);
         this.lblCloseWarn.Name = "lblCloseWarn";
         this.lblCloseWarn.Size = new System.Drawing.Size(172, 15);
         this.lblCloseWarn.Text = "Block close warning (seconds):";
@@ -112,11 +127,11 @@ partial class SettingsForm
         this.numCloseWarn.Minimum = 0;
         this.numCloseWarn.Maximum = 300;
         this.numCloseWarn.Value = 10;
-        this.numCloseWarn.Location = new System.Drawing.Point(215, 290);
+        this.numCloseWarn.Location = new System.Drawing.Point(215, 396);
         this.numCloseWarn.Width = 60;
         // lblMaxSize
         this.lblMaxSize.AutoSize = true;
-        this.lblMaxSize.Location = new System.Drawing.Point(22, 322);
+        this.lblMaxSize.Location = new System.Drawing.Point(22, 428);
         this.lblMaxSize.Name = "lblMaxSize";
         this.lblMaxSize.Size = new System.Drawing.Size(101, 15);
         this.lblMaxSize.Text = "Log max size (MB):";
@@ -124,10 +139,10 @@ partial class SettingsForm
         this.numMaxSize.Minimum = 0;
         this.numMaxSize.Maximum = 10000;
         this.numMaxSize.Value = 200;
-        this.numMaxSize.Location = new System.Drawing.Point(215, 320);
+        this.numMaxSize.Location = new System.Drawing.Point(215, 426);
         this.numMaxSize.Width = 80;
         // btnSave
-        this.btnSave.Location = new System.Drawing.Point(22, 360);
+        this.btnSave.Location = new System.Drawing.Point(22, 466);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new System.Drawing.Size(84, 27);
         this.btnSave.Text = "Save";
@@ -142,14 +157,16 @@ partial class SettingsForm
         this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
         // lblPath
         this.lblPath.AutoSize = true;
-        this.lblPath.Location = new System.Drawing.Point(22, 400);
+        this.lblPath.Location = new System.Drawing.Point(22, 506);
         this.lblPath.Name = "lblPath";
         this.lblPath.Size = new System.Drawing.Size(86, 15);
         this.lblPath.Text = "Config path: -";
         // SettingsForm
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(460, 440);
+        this.ClientSize = new System.Drawing.Size(480, 540);
         this.Controls.Add(this.lblPath);
+        this.Controls.Add(this.txtAllowedQuiet);
+        this.Controls.Add(this.lblAllowedQuiet);
         this.Controls.Add(this.numMaxSize);
         this.Controls.Add(this.lblMaxSize);
         this.Controls.Add(this.numCloseWarn);
