@@ -18,7 +18,7 @@ public sealed class JsonlFileEventSink : IEventSink
         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
         _writer = new StreamWriter(new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
         {
-            AutoFlush = true
+            AutoFlush = false
         };
         _jsonOptions.Converters.Add(new JsonStringEnumConverter());
     }
