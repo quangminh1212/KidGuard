@@ -10,6 +10,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 - Restore: dotnet restore .\ChildGuard.sln
 - Build: dotnet build .\ChildGuard.sln -c Release -v minimal
 - Run UI (dev): dotnet run --project .\ChildGuard.UI\ChildGuard.UI.csproj
+- Run Agent (tray, dev): dotnet run --project .\ChildGuard.Agent\ChildGuard.Agent.csproj
 - Test all: dotnet test .\ChildGuard.sln -c Release --logger "trx;LogFileName=test_results.trx"
 - Run a single test: dotnet test .\ChildGuard.Tests\ChildGuard.Tests.csproj --filter "FullyQualifiedName~ChildGuard.Tests.CoreModelsTests.JsonlSink_Writes_Line"
 - Format (lint/format): dotnet format .\ChildGuard.sln --verify-no-changes --severity info
@@ -24,6 +25,9 @@ Service lifecycle:
   - Logs to Windows Event Log. Future responsibilities: orchestrate per-user agents, data sinks, and policy.
 - WinForms UI (ChildGuard.UI):
   - Parent-facing local UI for development and configuration. Currently demonstrates input monitoring (low-level hooks) with privacy-preserving counters (does not log actual keys).
+- WinForms Agent (ChildGuard.Agent):
+  - Tray application chạy trong user session để thu thập hoạt động theo thời gian thực: Hooking bàn phím/chuột (đếm sự kiện), Active Window, process start/stop (WMI), USB device change (WM_DEVICECHANGE), và ghi JSONL.
+  - Chạy song song với Service (Service lo self-recovery/hardening; Agent lo thu thập trong phiên người dùng).
 - Hooking library (ChildGuard.Hooking):
   - Wraps Windows low-level keyboard/mouse hooks (SetWindowsHookEx, WH_KEYBOARD_LL/WH_MOUSE_LL) and raises sanitized activity events.
   - Target framework: net8.0-windows (Windows-only APIs).
