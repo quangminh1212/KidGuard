@@ -28,6 +28,10 @@ public partial class SettingsForm : Form
         dtEnd.Value = ParseTimeOrDefault(_config.QuietHoursEnd, new DateTime(2000,1,1,6,30,0));
         // Retention
         numRetention.Value = Math.Max(1, _config.LogRetentionDays);
+        // Block close warning seconds
+        numCloseWarn.Value = Math.Max(0, _config.BlockCloseWarningSeconds);
+        // Max log size MB
+        numMaxSize.Value = Math.Max(0, _config.LogMaxSizeMB);
     }
 
     private static DateTime ParseTimeOrDefault(string? s, DateTime fallback)
@@ -58,6 +62,9 @@ public partial class SettingsForm : Form
         _config.QuietHoursEnd = dtEnd.Value.ToString("HH:mm");
         // Retention
         _config.LogRetentionDays = (int)numRetention.Value;
+        // Warning seconds and max size
+        _config.BlockCloseWarningSeconds = (int)numCloseWarn.Value;
+        _config.LogMaxSizeMB = (int)numMaxSize.Value;
 
         ConfigManager.Save(_config, out var savedPath);
         lblPath.Text = savedPath;

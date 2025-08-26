@@ -15,6 +15,10 @@ partial class SettingsForm
     private System.Windows.Forms.Label lblQuiet = null!;
     private System.Windows.Forms.NumericUpDown numRetention = null!;
     private System.Windows.Forms.Label lblRetention = null!;
+    private System.Windows.Forms.Label lblCloseWarn = null!;
+    private System.Windows.Forms.NumericUpDown numCloseWarn = null!;
+    private System.Windows.Forms.Label lblMaxSize = null!;
+    private System.Windows.Forms.NumericUpDown numMaxSize = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -38,6 +42,12 @@ partial class SettingsForm
         this.numRetention = new System.Windows.Forms.NumericUpDown();
         this.lblRetention = new System.Windows.Forms.Label();
         ((System.ComponentModel.ISupportInitialize)(this.numRetention)).BeginInit();
+        this.lblCloseWarn = new System.Windows.Forms.Label();
+        this.numCloseWarn = new System.Windows.Forms.NumericUpDown();
+        this.lblMaxSize = new System.Windows.Forms.Label();
+        this.numMaxSize = new System.Windows.Forms.NumericUpDown();
+        ((System.ComponentModel.ISupportInitialize)(this.numCloseWarn)).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)(this.numMaxSize)).BeginInit();
         this.SuspendLayout();
         // chkInput
         this.chkInput.AutoSize = true;
@@ -92,8 +102,32 @@ partial class SettingsForm
         this.numRetention.Value = 14;
         this.numRetention.Location = new System.Drawing.Point(215, 260);
         this.numRetention.Width = 60;
+        // lblCloseWarn
+        this.lblCloseWarn.AutoSize = true;
+        this.lblCloseWarn.Location = new System.Drawing.Point(22, 292);
+        this.lblCloseWarn.Name = "lblCloseWarn";
+        this.lblCloseWarn.Size = new System.Drawing.Size(172, 15);
+        this.lblCloseWarn.Text = "Block close warning (seconds):";
+        // numCloseWarn
+        this.numCloseWarn.Minimum = 0;
+        this.numCloseWarn.Maximum = 300;
+        this.numCloseWarn.Value = 10;
+        this.numCloseWarn.Location = new System.Drawing.Point(215, 290);
+        this.numCloseWarn.Width = 60;
+        // lblMaxSize
+        this.lblMaxSize.AutoSize = true;
+        this.lblMaxSize.Location = new System.Drawing.Point(22, 322);
+        this.lblMaxSize.Name = "lblMaxSize";
+        this.lblMaxSize.Size = new System.Drawing.Size(101, 15);
+        this.lblMaxSize.Text = "Log max size (MB):";
+        // numMaxSize
+        this.numMaxSize.Minimum = 0;
+        this.numMaxSize.Maximum = 10000;
+        this.numMaxSize.Value = 200;
+        this.numMaxSize.Location = new System.Drawing.Point(215, 320);
+        this.numMaxSize.Width = 80;
         // btnSave
-        this.btnSave.Location = new System.Drawing.Point(22, 300);
+        this.btnSave.Location = new System.Drawing.Point(22, 360);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new System.Drawing.Size(84, 27);
         this.btnSave.Text = "Save";
@@ -108,14 +142,18 @@ partial class SettingsForm
         this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
         // lblPath
         this.lblPath.AutoSize = true;
-        this.lblPath.Location = new System.Drawing.Point(22, 340);
+        this.lblPath.Location = new System.Drawing.Point(22, 400);
         this.lblPath.Name = "lblPath";
         this.lblPath.Size = new System.Drawing.Size(86, 15);
         this.lblPath.Text = "Config path: -";
         // SettingsForm
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(430, 380);
+        this.ClientSize = new System.Drawing.Size(460, 440);
         this.Controls.Add(this.lblPath);
+        this.Controls.Add(this.numMaxSize);
+        this.Controls.Add(this.lblMaxSize);
+        this.Controls.Add(this.numCloseWarn);
+        this.Controls.Add(this.lblCloseWarn);
         this.Controls.Add(this.numRetention);
         this.Controls.Add(this.lblRetention);
         this.Controls.Add(this.dtEnd);
@@ -135,6 +173,8 @@ partial class SettingsForm
         this.Text = "Settings";
         this.Load += new System.EventHandler(this.SettingsForm_Load);
         ((System.ComponentModel.ISupportInitialize)(this.numRetention)).EndInit();
+        ((System.ComponentModel.ISupportInitialize)(this.numCloseWarn)).EndInit();
+        ((System.ComponentModel.ISupportInitialize)(this.numMaxSize)).EndInit();
         this.ResumeLayout(false);
         this.PerformLayout();
     }
