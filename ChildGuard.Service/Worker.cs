@@ -11,13 +11,23 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        _logger.LogInformation("ChildGuardService started at: {time}", DateTimeOffset.Now);
+        try
         {
-            if (_logger.IsEnabled(LogLevel.Information))
+            while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                // Health heartbeat; later this will orchestrate user-session agent and sinks
+                _logger.LogDebug("Heartbeat {time}", DateTimeOffset.Now);
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
-            await Task.Delay(1000, stoppingToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // expected on stop
+        }
+        finally
+        {
+            _logger.LogInformation("ChildGuardService stopping at: {time}", DateTimeOffset.Now);
         }
     }
 }
