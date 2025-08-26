@@ -2,6 +2,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using System.Text;
+using System.Globalization;
 using ChildGuard.Core.Abstractions;
 using ChildGuard.Core.Configuration;
 using ChildGuard.Core.Models;
@@ -58,6 +59,26 @@ public partial class Form1 : Form
         return Path.Combine(dir, $"events-{DateTime.UtcNow:yyyyMMdd}.jsonl");
     }
 
+    private void CleanOldLogs()
+    {
+        var dir = Path.Combine(_config.DataDirectory, "logs");
+        if (!Directory.Exists(dir)) return;
+        var retention = Math.Max(1, _config.LogRetentionDays);
+        var cutoff = DateTime.UtcNow.Date.AddDays(-retention);
+        foreach (var f in Directory.EnumerateFiles(dir, "events-*.jsonl", SearchOption.TopDirectoryOnly))
+        {
+            try
+            {
+                var info = new FileInfo(f);
+                if (info.LastWriteTimeUtc < cutoff)
+                {
+                    info.Delete();
+                }
+            }
+            catch { }
+        }
+    }
+
     private void StartMonitoring()
     {
         if (_cts != null) return;
@@ -65,6 +86,8 @@ public partial class Form1 : Form
         _sink = new JsonlFileEventSink(GetLogPath());
         // Refresh config on start (in case changed)
         LoadOrInitConfig();
+        // Clean old logs according to retention policy
+        try { CleanOldLogs(); } catch { }
         _writerTask = Task.Run(() => WriterLoopAsync(_cts.Token));
 
         // Hooking
@@ -170,6 +193,7 @@ public partial class Form1 : Form
     }
 
     private readonly Dictionary<int, DateTime> _lastEnforce = new();
+    private DateTime _lastQuietHoursNotice = DateTime.MinValue;
 
     private void activeWindowTimer_Tick(object? sender, EventArgs e)
     {
@@ -184,6 +208,8 @@ public partial class Form1 : Form
         _lastTitle = title;
         _queue.Writer.TryWrite(new ActivityEvent(DateTimeOffset.Now, ActivityEventType.ActiveWindow, new ActiveWindowInfo(title, procName, pid)));
 
+        bool inQuiet = IsInQuietHours(DateTime.Now);
+
         // Simple policy enforcement: block configured processes by name (case-insensitive)
         if (_config.BlockedProcesses?.Length > 0 && !string.IsNullOrWhiteSpace(procName))
         {
@@ -196,7 +222,7 @@ public partial class Form1 : Form
                 {
                     _lastEnforce[pid] = now;
                     notifyIcon.BalloonTipTitle = "ChildGuard Policy";
-                    notifyIcon.BalloonTipText = $"Ứng dụng '{procName}' bị chặn theo cấu hình.";
+                    notifyIcon.BalloonTipText = inQuiet ? $"Giờ yên lặng: Đóng '{procName}' theo cấu hình." : $"Ứng dụng '{procName}' bị chặn theo cấu hình.";
                     notifyIcon.ShowBalloonTip(2000);
                     try
                     {
@@ -205,6 +231,18 @@ public partial class Form1 : Form
                     }
                     catch { }
                 }
+            }
+        }
+
+        // Quiet hours notice (friendly), at most every 30 minutes
+        if (inQuiet)
+        {
+            if (DateTime.UtcNow - _lastQuietHoursNotice.ToUniversalTime() > TimeSpan.FromMinutes(30))
+            {
+                _lastQuietHoursNotice = DateTime.Now;
+                notifyIcon.BalloonTipTitle = "ChildGuard";
+                notifyIcon.BalloonTipText = "Đang trong khung giờ yên lặng (giới hạn sử dụng).";
+                notifyIcon.ShowBalloonTip(2000);
             }
         }
     }
@@ -225,6 +263,25 @@ public partial class Form1 : Form
             return ((int)pid, p.ProcessName);
         }
         catch { return ((int)pid, ""); }
+    }
+
+    private bool IsInQuietHours(DateTime localNow)
+    {
+        if (string.IsNullOrWhiteSpace(_config.QuietHoursStart) || string.IsNullOrWhiteSpace(_config.QuietHoursEnd))
+            return false;
+        if (!TimeSpan.TryParseExact(_config.QuietHoursStart, "hh\:mm", CultureInfo.InvariantCulture, out var start)) return false;
+        if (!TimeSpan.TryParseExact(_config.QuietHoursEnd, "hh\:mm", CultureInfo.InvariantCulture, out var end)) return false;
+        var t = localNow.TimeOfDay;
+        if (start <= end)
+        {
+            // e.g., 21:00-23:00
+            return t >= start && t <= end;
+        }
+        else
+        {
+            // overnight, e.g., 21:00-06:00
+            return t >= start || t <= end;
+        }
     }
 
     [DllImport("user32.dll")]
