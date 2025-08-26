@@ -140,6 +140,22 @@ public partial class Form1 : Form
             }
             catch { }
         }
+        // Enforce max directory size (best-effort)
+        long maxBytes = (long)_config.LogMaxSizeMB * 1024L * 1024L;
+        if (maxBytes > 0)
+        {
+            var files = Directory.EnumerateFiles(dir, "events-*.jsonl", SearchOption.TopDirectoryOnly)
+                .Select(p => new FileInfo(p))
+                .OrderBy(fi => fi.LastWriteTimeUtc)
+                .ToList();
+            long total = files.Sum(fi => fi.Length);
+            int idx = 0;
+            while (total > maxBytes && idx < files.Count)
+            {
+                try { total -= files[idx].Length; files[idx].Delete(); } catch { }
+                idx++;
+            }
+        }
     }
 
     private void StartMonitoring()
@@ -214,6 +230,13 @@ public partial class Form1 : Form
         try { _procStart?.Stop(); } catch { }
         try { _procStop?.Stop(); } catch { }
 
+        // cancel pending closes
+        foreach (var kv in _pendingClose.ToArray())
+        {
+            try { kv.Value.Cancel(); } catch { }
+        }
+        _pendingClose.Clear();
+
         _cts.Cancel();
         try { if (_writerTask != null) await _writerTask; } catch { }
         try { if (_sink != null) await _sink.DisposeAsync(); } catch { }
@@ -256,6 +279,7 @@ public partial class Form1 : Form
     }
 
     private readonly Dictionary<int, DateTime> _lastEnforce = new();
+    private readonly Dictionary<int, CancellationTokenSource> _pendingClose = new();
     private DateTime _lastQuietHoursNotice = DateTime.MinValue;
 
     private void activeWindowTimer_Tick(object? sender, EventArgs e)
@@ -284,15 +308,42 @@ public partial class Form1 : Form
                 if (!_lastEnforce.TryGetValue(pid, out var last) || (now - last) > TimeSpan.FromSeconds(30))
                 {
                     _lastEnforce[pid] = now;
+                    int warnSec = Math.Max(0, _config.BlockCloseWarningSeconds);
                     notifyIcon.BalloonTipTitle = "ChildGuard Policy";
-                    notifyIcon.BalloonTipText = inQuiet ? $"Giờ yên lặng: Đóng '{procName}' theo cấu hình." : $"Ứng dụng '{procName}' bị chặn theo cấu hình.";
+                    notifyIcon.BalloonTipText = warnSec > 0
+                        ? (inQuiet ? $"Giờ yên lặng: '{procName}' sẽ đóng sau {warnSec}s." : $"'{procName}' sẽ đóng sau {warnSec}s theo cấu hình.")
+                        : (inQuiet ? $"Giờ yên lặng: Đóng '{procName}' theo cấu hình." : $"Ứng dụng '{procName}' bị chặn theo cấu hình.");
                     notifyIcon.ShowBalloonTip(2000);
-                    try
+
+                    if (warnSec <= 0)
                     {
-                        using var p = System.Diagnostics.Process.GetProcessById(pid);
-                        _ = p.CloseMainWindow();
+                        TryCloseProcess(pid);
                     }
-                    catch { }
+                    else
+                    {
+                        if (_pendingClose.TryGetValue(pid, out var oldCts))
+                        {
+                            try { oldCts.Cancel(); } catch { }
+                        }
+                        var cts = new CancellationTokenSource();
+                        _pendingClose[pid] = cts;
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Task.Delay(TimeSpan.FromSeconds(warnSec), cts.Token);
+                                if (!cts.IsCancellationRequested)
+                                {
+                                    TryCloseProcess(pid);
+                                }
+                            }
+                            catch { }
+                            finally
+                            {
+                                _pendingClose.Remove(pid);
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -326,6 +377,16 @@ public partial class Form1 : Form
             return ((int)pid, p.ProcessName);
         }
         catch { return ((int)pid, ""); }
+    }
+
+    private void TryCloseProcess(int pid)
+    {
+        try
+        {
+            using var p = System.Diagnostics.Process.GetProcessById(pid);
+            _ = p.CloseMainWindow();
+        }
+        catch { }
     }
 
     private bool IsInQuietHours(DateTime localNow)

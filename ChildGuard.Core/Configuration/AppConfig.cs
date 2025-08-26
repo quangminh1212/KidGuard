@@ -15,4 +15,10 @@ public class AppConfig
 
     // Log retention in days for JSONL files.
     public int LogRetentionDays { get; set; } = 14;
+
+    // Warning countdown before enforcing blocked process (seconds). 0 = close immediately.
+    public int BlockCloseWarningSeconds { get; set; } = 10;
+
+    // Maximum total size of logs directory in MB (best-effort cleanup). 0 or negative = unlimited.
+    public int LogMaxSizeMB { get; set; } = 200;
 }
