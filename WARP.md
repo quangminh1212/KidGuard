@@ -19,6 +19,11 @@ Service lifecycle:
 - Publish + install service: pwsh -File .\scripts\publish_and_install_service.ps1
 - Uninstall service: pwsh -File .\scripts\uninstall_service.ps1
 
+Agent lifecycle:
+- Publish Agent: pwsh -File .\scripts\publish_agent.ps1
+- Install Agent autostart (current user): pwsh -File .\scripts\install_agent_autostart.ps1
+- Uninstall Agent autostart: pwsh -File .\scripts\uninstall_agent_autostart.ps1
+
 ## Architecture and structure (big picture)
 - Windows Service (ChildGuard.Service):
   - Hosts a long-running worker configured as a Windows Service (service name: ChildGuardService).
@@ -38,7 +43,8 @@ Service lifecycle:
   - xUnit tests; example covers JSONL sink behavior.
 
 Notes and constraints:
-- Global hooks should run in an interactive user session, not in Session 0 (Windows Service). The UI currently hosts hooks for development; a per-user agent can be introduced later for production.
+- Global hooks should run in an interactive user session, not in Session 0 (Windows Service). The UI currently hosts hooks for development; a per-user agent is provided for production.
+- Config path: prefers C:\ProgramData\ChildGuard\config.json; falls back to %LocalAppData%\ChildGuard\config.json if ProgramData is not writable.
 - Anti-tamper and self-defense should rely on OS-supported mechanisms (service recovery actions, permissions, and admin-only controls), avoiding invasive techniques.
 
 ## Assistant/workspace rules
