@@ -16,9 +16,9 @@ $dist = Join-Path $root 'dist'
 if (!(Test-Path $dist)) { New-Item -ItemType Directory -Path $dist | Out-Null }
 
 Write-Host "Publishing Agent -> $outAgent"
-dotnet publish $agentProj -c $Configuration -r $Rid -o $outAgent --no-self-contained
+dotnet publish $agentProj -c $Configuration -r $Rid -o $outAgent --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 Write-Host "Publishing Service -> $outService"
-dotnet publish $serviceProj -c $Configuration -r $Rid -o $outService --no-self-contained
+dotnet publish $serviceProj -c $Configuration -r $Rid -o $outService --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 
 # Update version in ISS dynamically (optional)
 $issContent = Get-Content -Raw $iss
