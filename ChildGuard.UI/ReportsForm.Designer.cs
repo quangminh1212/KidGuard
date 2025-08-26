@@ -10,6 +10,9 @@ partial class ReportsForm
     private System.Windows.Forms.Label lblSummary = null!;
     private System.Windows.Forms.Button btnExport = null!;
     private System.Windows.Forms.Panel pnlChart = null!;
+    private System.Windows.Forms.Label lblProcFilter = null!;
+    private System.Windows.Forms.TextBox txtProcFilter = null!;
+    private System.Windows.Forms.CheckBox chkByHour = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -28,6 +31,9 @@ partial class ReportsForm
         this.lblSummary = new System.Windows.Forms.Label();
         this.btnExport = new System.Windows.Forms.Button();
         this.pnlChart = new System.Windows.Forms.Panel();
+        this.lblProcFilter = new System.Windows.Forms.Label();
+        this.txtProcFilter = new System.Windows.Forms.TextBox();
+        this.chkByHour = new System.Windows.Forms.CheckBox();
         this.SuspendLayout();
         // dtp
         this.dtp.Location = new System.Drawing.Point(16, 16);
@@ -70,13 +76,33 @@ partial class ReportsForm
         this.btnExport.UseVisualStyleBackColor = true;
         this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
         // pnlChart
-        this.pnlChart.Location = new System.Drawing.Point(16, 444);
+        this.pnlChart.Location = new System.Drawing.Point(16, 494);
         this.pnlChart.Name = "pnlChart";
         this.pnlChart.Size = new System.Drawing.Size(760, 120);
         this.pnlChart.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlChart_Paint);
+        // lblProcFilter
+        this.lblProcFilter.AutoSize = true;
+        this.lblProcFilter.Location = new System.Drawing.Point(16, 44);
+        this.lblProcFilter.Name = "lblProcFilter";
+        this.lblProcFilter.Size = new System.Drawing.Size(76, 15);
+        this.lblProcFilter.Text = "Process filter";
+        // txtProcFilter
+        this.txtProcFilter.Location = new System.Drawing.Point(98, 42);
+        this.txtProcFilter.Name = "txtProcFilter";
+        this.txtProcFilter.Size = new System.Drawing.Size(286, 23);
+        // chkByHour
+        this.chkByHour.AutoSize = true;
+        this.chkByHour.Location = new System.Drawing.Point(392, 44);
+        this.chkByHour.Name = "chkByHour";
+        this.chkByHour.Size = new System.Drawing.Size(86, 19);
+        this.chkByHour.Text = "Group by hour";
+        this.chkByHour.UseVisualStyleBackColor = true;
         // Form
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 580);
+        this.ClientSize = new System.Drawing.Size(800, 630);
+        this.Controls.Add(this.chkByHour);
+        this.Controls.Add(this.txtProcFilter);
+        this.Controls.Add(this.lblProcFilter);
         this.Controls.Add(this.pnlChart);
         this.Controls.Add(this.lblSummary);
         this.Controls.Add(this.grid);
