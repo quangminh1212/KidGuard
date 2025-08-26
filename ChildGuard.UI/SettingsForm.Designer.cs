@@ -24,6 +24,8 @@ partial class SettingsForm
     private System.Windows.Forms.Label lblAdditionalQuiet = null!;
     private System.Windows.Forms.TextBox txtAdditionalQuiet = null!;
     private System.Windows.Forms.Button btnOpenConfig = null!;
+    private System.Windows.Forms.Label lblLanguage = null!;
+    private System.Windows.Forms.ComboBox cmbLanguage = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -31,37 +33,50 @@ partial class SettingsForm
         base.Dispose(disposing);
     }
 
-    private void InitializeComponent()
-    {
-        this.components = new System.ComponentModel.Container();
-        this.chkInput = new System.Windows.Forms.CheckBox();
-        this.chkActiveWindow = new System.Windows.Forms.CheckBox();
-        this.btnSave = new System.Windows.Forms.Button();
-        this.btnCancel = new System.Windows.Forms.Button();
-        this.lblPath = new System.Windows.Forms.Label();
-        this.txtBlocked = new System.Windows.Forms.TextBox();
-        this.lblBlocked = new System.Windows.Forms.Label();
-        this.txtAllowedQuiet = new System.Windows.Forms.TextBox();
-        this.lblAllowedQuiet = new System.Windows.Forms.Label();
-        this.dtStart = new System.Windows.Forms.DateTimePicker();
-        this.dtEnd = new System.Windows.Forms.DateTimePicker();
-        this.lblQuiet = new System.Windows.Forms.Label();
-        this.numRetention = new System.Windows.Forms.NumericUpDown();
-        this.lblRetention = new System.Windows.Forms.Label();
-        ((System.ComponentModel.ISupportInitialize)(this.numRetention)).BeginInit();
-        this.lblCloseWarn = new System.Windows.Forms.Label();
-        this.numCloseWarn = new System.Windows.Forms.NumericUpDown();
-        this.lblMaxSize = new System.Windows.Forms.Label();
-        this.numMaxSize = new System.Windows.Forms.NumericUpDown();
-        ((System.ComponentModel.ISupportInitialize)(this.numCloseWarn)).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)(this.numMaxSize)).BeginInit();
-        this.lblAdditionalQuiet = new System.Windows.Forms.Label();
-        this.txtAdditionalQuiet = new System.Windows.Forms.TextBox();
-        this.btnOpenConfig = new System.Windows.Forms.Button();
-        this.SuspendLayout();
-        // chkInput
-        this.chkInput.AutoSize = true;
-        this.chkInput.Location = new System.Drawing.Point(22, 22);
+private void InitializeComponent()
+{
+    this.components = new System.ComponentModel.Container();
+    this.chkInput = new System.Windows.Forms.CheckBox();
+    this.chkActiveWindow = new System.Windows.Forms.CheckBox();
+    this.btnSave = new System.Windows.Forms.Button();
+    this.btnCancel = new System.Windows.Forms.Button();
+    this.lblPath = new System.Windows.Forms.Label();
+    this.txtBlocked = new System.Windows.Forms.TextBox();
+    this.lblBlocked = new System.Windows.Forms.Label();
+    this.txtAllowedQuiet = new System.Windows.Forms.TextBox();
+    this.lblAllowedQuiet = new System.Windows.Forms.Label();
+    this.dtStart = new System.Windows.Forms.DateTimePicker();
+    this.dtEnd = new System.Windows.Forms.DateTimePicker();
+    this.lblQuiet = new System.Windows.Forms.Label();
+    this.numRetention = new System.Windows.Forms.NumericUpDown();
+    this.lblRetention = new System.Windows.Forms.Label();
+    ((System.ComponentModel.ISupportInitialize)(this.numRetention)).BeginInit();
+    this.lblCloseWarn = new System.Windows.Forms.Label();
+    this.numCloseWarn = new System.Windows.Forms.NumericUpDown();
+    this.lblMaxSize = new System.Windows.Forms.Label();
+    this.numMaxSize = new System.Windows.Forms.NumericUpDown();
+    ((System.ComponentModel.ISupportInitialize)(this.numCloseWarn)).BeginInit();
+    ((System.ComponentModel.ISupportInitialize)(this.numMaxSize)).BeginInit();
+    this.lblAdditionalQuiet = new System.Windows.Forms.Label();
+    this.txtAdditionalQuiet = new System.Windows.Forms.TextBox();
+    this.btnOpenConfig = new System.Windows.Forms.Button();
+    this.lblLanguage = new System.Windows.Forms.Label();
+    this.cmbLanguage = new System.Windows.Forms.ComboBox();
+    this.SuspendLayout();
+// lblLanguage
+this.lblLanguage.AutoSize = true;
+this.lblLanguage.Location = new System.Drawing.Point(22, 8);
+this.lblLanguage.Name = "lblLanguage";
+this.lblLanguage.Size = new System.Drawing.Size(64, 15);
+this.lblLanguage.Text = "Language";
+// cmbLanguage
+this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+this.cmbLanguage.Location = new System.Drawing.Point(100, 5);
+this.cmbLanguage.Name = "cmbLanguage";
+this.cmbLanguage.Size = new System.Drawing.Size(160, 23);
+// chkInput
+this.chkInput.AutoSize = true;
+this.chkInput.Location = new System.Drawing.Point(22, 22);
         this.chkInput.Name = "chkInput";
         this.chkInput.Size = new System.Drawing.Size(214, 19);
         this.chkInput.Text = "Enable input monitoring (keyboard/mouse)";
@@ -147,15 +162,15 @@ partial class SettingsForm
         this.numMaxSize.Value = 200;
         this.numMaxSize.Location = new System.Drawing.Point(215, 426);
         this.numMaxSize.Width = 80;
-        // btnSave
-        this.btnSave.Location = new System.Drawing.Point(22, 466);
+// btnSave
+this.btnSave.Location = new System.Drawing.Point(22, 596);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new System.Drawing.Size(84, 27);
         this.btnSave.Text = "Save";
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-        // btnCancel
-        this.btnCancel.Location = new System.Drawing.Point(122, 98);
+// btnCancel
+this.btnCancel.Location = new System.Drawing.Point(122, 596);
         this.btnCancel.Name = "btnCancel";
         this.btnCancel.Size = new System.Drawing.Size(84, 27);
         this.btnCancel.Text = "Cancel";
@@ -172,9 +187,9 @@ partial class SettingsForm
         this.txtAdditionalQuiet.Multiline = true;
         this.txtAdditionalQuiet.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
         this.txtAdditionalQuiet.Size = new System.Drawing.Size(376, 80);
-        // lblPath
-        this.lblPath.AutoSize = true;
-        this.lblPath.Location = new System.Drawing.Point(22, 566);
+// lblPath
+this.lblPath.AutoSize = true;
+this.lblPath.Location = new System.Drawing.Point(22, 566);
         this.lblPath.Name = "lblPath";
         this.lblPath.Size = new System.Drawing.Size(86, 15);
         this.lblPath.Text = "Config path: -";
@@ -186,9 +201,12 @@ partial class SettingsForm
         this.btnOpenConfig.UseVisualStyleBackColor = true;
         this.btnOpenConfig.Click += new System.EventHandler(this.btnOpenConfig_Click);
         // SettingsForm
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(480, 600);
-        this.Controls.Add(this.btnOpenConfig);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        this.ClientSize = new System.Drawing.Size(560, 680);
+        this.MinimumSize = new System.Drawing.Size(560, 680);
+this.Controls.Add(this.cmbLanguage);
+this.Controls.Add(this.lblLanguage);
+this.Controls.Add(this.btnOpenConfig);
         this.Controls.Add(this.lblPath);
         this.Controls.Add(this.txtAdditionalQuiet);
         this.Controls.Add(this.lblAdditionalQuiet);

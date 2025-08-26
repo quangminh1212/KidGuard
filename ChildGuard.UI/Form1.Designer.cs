@@ -16,6 +16,7 @@ partial class Form1
     private System.Windows.Forms.MenuStrip menuStrip1 = null!;
     private System.Windows.Forms.ToolStripMenuItem mnuSettings = null!;
     private System.Windows.Forms.ToolStripMenuItem mnuReports = null!;
+    private System.Windows.Forms.ToolStripMenuItem mnuPolicy = null!;
 
     /// <summary>
     ///  Clean up any resources being used.
@@ -48,6 +49,7 @@ partial class Form1
         this.menuStrip1 = new System.Windows.Forms.MenuStrip();
         this.mnuSettings = new System.Windows.Forms.ToolStripMenuItem();
         this.mnuReports = new System.Windows.Forms.ToolStripMenuItem();
+        this.mnuPolicy = new System.Windows.Forms.ToolStripMenuItem();
         this.menuStrip1.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -106,7 +108,7 @@ partial class Form1
         // 
         // menuStrip1
         //
-        this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.mnuSettings, this.mnuReports });
+        this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.mnuSettings, this.mnuReports, this.mnuPolicy });
         this.menuStrip1.Location = new System.Drawing.Point(0, 0);
         this.menuStrip1.Name = "menuStrip1";
         this.menuStrip1.Size = new System.Drawing.Size(340, 24);
@@ -122,16 +124,17 @@ partial class Form1
         this.mnuReports.Size = new System.Drawing.Size(59, 20);
         this.mnuReports.Text = "Reports";
         this.mnuReports.Click += new System.EventHandler(this.mnuReports_Click);
+        // mnuPolicy
+        this.mnuPolicy.Name = "mnuPolicy";
+        this.mnuPolicy.Size = new System.Drawing.Size(86, 20);
+        this.mnuPolicy.Text = "Policy Editor";
+        this.mnuPolicy.Click += new System.EventHandler(this.mnuPolicy_Click);
         // Form1
         // 
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(340, 190);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        this.ClientSize = new System.Drawing.Size(520, 300);
+        this.MinimumSize = new System.Drawing.Size(520, 300);
         this.Controls.Add(this.menuStrip1);
-        this.Controls.Add(this.btnStop);
-        this.Controls.Add(this.btnStart);
-        this.Controls.Add(this.chkEnableInput);
-        this.Controls.Add(this.lblMouse);
-        this.Controls.Add(this.lblKeys);
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
         this.MainMenuStrip = this.menuStrip1;
         this.MaximizeBox = false;

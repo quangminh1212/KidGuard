@@ -5,6 +5,12 @@ public class AppConfig
     public bool EnableInputMonitoring { get; set; } = false; // Disabled by default for privacy; enable explicitly
     public bool EnableActiveWindowTracking { get; set; } = true;
     public string DataDirectory { get; set; } = "C:/ProgramData/ChildGuard";
+    
+    // UI language: "en" (default) or "vi"
+    public string UILanguage { get; set; } = "en";
+
+    // UI theme preference: "System" (default), "Light", or "Dark"
+    public string Theme { get; set; } = "System";
 
     // Simple policy: list of process names to block (case-insensitive, without path, e.g., "game", "chrome")
     public string[] BlockedProcesses { get; set; } = Array.Empty<string>();

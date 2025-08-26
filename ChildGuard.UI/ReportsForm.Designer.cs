@@ -81,6 +81,9 @@ partial class ReportsForm
         this.grid.Location = new System.Drawing.Point(16, 56);
         this.grid.Name = "grid";
         this.grid.Size = new System.Drawing.Size(760, 380);
+        this.grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+        this.grid.RowHeadersVisible = false;
+        this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
         this.grid.Columns.Add("Timestamp", "Timestamp");
         this.grid.Columns.Add("Type", "Type");
         this.grid.Columns.Add("Data", "Data");
@@ -188,7 +191,9 @@ partial class ReportsForm
         this.pnlTrend.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlTrend_Paint);
         // Form
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 840);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        this.ClientSize = new System.Drawing.Size(900, 860);
+        this.MinimumSize = new System.Drawing.Size(720, 600);
         this.Controls.Add(this.pnlTrend);
         this.Controls.Add(this.btnExportTrendChart);
         this.Controls.Add(this.btnExportTrendCsv);
