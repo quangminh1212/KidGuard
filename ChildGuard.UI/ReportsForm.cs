@@ -7,6 +7,7 @@ namespace ChildGuard.UI;
 public partial class ReportsForm : Form
 {
     private Dictionary<string,int> _lastCounts = new(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<DateTime,int> _trendCounts = new();
 
     public ReportsForm()
     {
@@ -19,11 +20,22 @@ public partial class ReportsForm : Form
         cmbType.SelectedIndex = 0;
         dtp.Value = DateTime.Today;
         dtpTo.Value = DateTime.Today;
+        // default time filter window 00:00 - 23:59
+        try
+        {
+            dtpTimeFrom.Value = DateTime.Today.AddHours(0);
+            dtpTimeTo.Value = DateTime.Today.AddHours(23).AddMinutes(59);
+        }
+        catch { }
     }
+
+    private static bool InTimeRange(TimeSpan t, TimeSpan from, TimeSpan to)
+        => from <= to ? (t >= from && t <= to) : (t >= from || t <= to);
 
     private void btnLoad_Click(object? sender, EventArgs e)
     {
         grid.Rows.Clear();
+        _trendCounts = new();
         var cfg = ConfigManager.Load(out _);
         var startDate = dtp.Value.Date;
         var endDate = dtpTo.Value.Date;
@@ -33,53 +45,71 @@ public partial class ReportsForm : Form
         var typeFilter = cmbType.SelectedItem?.ToString();
         var procFilter = (txtProcFilter.Text ?? string.Empty).Trim();
         bool hasProcFilter = procFilter.Length > 0;
+        bool applyTime = chkTimeFilter.Checked;
+        var timeFrom = dtpTimeFrom.Value.TimeOfDay;
+        var timeTo = dtpTimeTo.Value.TimeOfDay;
         for (var date = startDate; date <= endDate; date = date.AddDays(1))
         {
             var path = Path.Combine(cfg.DataDirectory, "logs", $"events-{date:yyyyMMdd}.jsonl");
             if (!File.Exists(path)) continue;
             foreach (var line in File.ReadLines(path))
             {
-            try
-            {
-                using var doc = JsonDocument.Parse(line);
-                var root = doc.RootElement;
-                var type = root.GetProperty("type").GetString() ?? "?";
-                if (typeFilter != null && typeFilter != "All" && !string.Equals(type, typeFilter, StringComparison.OrdinalIgnoreCase)) continue;
-                var ts = root.GetProperty("timestamp").GetString() ?? string.Empty;
-                var dataElem = root.GetProperty("data");
-                if (hasProcFilter)
+                try
                 {
-                    string? pn = null;
-                    if (dataElem.ValueKind == JsonValueKind.Object && dataElem.TryGetProperty("processName", out var pnElem))
+                    using var doc = JsonDocument.Parse(line);
+                    var root = doc.RootElement;
+                    var type = root.GetProperty("type").GetString() ?? "?";
+                    if (typeFilter != null && typeFilter != "All" && !string.Equals(type, typeFilter, StringComparison.OrdinalIgnoreCase)) continue;
+                    var ts = root.GetProperty("timestamp").GetString() ?? string.Empty;
+                    var dataElem = root.GetProperty("data");
+
+                    // time-of-day filter
+                    DateTimeOffset dto;
+                    bool parsedTs = DateTimeOffset.TryParse(ts, out dto);
+                    if (applyTime)
                     {
-                        pn = pnElem.GetString();
+                        if (!parsedTs) continue; // cannot evaluate time range without timestamp
+                        var tod = dto.ToLocalTime().TimeOfDay;
+                        if (!InTimeRange(tod, timeFrom, timeTo)) continue;
                     }
-                    if (string.IsNullOrEmpty(pn) || pn?.IndexOf(procFilter, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                }
-                var dataStr = dataElem.ToString();
-                grid.Rows.Add(ts, type, dataStr);
-                total++;
-                // grouping key: by hour or by type
-                if (chkByHour.Checked)
-                {
-                    if (DateTimeOffset.TryParse(ts, out var dto))
+
+                    if (hasProcFilter)
                     {
-                        var label = dto.ToLocalTime().ToString("HH:00");
-                        counts[label] = counts.TryGetValue(label, out var c) ? c+1 : 1;
+                        string? pn = null;
+                        if (dataElem.ValueKind == JsonValueKind.Object && dataElem.TryGetProperty("processName", out var pnElem))
+                        {
+                            pn = pnElem.GetString();
+                        }
+                        if (string.IsNullOrEmpty(pn) || pn?.IndexOf(procFilter, StringComparison.OrdinalIgnoreCase) < 0) continue;
                     }
+                    var dataStr = dataElem.ToString();
+                    grid.Rows.Add(ts, type, dataStr);
+                    total++;
+                    // grouping key: by hour or by type
+                    if (chkByHour.Checked)
+                    {
+                        if (parsedTs)
+                        {
+                            var label = dto.ToLocalTime().ToString("HH:00");
+                            counts[label] = counts.TryGetValue(label, out var c) ? c+1 : 1;
+                        }
+                    }
+                    else
+                    {
+                        counts[type] = counts.TryGetValue(type, out var c) ? c+1 : 1;
+                    }
+                    // trend by day
+                    DateTime dayKey = parsedTs ? dto.ToLocalTime().Date : date;
+                    _trendCounts[dayKey] = _trendCounts.TryGetValue(dayKey, out var tc) ? tc+1 : 1;
                 }
-                else
-                {
-                    counts[type] = counts.TryGetValue(type, out var c) ? c+1 : 1;
-                }
+                catch { }
             }
-            catch { }
-        }
         }
         var parts = counts.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}:{kv.Value}");
         lblSummary.Text = $"Summary: total={total} | " + string.Join(" | ", parts);
         _lastCounts = counts;
         pnlChart.Invalidate();
+        pnlTrend.Invalidate();
     }
 
     private void pnlChart_Paint(object? sender, PaintEventArgs e)
@@ -102,7 +132,32 @@ public partial class ReportsForm : Form
             using var pen = new Pen(Color.DodgerBlue, 1);
             g.DrawRectangle(pen, new Rectangle(x, y, barWidth, h));
             var label = kv.Key;
-            var size = g.MeasureString(label, this.Font);
+            g.DrawString(label, this.Font, Brushes.Black, x, rect.Bottom - 18);
+            g.DrawString(kv.Value.ToString(), this.Font, Brushes.Black, x, y - 16);
+            idx++;
+        }
+    }
+
+    private void pnlTrend_Paint(object? sender, PaintEventArgs e)
+    {
+        var g = e.Graphics;
+        g.Clear(SystemColors.Control);
+        if (_trendCounts == null || _trendCounts.Count == 0) return;
+        var rect = e.ClipRectangle;
+        int n = _trendCounts.Count;
+        int idx = 0;
+        int max = Math.Max(1, _trendCounts.Values.Max());
+        int barWidth = Math.Max(20, rect.Width / Math.Max(1,n) - 10);
+        foreach (var kv in _trendCounts.OrderBy(k => k.Key))
+        {
+            int x = rect.Left + 10 + idx * (barWidth + 10);
+            int h = (int)((kv.Value / (float)max) * (rect.Height - 30));
+            int y = rect.Bottom - 20 - h;
+            using var brush = new SolidBrush(Color.FromArgb(100, 160, 120));
+            g.FillRectangle(brush, new Rectangle(x, y, barWidth, h));
+            using var pen = new Pen(Color.SeaGreen, 1);
+            g.DrawRectangle(pen, new Rectangle(x, y, barWidth, h));
+            var label = kv.Key.ToString("MM-dd");
             g.DrawString(label, this.Font, Brushes.Black, x, rect.Bottom - 18);
             g.DrawString(kv.Value.ToString(), this.Font, Brushes.Black, x, y - 16);
             idx++;
@@ -123,6 +178,23 @@ public partial class ReportsForm : Form
         catch (Exception ex)
         {
             MessageBox.Show(this, $"Lỗi export chart: {ex.Message}", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void btnExportTrendChart_Click(object? sender, EventArgs e)
+    {
+        using var sfd = new SaveFileDialog { Filter = "PNG Image (*.png)|*.png|All files (*.*)|*.*", FileName = $"childguard_trend_{DateTime.Now:yyyyMMdd_HHmmss}.png" };
+        if (sfd.ShowDialog(this) != DialogResult.OK) return;
+        try
+        {
+            using var bmp = new Bitmap(pnlTrend.Width, pnlTrend.Height);
+            pnlTrend.DrawToBitmap(bmp, new Rectangle(Point.Empty, pnlTrend.Size));
+            bmp.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Png);
+            MessageBox.Show(this, "Đã xuất biểu đồ xu hướng PNG.", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Lỗi export trend chart: {ex.Message}", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -157,6 +229,33 @@ public partial class ReportsForm : Form
         catch (Exception ex)
         {
             MessageBox.Show(this, $"Lỗi export: {ex.Message}", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void btnExportTrendCsv_Click(object? sender, EventArgs e)
+    {
+        if (_trendCounts == null || _trendCounts.Count == 0)
+        {
+            MessageBox.Show(this, "Không có dữ liệu xu hướng để export.", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        using var sfd = new SaveFileDialog { Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*", FileName = $"childguard_trend_{DateTime.Now:yyyyMMdd_HHmmss}.csv" };
+        if (sfd.ShowDialog(this) != DialogResult.OK) return;
+        try
+        {
+            using var sw = new StreamWriter(sfd.FileName, false, Encoding.UTF8);
+            sw.WriteLine("Date,Count");
+            foreach (var kv in _trendCounts.OrderBy(k => k.Key))
+            {
+                var dateStr = kv.Key.ToString("yyyy-MM-dd");
+                var count = kv.Value;
+                sw.WriteLine(string.Join(',', dateStr, count.ToString()));
+            }
+            MessageBox.Show(this, "Đã xuất Trend CSV.", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Lỗi export trend: {ex.Message}", "ChildGuard", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }
