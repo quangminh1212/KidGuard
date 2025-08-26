@@ -36,6 +36,10 @@ public partial class SettingsForm : Form
         numCloseWarn.Value = Math.Max(0, _config.BlockCloseWarningSeconds);
         // Max log size MB
         numMaxSize.Value = Math.Max(0, _config.LogMaxSizeMB);
+        // Additional quiet windows
+        txtAdditionalQuiet.Text = _config.AdditionalQuietWindows is { Length: >0 }
+            ? string.Join(Environment.NewLine, _config.AdditionalQuietWindows)
+            : string.Empty;
     }
 
     private static DateTime ParseTimeOrDefault(string? s, DateTime fallback)
@@ -78,6 +82,13 @@ public partial class SettingsForm : Form
         // Warning seconds and max size
         _config.BlockCloseWarningSeconds = (int)numCloseWarn.Value;
         _config.LogMaxSizeMB = (int)numMaxSize.Value;
+        // Additional quiet windows
+        var addQuiet = (txtAdditionalQuiet.Text ?? string.Empty)
+            .Split(new[]{"\r\n","\n"}, StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .Where(s => s.Length>0)
+            .ToArray();
+        _config.AdditionalQuietWindows = addQuiet;
 
         ConfigManager.Save(_config, out var savedPath);
         lblPath.Text = savedPath;

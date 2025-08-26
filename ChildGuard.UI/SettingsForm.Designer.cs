@@ -21,6 +21,8 @@ partial class SettingsForm
     private System.Windows.Forms.NumericUpDown numCloseWarn = null!;
     private System.Windows.Forms.Label lblMaxSize = null!;
     private System.Windows.Forms.NumericUpDown numMaxSize = null!;
+    private System.Windows.Forms.Label lblAdditionalQuiet = null!;
+    private System.Windows.Forms.TextBox txtAdditionalQuiet = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -52,6 +54,8 @@ partial class SettingsForm
         this.numMaxSize = new System.Windows.Forms.NumericUpDown();
         ((System.ComponentModel.ISupportInitialize)(this.numCloseWarn)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.numMaxSize)).BeginInit();
+        this.lblAdditionalQuiet = new System.Windows.Forms.Label();
+        this.txtAdditionalQuiet = new System.Windows.Forms.TextBox();
         this.SuspendLayout();
         // chkInput
         this.chkInput.AutoSize = true;
@@ -155,16 +159,29 @@ partial class SettingsForm
         this.btnCancel.Text = "Cancel";
         this.btnCancel.UseVisualStyleBackColor = true;
         this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+        // lblAdditionalQuiet
+        this.lblAdditionalQuiet.AutoSize = true;
+        this.lblAdditionalQuiet.Location = new System.Drawing.Point(22, 458);
+        this.lblAdditionalQuiet.Name = "lblAdditionalQuiet";
+        this.lblAdditionalQuiet.Size = new System.Drawing.Size(243, 15);
+        this.lblAdditionalQuiet.Text = "Additional quiet windows (HH:mm-HH:mm, per line):";
+        // txtAdditionalQuiet
+        this.txtAdditionalQuiet.Location = new System.Drawing.Point(22, 476);
+        this.txtAdditionalQuiet.Multiline = true;
+        this.txtAdditionalQuiet.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+        this.txtAdditionalQuiet.Size = new System.Drawing.Size(376, 80);
         // lblPath
         this.lblPath.AutoSize = true;
-        this.lblPath.Location = new System.Drawing.Point(22, 506);
+        this.lblPath.Location = new System.Drawing.Point(22, 566);
         this.lblPath.Name = "lblPath";
         this.lblPath.Size = new System.Drawing.Size(86, 15);
         this.lblPath.Text = "Config path: -";
         // SettingsForm
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(480, 540);
+        this.ClientSize = new System.Drawing.Size(480, 600);
         this.Controls.Add(this.lblPath);
+        this.Controls.Add(this.txtAdditionalQuiet);
+        this.Controls.Add(this.lblAdditionalQuiet);
         this.Controls.Add(this.txtAllowedQuiet);
         this.Controls.Add(this.lblAllowedQuiet);
         this.Controls.Add(this.numMaxSize);

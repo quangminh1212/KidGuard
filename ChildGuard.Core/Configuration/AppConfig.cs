@@ -16,6 +16,9 @@ public class AppConfig
     public string? QuietHoursStart { get; set; } = null; // e.g., "21:30"
     public string? QuietHoursEnd { get; set; } = null;   // e.g., "06:30"
 
+    // Additional quiet windows in HH:mm-HH:mm format, one per entry. Overnight supported (e.g., 22:00-06:00)
+    public string[] AdditionalQuietWindows { get; set; } = Array.Empty<string>();
+
     // Log retention in days for JSONL files.
     public int LogRetentionDays { get; set; } = 14;
 
