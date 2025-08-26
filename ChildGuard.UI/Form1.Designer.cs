@@ -15,6 +15,7 @@ partial class Form1
     private System.Windows.Forms.Timer uiTimer = null!;
     private System.Windows.Forms.MenuStrip menuStrip1 = null!;
     private System.Windows.Forms.ToolStripMenuItem mnuSettings = null!;
+    private System.Windows.Forms.ToolStripMenuItem mnuReports = null!;
 
     /// <summary>
     ///  Clean up any resources being used.
@@ -46,6 +47,7 @@ partial class Form1
         this.uiTimer = new System.Windows.Forms.Timer(this.components);
         this.menuStrip1 = new System.Windows.Forms.MenuStrip();
         this.mnuSettings = new System.Windows.Forms.ToolStripMenuItem();
+        this.mnuReports = new System.Windows.Forms.ToolStripMenuItem();
         this.menuStrip1.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -104,7 +106,7 @@ partial class Form1
         // 
         // menuStrip1
         //
-        this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.mnuSettings });
+        this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.mnuSettings, this.mnuReports });
         this.menuStrip1.Location = new System.Drawing.Point(0, 0);
         this.menuStrip1.Name = "menuStrip1";
         this.menuStrip1.Size = new System.Drawing.Size(340, 24);
@@ -115,6 +117,11 @@ partial class Form1
         this.mnuSettings.Size = new System.Drawing.Size(61, 20);
         this.mnuSettings.Text = "Settings";
         this.mnuSettings.Click += new System.EventHandler(this.mnuSettings_Click);
+        // mnuReports
+        this.mnuReports.Name = "mnuReports";
+        this.mnuReports.Size = new System.Drawing.Size(59, 20);
+        this.mnuReports.Text = "Reports";
+        this.mnuReports.Click += new System.EventHandler(this.mnuReports_Click);
         // Form1
         // 
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
