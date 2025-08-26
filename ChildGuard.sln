@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.UI", "ChildGuard.UI\ChildGuard.UI.csproj", "{C5D7AB9D-DD79-4B8B-AC28-54551987AFF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.Service", "ChildGuard.Service\ChildGuard.Service.csproj", "{B0BAA859-0810-4F20-8EC1-54604C0599F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.Core", "ChildGuard.Core\ChildGuard.Core.csproj", "{7CF72EC1-04DB-4D42-8351-9BE3AB06F426}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.Hooking", "ChildGuard.Hooking\ChildGuard.Hooking.csproj", "{BBC238EE-BA7C-452A-9FAF-4161385CE44C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildGuard.Tests", "ChildGuard.Tests\ChildGuard.Tests.csproj", "{BECAB314-03CE-43FC-8CDF-908800B6F4B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5D7AB9D-DD79-4B8B-AC28-54551987AFF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5D7AB9D-DD79-4B8B-AC28-54551987AFF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5D7AB9D-DD79-4B8B-AC28-54551987AFF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5D7AB9D-DD79-4B8B-AC28-54551987AFF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0BAA859-0810-4F20-8EC1-54604C0599F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0BAA859-0810-4F20-8EC1-54604C0599F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0BAA859-0810-4F20-8EC1-54604C0599F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0BAA859-0810-4F20-8EC1-54604C0599F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CF72EC1-04DB-4D42-8351-9BE3AB06F426}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CF72EC1-04DB-4D42-8351-9BE3AB06F426}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CF72EC1-04DB-4D42-8351-9BE3AB06F426}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CF72EC1-04DB-4D42-8351-9BE3AB06F426}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBC238EE-BA7C-452A-9FAF-4161385CE44C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBC238EE-BA7C-452A-9FAF-4161385CE44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBC238EE-BA7C-452A-9FAF-4161385CE44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBC238EE-BA7C-452A-9FAF-4161385CE44C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BECAB314-03CE-43FC-8CDF-908800B6F4B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BECAB314-03CE-43FC-8CDF-908800B6F4B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BECAB314-03CE-43FC-8CDF-908800B6F4B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BECAB314-03CE-43FC-8CDF-908800B6F4B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
