@@ -169,6 +169,8 @@ public partial class Form1 : Form
         base.WndProc(ref m);
     }
 
+    private readonly Dictionary<int, DateTime> _lastEnforce = new();
+
     private void activeWindowTimer_Tick(object? sender, EventArgs e)
     {
         if (!IsHandleCreated) return;
@@ -181,6 +183,30 @@ public partial class Form1 : Form
         _lastWindow = h;
         _lastTitle = title;
         _queue.Writer.TryWrite(new ActivityEvent(DateTimeOffset.Now, ActivityEventType.ActiveWindow, new ActiveWindowInfo(title, procName, pid)));
+
+        // Simple policy enforcement: block configured processes by name (case-insensitive)
+        if (_config.BlockedProcesses?.Length > 0 && !string.IsNullOrWhiteSpace(procName))
+        {
+            var pn = procName.ToLowerInvariant();
+            bool isBlocked = _config.BlockedProcesses.Any(x => string.Equals(x.Trim().TrimEnd(".exe".ToCharArray()).ToLowerInvariant(), pn));
+            if (isBlocked)
+            {
+                var now = DateTime.UtcNow;
+                if (!_lastEnforce.TryGetValue(pid, out var last) || (now - last) > TimeSpan.FromSeconds(30))
+                {
+                    _lastEnforce[pid] = now;
+                    notifyIcon.BalloonTipTitle = "ChildGuard Policy";
+                    notifyIcon.BalloonTipText = $"Ứng dụng '{procName}' bị chặn theo cấu hình.";
+                    notifyIcon.ShowBalloonTip(2000);
+                    try
+                    {
+                        using var p = System.Diagnostics.Process.GetProcessById(pid);
+                        _ = p.CloseMainWindow();
+                    }
+                    catch { }
+                }
+            }
+        }
     }
 
     private static string GetWindowTitle(IntPtr hWnd)
