@@ -169,8 +169,15 @@ private void ApplyLocalization()
     {
         var g = e.Graphics;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        g.Clear(SystemColors.Control);
+        var panel = sender as Panel ?? pnlChart;
+        var back = panel.BackColor;
+        g.Clear(back);
         if (_lastCounts == null || _lastCounts.Count == 0) return;
+        bool dark = back.GetBrightness() < 0.5f;
+        var accent = ThemeHelper.GetAccentColor();
+        using var textBrush = new SolidBrush(dark ? Color.FromArgb(235,235,235) : Color.FromArgb(30,30,30));
+        using var barBrush = new SolidBrush(dark ? ControlPaint.Light(accent) : accent);
+        using var barPen = new Pen(dark ? ControlPaint.LightLight(accent) : ControlPaint.Dark(accent), 1);
         var rect = e.ClipRectangle;
         int n = _lastCounts.Count;
         int idx = 0;
@@ -181,13 +188,11 @@ private void ApplyLocalization()
             int x = rect.Left + 10 + idx * (barWidth + 10);
             int h = (int)( (kv.Value / (float)max) * (rect.Height - 30));
             int y = rect.Bottom - 20 - h;
-            using var brush = new SolidBrush(Color.FromArgb(80, 120, 200));
-            g.FillRectangle(brush, new Rectangle(x, y, barWidth, h));
-            using var pen = new Pen(Color.DodgerBlue, 1);
-            g.DrawRectangle(pen, new Rectangle(x, y, barWidth, h));
+            g.FillRectangle(barBrush, new Rectangle(x, y, barWidth, h));
+            g.DrawRectangle(barPen, new Rectangle(x, y, barWidth, h));
             var label = kv.Key;
-            g.DrawString(label, this.Font, Brushes.Black, x, rect.Bottom - 18);
-            g.DrawString(kv.Value.ToString(), this.Font, Brushes.Black, x, y - 16);
+            g.DrawString(label, this.Font, textBrush, x, rect.Bottom - 18);
+            g.DrawString(kv.Value.ToString(), this.Font, textBrush, x, y - 16);
             idx++;
         }
     }
@@ -196,8 +201,16 @@ private void ApplyLocalization()
     {
         var g = e.Graphics;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        g.Clear(SystemColors.Control);
+        var panel = sender as Panel ?? pnlTrend;
+        var back = panel.BackColor;
+        g.Clear(back);
         if (_trendCounts == null || _trendCounts.Count == 0) return;
+        bool dark = back.GetBrightness() < 0.5f;
+        var accent = ThemeHelper.GetAccentColor();
+        using var textBrush = new SolidBrush(dark ? Color.FromArgb(235,235,235) : Color.FromArgb(30,30,30));
+        using var barBrush = new SolidBrush(dark ? ControlPaint.LightLight(Color.FromArgb(
+            Math.Min(255, accent.R + 20), Math.Min(255, accent.G + 20), Math.Min(255, accent.B + 20))) : ControlPaint.Light(accent));
+        using var barPen = new Pen(dark ? ControlPaint.LightLight(accent) : ControlPaint.Dark(accent), 1);
         var rect = e.ClipRectangle;
         int n = _trendCounts.Count;
         int idx = 0;
@@ -208,13 +221,11 @@ private void ApplyLocalization()
             int x = rect.Left + 10 + idx * (barWidth + 10);
             int h = (int)((kv.Value / (float)max) * (rect.Height - 30));
             int y = rect.Bottom - 20 - h;
-            using var brush = new SolidBrush(Color.FromArgb(100, 160, 120));
-            g.FillRectangle(brush, new Rectangle(x, y, barWidth, h));
-            using var pen = new Pen(Color.SeaGreen, 1);
-            g.DrawRectangle(pen, new Rectangle(x, y, barWidth, h));
+            g.FillRectangle(barBrush, new Rectangle(x, y, barWidth, h));
+            g.DrawRectangle(barPen, new Rectangle(x, y, barWidth, h));
             var label = kv.Key.ToString("MM-dd");
-            g.DrawString(label, this.Font, Brushes.Black, x, rect.Bottom - 18);
-            g.DrawString(kv.Value.ToString(), this.Font, Brushes.Black, x, y - 16);
+            g.DrawString(label, this.Font, textBrush, x, rect.Bottom - 18);
+            g.DrawString(kv.Value.ToString(), this.Font, textBrush, x, y - 16);
             idx++;
         }
     }
