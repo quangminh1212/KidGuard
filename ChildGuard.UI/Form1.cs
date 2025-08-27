@@ -4,16 +4,23 @@ using ChildGuard.Hooking;
 using ChildGuard.UI.Localization;
 using ChildGuard.UI.Theming;
 using System.Windows.Forms.Layout;
+using System.Collections.Concurrent;
+using System.Drawing.Drawing2D;
 
 namespace ChildGuard.UI;
 
 public partial class Form1 : Form
 {
-    private readonly HookManager _hookManager = new();
+    private readonly AdvancedProtectionManager _protectionManager = new();
     private long _lastKeys;
     private long _lastMouse;
+    private long _threatsDetected;
     private volatile bool _running;
     private AppConfig _cfg = new();
+    private readonly ConcurrentQueue<ThreatNotification> _threatQueue = new();
+    private Panel _threatPanel;
+    private ListBox _activityLog;
+    private Label _statusLabel;
 
 public Form1()
 {
@@ -23,7 +30,13 @@ InitializeComponent();
     EnsureHelpMenu();
     ApplyLocalization();
     ModernStyle.Apply(this, ParseTheme(_cfg.Theme));
-    SetupModernLayout();
+    
+    // Use new simple modern layout
+    var isDark = ParseTheme(_cfg.Theme) == ThemeMode.Dark || 
+                 (ParseTheme(_cfg.Theme) == ThemeMode.System && ThemeHelper.IsSystemDark());
+    SimpleModernLayout.ApplyToForm(this, isDark);
+    SetupEventHandlers();
+    
     uiTimer.Start();
     _hookManager.OnEvent += OnActivity;
 }
@@ -125,6 +138,48 @@ private void uiTimer_Tick(object? sender, EventArgs e)
             this.menuStrip1.Items.Add(help);
         }
         catch { }
+    }
+    
+    private void SetupEventHandlers()
+    {
+        // Hook up buttons
+        var startBtn = this.Controls.Find("startBtn", true).FirstOrDefault() as Button;
+        if (startBtn != null)
+        {
+            startBtn.Click += (s, e) => {
+                if (_running) return;
+                var checkbox = this.Controls.Find("monitoringCheck", true).FirstOrDefault() as CheckBox;
+                var cfg = new AppConfig { EnableInputMonitoring = checkbox?.Checked ?? false };
+                _hookManager.Start(cfg);
+                _running = true;
+            };
+        }
+        
+        var stopBtn = this.Controls.Find("stopBtn", true).FirstOrDefault() as Button;
+        if (stopBtn != null)
+        {
+            stopBtn.Click += (s, e) => {
+                if (!_running) return;
+                _hookManager.Stop();
+                _running = false;
+            };
+        }
+        
+        // Update timer to show values
+        uiTimer.Tick += (s, e) => {
+            var keyValue = this.Controls.Find("keyValue", true).FirstOrDefault() as Label;
+            if (keyValue != null) keyValue.Text = _lastKeys.ToString("N0");
+            
+            var mouseValue = this.Controls.Find("mouseValue", true).FirstOrDefault() as Label;
+            if (mouseValue != null) mouseValue.Text = _lastMouse.ToString("N0");
+        };
+        
+        // Hide original controls
+        lblKeys.Visible = false;
+        lblMouse.Visible = false;
+        chkEnableInput.Visible = false;
+        btnStart.Visible = false;
+        btnStop.Visible = false;
     }
 
     private void SetupModernLayout()

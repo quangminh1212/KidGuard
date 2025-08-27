@@ -39,4 +39,10 @@ public class AppConfig
 
     // Advanced time-based rules (per day-of-week windows)
     public PolicyRule[] PolicyRules { get; set; } = Array.Empty<PolicyRule>();
+    
+    // Protection features
+    public bool EnableAudioMonitoring { get; set; } = false;
+    public bool BlockScreenshots { get; set; } = false;
+    public bool CheckUrls { get; set; } = true;
+    public bool BlockInappropriateContent { get; set; } = true;
 }

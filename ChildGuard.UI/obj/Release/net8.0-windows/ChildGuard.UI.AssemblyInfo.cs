@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChildGuard.UI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41e8277c313ce49082d7d4f7f13e466d4115b33a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2b55f3004adbdd575c596d7b99445d40e926cd9b")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChildGuard.UI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChildGuard.UI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

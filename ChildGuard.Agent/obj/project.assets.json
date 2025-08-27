@@ -64,7 +64,10 @@
         },
         "runtime": {
           "bin/placeholder/ChildGuard.Hooking.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WindowsForms"
+        ]
       }
     }
   },

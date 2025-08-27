@@ -13,6 +13,11 @@ ChildGuard là ứng dụng Windows (.NET 8, WinForms) giúp giám sát hoạt �
   - Theo dõi cửa sổ đang hoạt động (tên tiến trình/tiêu đề)
   - Ghi nhận tiến trình khởi động/thoát (ProcessStart/ProcessStop)
   - Ghi nhận cắm/rút thiết bị USB
+- **Protection Features (Mới)**
+  - Phát hiện từ ngữ không phù hợp (tiếng Việt/Anh) với BadWordsDetector
+  - Kiểm tra an toàn URL/website với UrlSafetyChecker
+  - Giám sát âm thanh với AudioMonitor (yêu cầu FFmpeg)
+  - Enhanced Hook Manager cho phân tích real-time
 - Chính sách & Khung giờ yên lặng (Quiet Hours)
   - Cấu hình QuietHoursStart/QuietHoursEnd (HH:mm); hỗ trợ nhiều khung giờ bổ sung (AdditionalQuietWindows)
   - Danh sách chặn (BlockedProcesses) và danh sách cho phép trong Quiet Hours (AllowedProcessesDuringQuietHours)
