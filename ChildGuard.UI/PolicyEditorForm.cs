@@ -22,6 +22,7 @@ public PolicyEditorForm()
         UIStrings.SetLanguage(_config.UILanguage);
         ApplyLocalization();
         ModernStyle.Apply(this, ParseTheme(_config.Theme));
+        try { txtJson.Font = new Font("Consolas", 10f); } catch { }
         var opts = new JsonSerializerOptions { WriteIndented = true };
         txtJson.Text = JsonSerializer.Serialize(_config.PolicyRules, opts);
         lblPath.Text = string.Format(UIStrings.Get("Policy.ConfigPath"), _configPath);
