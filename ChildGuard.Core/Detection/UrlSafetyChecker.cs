@@ -87,6 +87,7 @@ public class UrlSafetyChecker
             result.IsSafe = true;
             result.Reason = "Trusted domain";
             result.RiskLevel = RiskLevel.None;
+            result.ThreatLevel = UrlThreatLevel.Low;
             return result;
         }
         
@@ -96,6 +97,7 @@ public class UrlSafetyChecker
             result.IsSafe = false;
             result.Reason = "Blacklisted domain";
             result.RiskLevel = RiskLevel.High;
+            result.ThreatLevel = UrlThreatLevel.High;
             result.Categories.Add("Blocked");
             return result;
         }
@@ -108,6 +110,7 @@ public class UrlSafetyChecker
                 result.IsSafe = false;
                 result.Reason = "Suspicious URL pattern";
                 result.RiskLevel = RiskLevel.Medium;
+                result.ThreatLevel = UrlThreatLevel.Medium;
                 result.Categories.Add("Suspicious");
                 return result;
             }
@@ -119,6 +122,7 @@ public class UrlSafetyChecker
             result.IsSafe = false;
             result.Reason = "Possible phishing site";
             result.RiskLevel = RiskLevel.High;
+            result.ThreatLevel = UrlThreatLevel.High;
             result.Categories.Add("Phishing");
             return result;
         }
@@ -222,6 +226,7 @@ public class UrlCheckResult
     public bool IsSafe { get; set; }
     public string Reason { get; set; }
     public RiskLevel RiskLevel { get; set; }
+    public UrlThreatLevel ThreatLevel { get; set; }
     public List<string> Categories { get; set; } = new List<string>();
     
     public string GetSummary()
@@ -240,4 +245,11 @@ public enum RiskLevel
     Medium,
     High,
     Critical
+}
+
+public enum UrlThreatLevel
+{
+    Low,
+    Medium,
+    High
 }

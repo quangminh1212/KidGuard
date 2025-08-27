@@ -38,7 +38,7 @@ InitializeComponent();
     SetupEventHandlers();
     
     uiTimer.Start();
-    _hookManager.OnEvent += OnActivity;
+    // _protectionManager handles events instead of _hookManager
 }
 
     private void mnuSettings_Click(object? sender, EventArgs e)
@@ -78,14 +78,14 @@ private void uiTimer_Tick(object? sender, EventArgs e)
     {
         if (_running) return;
         var cfg = new AppConfig { EnableInputMonitoring = chkEnableInput.Checked };
-        _hookManager.Start(cfg);
+        _protectionManager.Start(cfg);
         _running = true;
     }
 
     private void btnStop_Click(object? sender, EventArgs e)
     {
         if (!_running) return;
-        _hookManager.Stop();
+        _protectionManager.Stop();
         _running = false;
     }
     private static ThemeMode ParseTheme(string? s)
@@ -150,7 +150,7 @@ private void uiTimer_Tick(object? sender, EventArgs e)
                 if (_running) return;
                 var checkbox = this.Controls.Find("monitoringCheck", true).FirstOrDefault() as CheckBox;
                 var cfg = new AppConfig { EnableInputMonitoring = checkbox?.Checked ?? false };
-                _hookManager.Start(cfg);
+                _protectionManager.Start(cfg);
                 _running = true;
             };
         }
@@ -160,7 +160,7 @@ private void uiTimer_Tick(object? sender, EventArgs e)
         {
             stopBtn.Click += (s, e) => {
                 if (!_running) return;
-                _hookManager.Stop();
+                _protectionManager.Stop();
                 _running = false;
             };
         }

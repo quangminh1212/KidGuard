@@ -10,6 +10,7 @@ using ChildGuard.Core.Configuration;
 using ChildGuard.Core.Detection;
 using ChildGuard.Core.Models;
 using ChildGuard.Core.Audio;
+using ThreadingTimer = System.Threading.Timer;
 
 namespace ChildGuard.Hooking;
 
@@ -58,7 +59,7 @@ public class AdvancedProtectionManager : IDisposable
         _audioMonitor.OnLoudNoiseDetected += HandleLoudNoise;
         
         // Periodic analysis every 30 seconds
-        _periodicAnalysisTimer = new Timer(PeriodicAnalysis, null, 
+        _periodicAnalysisTimer = new ThreadingTimer(PeriodicAnalysis, null, 
             TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
     }
     
@@ -433,12 +434,12 @@ public class AdvancedProtectionManager : IDisposable
     
     private void LogActivity(string description, ActivityType type)
     {
-        OnActivity?.Invoke(this, new ChildGuard.Core.Models.ActivityEvent
-        {
-            Timestamp = DateTime.Now,
-            Description = description,
-            Data = type
-        });
+        var evt = new ChildGuard.Core.Models.ActivityEvent(
+            DateTimeOffset.Now,
+            MapToActivityEventType(type),
+            description
+        );
+        OnActivity?.Invoke(this, evt);
     }
     
     private void UpdateStatistics()
@@ -481,10 +482,10 @@ public class AdvancedProtectionManager : IDisposable
                (key >= Keys.D0 && key <= Keys.D9) ||
                (key >= Keys.NumPad0 && key <= Keys.NumPad9) ||
                key == Keys.Space || key == Keys.Enter || key == Keys.Tab ||
-               key == Keys.OemPeriod || key == Keys.OemComma ||
+               key == Keys.OemPeriod || key == Keys.Oemcomma ||
                key == Keys.OemQuestion || key == Keys.OemSemicolon ||
                key == Keys.OemQuotes || key == Keys.OemMinus ||
-               key == Keys.OemPlus;
+               key == Keys.Oemplus;
     }
     
     private char GetCharFromKey(Keys key)
@@ -517,12 +518,12 @@ public class AdvancedProtectionManager : IDisposable
             case Keys.Enter: return '\n';
             case Keys.Tab: return '\t';
             case Keys.OemPeriod: return '.';
-            case Keys.OemComma: return ',';
+            case Keys.Oemcomma: return ',';
             case Keys.OemQuestion: return '?';
             case Keys.OemSemicolon: return ';';
             case Keys.OemQuotes: return '"';
             case Keys.OemMinus: return '-';
-            case Keys.OemPlus: return '+';
+            case Keys.Oemplus: return '+';
             default: return '\0';
         }
     }
@@ -532,6 +533,19 @@ public class AdvancedProtectionManager : IDisposable
         var className = new StringBuilder(256);
         GetClassName(hWnd, className, className.Capacity);
         return className.ToString();
+    }
+    
+    private ChildGuard.Core.Models.ActivityEventType MapToActivityEventType(ActivityType type)
+    {
+        return type switch
+        {
+            ActivityType.KeyPress => ChildGuard.Core.Models.ActivityEventType.Keyboard,
+            ActivityType.MouseClick => ChildGuard.Core.Models.ActivityEventType.Mouse,
+            ActivityType.WindowSwitch => ChildGuard.Core.Models.ActivityEventType.ActiveWindow,
+            ActivityType.Screenshot => ChildGuard.Core.Models.ActivityEventType.ActiveWindow,
+            ActivityType.SystemEvent => ChildGuard.Core.Models.ActivityEventType.SessionSwitch,
+            _ => ChildGuard.Core.Models.ActivityEventType.ActiveWindow
+        };
     }
     
     public void Dispose()

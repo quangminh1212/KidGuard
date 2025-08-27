@@ -232,7 +232,7 @@ public class EnhancedHookManager : IDisposable
                key == Keys.Space ||
                key == Keys.Enter ||
                key == Keys.OemPeriod ||
-               key == Keys.OemComma;
+               key == Keys.Oemcomma;
     }
     
     private char GetCharFromKey(Keys key)
@@ -250,7 +250,7 @@ public class EnhancedHookManager : IDisposable
             
         if (key == Keys.Space) return ' ';
         if (key == Keys.OemPeriod) return '.';
-        if (key == Keys.OemComma) return ',';
+        if (key == Keys.Oemcomma) return ',';
         
         return '\0';
     }

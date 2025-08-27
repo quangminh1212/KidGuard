@@ -36,7 +36,7 @@ public partial class EnhancedForm1 : Form
     private CheckBox _audioCheckBox;
     private CheckBox _urlCheckBox;
     private CheckBox _contentCheckBox;
-    private Timer _uiUpdateTimer;
+    private System.Windows.Forms.Timer _uiUpdateTimer;
     private MenuStrip _menuStrip;
     
     public EnhancedForm1()
@@ -55,7 +55,7 @@ public partial class EnhancedForm1 : Form
         this.Font = new Font("Segoe UI", 9F);
         
         _menuStrip = new MenuStrip();
-        _uiUpdateTimer = new Timer { Interval = 100 };
+        _uiUpdateTimer = new System.Windows.Forms.Timer { Interval = 100 };
         _uiUpdateTimer.Tick += UpdateUI;
         
         this.Controls.Add(_menuStrip);
@@ -481,7 +481,8 @@ public partial class EnhancedForm1 : Form
     
     private void OnActivityDetected(object sender, ActivityEvent e)
     {
-        LogActivity($"{e.Type}: {e.Description}");
+        // ActivityEvent is a record with Type and Data properties
+        LogActivity($"{e.Type}: {e.Data}");
     }
     
     private void LogActivity(string message)
