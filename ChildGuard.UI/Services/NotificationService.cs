@@ -278,6 +278,14 @@ namespace ChildGuard.UI.Services
         }
         
         /// <summary>
+        /// Show system tray notification (public method)
+        /// </summary>
+        public void ShowTrayNotification(string title, string message, NotificationType type)
+        {
+            ShowTrayBalloon(title, message, type);
+        }
+        
+        /// <summary>
         /// Show in-app toast
         /// </summary>
         private void ShowInAppToast(string title, string message, NotificationType type)

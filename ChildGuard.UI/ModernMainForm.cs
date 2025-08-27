@@ -5,11 +5,15 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ChildGuard.Core.Configuration;
 using ChildGuard.Core.Models;
+using ChildGuard.Core.Services;
+using ChildGuard.Core.Events;
 using ChildGuard.Hooking;
 using ChildGuard.UI.Controls;
 using ChildGuard.UI.Localization;
+using ChildGuard.UI.Services;
 using ChildGuard.UI.Theming;
 
 namespace ChildGuard.UI
@@ -39,10 +43,17 @@ namespace ChildGuard.UI
         private volatile bool _running;
         private AppConfig _config = new();
         
+        // Services
+        private readonly ServiceManager _serviceManager;
+        private KeyboardMouseMonitor? _keyboardMouseMonitor;
+        private NotificationService? _notificationService;
+        
         // Stats
         private long _lastKeys;
         private long _lastMouse;
         private long _threatsDetected;
+        private int _keystrokeCount;
+        private int _mouseClickCount;
         
         // Timers
         private System.Windows.Forms.Timer updateTimer;
@@ -50,11 +61,13 @@ namespace ChildGuard.UI
         
         public ModernMainForm()
         {
+            _serviceManager = ServiceManager.Instance;
             InitializeForm();
             InitializeComponents();
             LoadConfiguration();
             SetupEventHandlers();
             ApplyTheme();
+            InitializeServicesAsync();
         }
         
         private void InitializeForm()
@@ -712,11 +725,16 @@ namespace ChildGuard.UI
             // Update monitoring values
             var keyLabel = contentPanel.Controls.Find("keyValueLabel", true).FirstOrDefault() as Label;
             if (keyLabel != null)
-                keyLabel.Text = _lastKeys.ToString("N0");
+                keyLabel.Text = _keystrokeCount.ToString("N0");
             
             var mouseLabel = contentPanel.Controls.Find("mouseValueLabel", true).FirstOrDefault() as Label;
             if (mouseLabel != null)
-                mouseLabel.Text = _lastMouse.ToString("N0");
+                mouseLabel.Text = _mouseClickCount.ToString("N0");
+            
+            // Update threat counter
+            var threatLabel = contentPanel.Controls.Find("threatValueLabel", true).FirstOrDefault() as Label;
+            if (threatLabel != null)
+                threatLabel.Text = _threatsDetected.ToString("N0");
         }
         
         private void AnimationTimer_Tick(object sender, EventArgs e)
@@ -765,6 +783,153 @@ namespace ChildGuard.UI
                 }
             }
             return bitmap;
+        }
+        
+        private async void InitializeServicesAsync()
+        {
+            try
+            {
+                // Initialize ServiceManager
+                await _serviceManager.InitializeAsync();
+                
+                // Initialize KeyboardMouseMonitor
+                _keyboardMouseMonitor = new KeyboardMouseMonitor();
+                _keyboardMouseMonitor.KeystrokeDetected += OnKeystrokeDetected;
+                _keyboardMouseMonitor.MouseActivityDetected += OnMouseActivityDetected;
+                _serviceManager.RegisterService(_keyboardMouseMonitor);
+                
+                // Initialize NotificationService
+                if (_notificationService == null)
+                {
+                    _notificationService = new NotificationService();
+                    _notificationService.Initialize(this);
+                    _serviceManager.RegisterService(_notificationService);
+                }
+                
+                // Subscribe to events from EventDispatcher
+                SubscribeToEvents();
+                
+                // Start monitoring by default (can be configured later)
+                _keyboardMouseMonitor.StartMonitoring();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Failed to initialize services: {ex.Message}", 
+                    "Initialization Error", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error
+                );
+            }
+        }
+        
+        private void SubscribeToEvents()
+        {
+            // Subscribe to threat events
+            _serviceManager.EventDispatcher.Subscribe<BadWordDetectedEvent>((evt) =>
+            {
+                _threatsDetected++;
+                BeginInvoke(new Action(() =>
+                {
+                    // Show system tray notification
+                    _notificationService?.ShowTrayNotification(
+                        "Threat Detected",
+                        $"Bad word detected: {evt.Word}",
+                        NotificationType.Warning
+                    );
+                }));
+            });
+            
+            _serviceManager.EventDispatcher.Subscribe<UrlDetectedEvent>((evt) =>
+            {
+                if (!evt.IsSafe)
+                {
+                    _threatsDetected++;
+                    BeginInvoke(new Action(() =>
+                    {
+                        // Show system tray notification
+                        _notificationService?.ShowTrayNotification(
+                            "Dangerous URL",
+                            $"Blocked access to: {evt.Url}",
+                            NotificationType.Error
+                        );
+                    }));
+                }
+            });
+            
+            _serviceManager.EventDispatcher.Subscribe<ProcessBlockedEvent>((evt) =>
+            {
+                _threatsDetected++;
+                BeginInvoke(new Action(() =>
+                {
+                    // Show system tray notification
+                    _notificationService?.ShowTrayNotification(
+                        "Process Blocked",
+                        $"Blocked: {evt.ProcessName}",
+                        NotificationType.Warning
+                    );
+                }));
+            });
+        }
+        
+        private void OnKeystrokeDetected(object? sender, KeystrokeEventArgs e)
+        {
+            // Update keystroke counter
+            _keystrokeCount += e.Text.Length;
+            
+            // Log to activity list if monitoring panel is active
+            if (activeSidebarItem?.Text == "Monitoring")
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    var logList = contentPanel.Controls.Find("activityLog", true).FirstOrDefault() as ListBox;
+                    if (logList != null)
+                    {
+                        logList.Items.Insert(0, $"[{DateTime.Now:HH:mm:ss}] Keystroke: {e.Text.Length} chars");
+                        if (logList.Items.Count > 100) 
+                            logList.Items.RemoveAt(logList.Items.Count - 1);
+                    }
+                }));
+            }
+        }
+        
+        private void OnMouseActivityDetected(object? sender, MouseActivityEventArgs e)
+        {
+            // Update mouse counter
+            if (e.Action == "Click")
+            {
+                _mouseClickCount++;
+            }
+            
+            // Log significant events
+            if (e.Action == "Click" && activeSidebarItem?.Text == "Monitoring")
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    var logList = contentPanel.Controls.Find("activityLog", true).FirstOrDefault() as ListBox;
+                    if (logList != null)
+                    {
+                        logList.Items.Insert(0, $"[{DateTime.Now:HH:mm:ss}] Mouse {e.Action}: {e.Button} at ({e.Location.X},{e.Location.Y})");
+                        if (logList.Items.Count > 100)
+                            logList.Items.RemoveAt(logList.Items.Count - 1);
+                    }
+                }));
+            }
+        }
+        
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            
+            // Stop monitoring
+            _keyboardMouseMonitor?.StopMonitoring();
+            
+            // Shutdown services
+            _serviceManager.ShutdownAsync().GetAwaiter().GetResult();
+            
+            // Dispose services
+            _keyboardMouseMonitor?.Dispose();
+            _notificationService?.Dispose();
         }
     }
     

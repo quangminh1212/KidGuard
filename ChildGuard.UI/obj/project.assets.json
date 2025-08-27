@@ -97,6 +97,15 @@
           }
         }
       },
+      "MouseKeyHook/5.6.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Gma.System.MouseKeyHook.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Gma.System.MouseKeyHook.dll": {}
+        }
+      },
       "NAudio/2.2.1": {
         "type": "package",
         "dependencies": {
@@ -639,6 +648,18 @@
         "version.txt"
       ]
     },
+    "MouseKeyHook/5.6.0": {
+      "sha512": "xDNM10IfRED0+k78O9VvY0/suqeNJVg6GttEFPP/N4CEMujwVrfU+UatFN7Rb+gdjqIfhKblz7/nG3pUQmHaJg==",
+      "type": "package",
+      "path": "mousekeyhook/5.6.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/Gma.System.MouseKeyHook.dll",
+        "mousekeyhook.5.6.0.nupkg.sha512",
+        "mousekeyhook.nuspec"
+      ]
+    },
     "NAudio/2.2.1": {
       "sha512": "c0DzwiyyklM0TP39Y7RObwO3QkWecgM6H60ikiEnsV/aEAJPbj5MFCLaD8BSfKuZe0HGuh9GRGWWlJmSxDc9MA==",
       "type": "package",
@@ -1077,7 +1098,8 @@
     "net8.0-windows7.0": [
       "ChildGuard.Core >= 1.0.0",
       "ChildGuard.Hooking >= 1.0.0",
-      "Microsoft.Toolkit.Uwp.Notifications >= 7.1.3"
+      "Microsoft.Toolkit.Uwp.Notifications >= 7.1.3",
+      "MouseKeyHook >= 5.6.0"
     ]
   },
   "packageFolders": {
@@ -1141,6 +1163,10 @@
           "Microsoft.Toolkit.Uwp.Notifications": {
             "target": "Package",
             "version": "[7.1.3, )"
+          },
+          "MouseKeyHook": {
+            "target": "Package",
+            "version": "[5.6.0, )"
           }
         },
         "imports": [
@@ -1165,5 +1191,17 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'MouseKeyHook 5.6.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "MouseKeyHook",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    }
+  ]
 }

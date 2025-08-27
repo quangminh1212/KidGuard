@@ -70,18 +70,28 @@ namespace ChildGuard.Core.Events
     /// </summary>
     public class KeystrokeEvent : BaseEvent
     {
-        public string Key { get; }
-        public string WindowTitle { get; }
-        public string ProcessName { get; }
-        public bool IsSpecialKey { get; }
+        public string Text { get; set; } = string.Empty;
+        public int WordCount { get; set; }
+        public int CharacterCount { get; set; }
+        public new DateTime Timestamp { get; set; }
+        public string WindowTitle { get; set; } = string.Empty;
+        public string ProcessName { get; set; } = string.Empty;
         
-        public KeystrokeEvent(string key, string windowTitle, string processName, bool isSpecialKey = false)
+        public KeystrokeEvent()
             : base("KeyboardMonitor")
         {
-            Key = key;
+            Timestamp = DateTime.UtcNow;
+        }
+        
+        public KeystrokeEvent(string text, string windowTitle, string processName)
+            : base("KeyboardMonitor")
+        {
+            Text = text;
             WindowTitle = windowTitle;
             ProcessName = processName;
-            IsSpecialKey = isSpecialKey;
+            Timestamp = DateTime.UtcNow;
+            WordCount = string.IsNullOrEmpty(text) ? 0 : text.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+            CharacterCount = string.IsNullOrEmpty(text) ? 0 : text.Length;
         }
     }
     
@@ -235,5 +245,66 @@ namespace ChildGuard.Core.Events
             Reason = reason;
             RunDuration = runDuration;
         }
+    }
+    
+    /// <summary>
+    /// Event khi truy cập URL
+    /// </summary>
+    public class UrlVisitedEvent : BaseEvent
+    {
+        public string Url { get; set; } = string.Empty;
+        public new string Source { get; set; } = string.Empty;
+        public new DateTime Timestamp { get; set; }
+        public string WindowTitle { get; set; } = string.Empty;
+        public string ProcessName { get; set; } = string.Empty;
+        
+        public UrlVisitedEvent()
+            : base("UrlMonitor")
+        {
+            Timestamp = DateTime.UtcNow;
+        }
+        
+        public UrlVisitedEvent(string url, string source)
+            : base("UrlMonitor")
+        {
+            Url = url;
+            Source = source;
+            Timestamp = DateTime.UtcNow;
+        }
+    }
+    
+    /// <summary>
+    /// System event để log thông tin hệ thống
+    /// </summary>
+    public class SystemEvent : BaseEvent
+    {
+        public string Message { get; set; } = string.Empty;
+        public EventLevel Level { get; set; }
+        public Dictionary<string, object>? Metadata { get; set; }
+        
+        public SystemEvent()
+            : base("System")
+        {
+            Level = EventLevel.Info;
+        }
+        
+        public SystemEvent(string message, EventLevel level = EventLevel.Info)
+            : base("System")
+        {
+            Message = message;
+            Level = level;
+        }
+    }
+    
+    /// <summary>
+    /// Event level enum
+    /// </summary>
+    public enum EventLevel
+    {
+        Debug,
+        Info,
+        Warning,
+        Error,
+        Critical
     }
 }
