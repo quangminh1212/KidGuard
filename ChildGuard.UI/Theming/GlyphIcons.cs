@@ -8,6 +8,7 @@ public static class GlyphIcons
     public const char Policy = '\uE70F';  // Edit
     public const char Keyboard = '\uE92E';
     public const char Mouse = '\uE962';
+    public const char Info = '\uE946';    // Info
 
     public static Bitmap Render(char glyph, int size, Color color)
     {
