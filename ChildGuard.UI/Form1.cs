@@ -119,8 +119,7 @@ private void uiTimer_Tick(object? sender, EventArgs e)
             var about = new ToolStripMenuItem { Name = "mnuAbout", Text = UIStrings.Get("Menu.About") };
             about.Click += (s, e) =>
             {
-                // Placeholder - will be replaced by AboutForm dialog
-                MessageBox.Show(this, "ChildGuard", UIStrings.Get("Menu.About"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                try { using var dlg = new AboutForm(); dlg.ShowDialog(this); } catch { }
             };
             help.DropDownItems.Add(about);
             this.menuStrip1.Items.Add(help);
