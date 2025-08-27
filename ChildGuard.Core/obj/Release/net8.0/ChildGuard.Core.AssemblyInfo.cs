@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChildGuard.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+04005b5c8c0dba78c6094bb63b952768772f7c84")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41e8277c313ce49082d7d4f7f13e466d4115b33a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChildGuard.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChildGuard.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

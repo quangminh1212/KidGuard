@@ -141,67 +141,20 @@ private void uiTimer_Tick(object? sender, EventArgs e)
         btnStart.Visible = false;
         btnStop.Visible = false;
         
-        // Cập nhật form appearance
+        // Setup form
         this.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
-        if (dark)
-        {
-            this.BackColor = Color.FromArgb(30, 30, 30);
-            this.ForeColor = Color.FromArgb(240, 240, 240);
-        }
-        else
-        {
-            this.BackColor = Color.FromArgb(245, 245, 245);
-            this.ForeColor = Color.FromArgb(30, 30, 30);
-        }
+        this.BackColor = dark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(251, 251, 251);
+        this.ForeColor = dark ? Color.FromArgb(230, 230, 230) : Color.FromArgb(40, 40, 40);
         
-        // Main container - full form
-        var mainContainer = new Panel
+        // Main panel - đơn giản hóa
+        var mainPanel = new Panel
         {
-            Dock = DockStyle.Fill,
-            Padding = new Padding(30, 10, 30, 30),
-            BackColor = Color.Transparent
+            Location = new Point(0, menuStrip1.Height),
+            Size = new Size(this.ClientSize.Width, this.ClientSize.Height - menuStrip1.Height),
+            Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+            BackColor = this.BackColor,
+            Padding = new Padding(40)
         };
-        
-        // Header Panel với gradient effect
-        var headerPanel = new Panel
-        {
-            Height = 60,
-            Dock = DockStyle.Top,
-            BackColor = Color.Transparent
-        };
-        headerPanel.Paint += (s, e) => {
-            var rect = headerPanel.ClientRectangle;
-            using var brush = new System.Drawing.Drawing2D.LinearGradientBrush(
-                rect,
-                dark ? Color.FromArgb(40, 40, 43) : Color.White,
-                dark ? Color.FromArgb(30, 30, 33) : Color.FromArgb(250, 250, 250),
-                System.Drawing.Drawing2D.LinearGradientMode.Vertical);
-            e.Graphics.FillRectangle(brush, rect);
-        };
-        
-        // App title trong header
-        var appTitle = new Label
-        {
-            Text = "ChildGuard",
-            Font = new Font("Segoe UI Variable Display Semibold", 20, FontStyle.Bold),
-            Location = new Point(30, 15),
-            AutoSize = true,
-            BackColor = Color.Transparent,
-            ForeColor = ThemeHelper.GetAccentColor()
-        };
-        headerPanel.Controls.Add(appTitle);
-        
-        // Subtitle
-        var subtitle = new Label
-        {
-            Text = "System Monitor",
-            Font = new Font("Segoe UI", 10),
-            Location = new Point(170, 25),
-            AutoSize = true,
-            BackColor = Color.Transparent,
-            ForeColor = dark ? Color.FromArgb(150, 150, 150) : Color.FromArgb(120, 120, 120)
-        };
-        headerPanel.Controls.Add(subtitle);
         
         // Content area
         var contentArea = new Panel
@@ -540,13 +493,14 @@ private void uiTimer_Tick(object? sender, EventArgs e)
             if (mouse != null) mouse.Text = _lastMouse.ToString("N0");
         };
         
-        // Add panels to form
-        mainContainer.Controls.Add(contentArea);
-        mainContainer.Controls.Add(headerPanel);
-        this.Controls.Add(mainContainer);
+        // Add content to main panel
+        mainPanel.Controls.Add(contentArea);
         
-        // Ensure correct z-order
-        mainContainer.BringToFront();
+        // Add main panel to form
+        this.Controls.Add(mainPanel);
+        
+        // Ensure correct z-order  
+        mainPanel.BringToFront();
         menuStrip1.BringToFront();
         
         this.ResumeLayout(true);
