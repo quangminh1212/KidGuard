@@ -13,15 +13,16 @@ public partial class Form1 : Form
     private long _lastKeys;
     private long _lastMouse;
     private volatile bool _running;
+    private AppConfig _cfg = new();
 
 public Form1()
 {
 InitializeComponent();
-    var cfg = ConfigManager.Load(out _);
-    UIStrings.SetLanguage(cfg.UILanguage);
+    _cfg = ConfigManager.Load(out _);
+    UIStrings.SetLanguage(_cfg.UILanguage);
     ApplyLocalization();
-    ModernStyle.Apply(this, ParseTheme(cfg.Theme));
-    RebuildLayoutModern(ParseTheme(cfg.Theme));
+    ModernStyle.Apply(this, ParseTheme(_cfg.Theme));
+    RebuildLayoutModern(ParseTheme(_cfg.Theme));
     uiTimer.Start();
     _hookManager.OnEvent += OnActivity;
 }
@@ -123,19 +124,47 @@ private void uiTimer_Tick(object? sender, EventArgs e)
         var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 0, Padding = new Padding(12) };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
+        // Optional sidebar navigation
+        Panel? side = null;
+        if (_cfg.UseSidebarNavigation)
+        {
+            side = new Panel { Dock = DockStyle.Left, Width = 180, Padding = new Padding(12) };
+            side.BackColor = this.BackColor;
+            side.ForeColor = this.ForeColor;
+            var stack = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
+
+            Button MakeSideBtn(string text, char glyph, EventHandler onClick)
+            {
+                var b = new Button { Text = text, TextAlign = ContentAlignment.MiddleLeft, Width = 156, Height = 36, ImageAlign = ContentAlignment.MiddleLeft, Padding = new Padding(8,0,8,0), Margin = new Padding(0,0,0,8) };
+                b.Image = GlyphIcons.Render(glyph, 16, ThemeHelper.GetAccentColor());
+                b.Click += onClick;
+                ModernStyle.MakeSecondary(b, dark);
+                return b;
+            }
+
+            var btnSettings = MakeSideBtn(UIStrings.Get("Menu.Settings"), GlyphIcons.Settings, (s,e)=> { using var dlg = new SettingsForm(); dlg.ShowDialog(this); });
+            var btnReports = MakeSideBtn(UIStrings.Get("Menu.Reports"), GlyphIcons.Reports, (s,e)=> { using var dlg = new ReportsForm(); dlg.ShowDialog(this); });
+            var btnPolicy  = MakeSideBtn(UIStrings.Get("Menu.PolicyEditor"), GlyphIcons.Policy, (s,e)=> { using var dlg = new PolicyEditorForm(); dlg.ShowDialog(this); });
+
+            stack.Controls.Add(btnSettings);
+            stack.Controls.Add(btnReports);
+            stack.Controls.Add(btnPolicy);
+            side.Controls.Add(stack);
+        }
+
         // Activity section (stats)
         var secActivity = MakeSection(UIStrings.Get("Form1.Section.Activity"));
         var cards = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(8, 32, 8, 8), WrapContents = true };
         // Key card
         var keyCard = new RoundedPanel { Width = 220, Height = 72, Padding = new Padding(12), Margin = new Padding(0,0,12,0), Dark = dark };
         var keyIcon = new PictureBox { Image = GlyphIcons.Render(GlyphIcons.Keyboard, 18, ThemeHelper.GetAccentColor()), SizeMode = PictureBoxSizeMode.CenterImage, Width = 24, Height = 24, Location = new Point(8, 10) };
-        var keyTitle = new Label { Text = "Keys", AutoSize = true, Location = new Point(38, 10) };
+        var keyTitle = new Label { Text = UIStrings.Get("Form1.Card.Keys"), AutoSize = true, Location = new Point(38, 10) };
         var keyValue = new Label { Text = "0", AutoSize = true, Font = new Font(this.Font.FontFamily, 14, FontStyle.Bold), Location = new Point(38, 32) };
         keyCard.Controls.Add(keyIcon); keyCard.Controls.Add(keyTitle); keyCard.Controls.Add(keyValue);
         // Mouse card
         var mouseCard = new RoundedPanel { Width = 220, Height = 72, Padding = new Padding(12), Dark = dark };
         var mouseIcon = new PictureBox { Image = GlyphIcons.Render(GlyphIcons.Mouse, 18, ThemeHelper.GetAccentColor()), SizeMode = PictureBoxSizeMode.CenterImage, Width = 24, Height = 24, Location = new Point(8, 10) };
-        var mouseTitle = new Label { Text = "Mouse", AutoSize = true, Location = new Point(38, 10) };
+        var mouseTitle = new Label { Text = UIStrings.Get("Form1.Card.Mouse"), AutoSize = true, Location = new Point(38, 10) };
         var mouseValue = new Label { Text = "0", AutoSize = true, Font = new Font(this.Font.FontFamily, 14, FontStyle.Bold), Location = new Point(38, 32) };
         mouseCard.Controls.Add(mouseIcon); mouseCard.Controls.Add(mouseTitle); mouseCard.Controls.Add(mouseValue);
         cards.Controls.Add(keyCard);
@@ -169,6 +198,7 @@ private void uiTimer_Tick(object? sender, EventArgs e)
         menu.Dock = DockStyle.Top;
         this.Controls.Add(menu);
         this.MainMenuStrip = menu;
+        if (side != null) this.Controls.Add(side);
         this.Controls.Add(root);
         root.BringToFront();
         this.ResumeLayout(true);
