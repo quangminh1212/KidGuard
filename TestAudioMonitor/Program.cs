@@ -6,6 +6,7 @@ using ChildGuard.Core.Audio;
 using ChildGuard.Core.Detection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TestAudioMonitor;
 
@@ -412,14 +413,26 @@ public class AudioMonitorTestForm : Form
 public static class Program
 {
     [STAThread]
-    public static void Main()
+    public static void Main(string[] args)
     {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         
         try
         {
-            Application.Run(new AudioMonitorTestForm());
+            // Use modern UI by default, pass --classic for old UI
+            bool useModernUI = !args.Contains("--classic");
+            
+            if (useModernUI)
+            {
+                // Use the modern Material Design UI
+                Application.Run(new ModernAudioMonitorForm());
+            }
+            else
+            {
+                // Use the classic UI
+                Application.Run(new AudioMonitorTestForm());
+            }
         }
         catch (Exception ex)
         {
