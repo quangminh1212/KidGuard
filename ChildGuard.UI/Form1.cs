@@ -23,7 +23,7 @@ InitializeComponent();
     EnsureHelpMenu();
     ApplyLocalization();
     ModernStyle.Apply(this, ParseTheme(_cfg.Theme));
-    RebuildLayoutModern(ParseTheme(_cfg.Theme));
+    SetupModernLayout();
     uiTimer.Start();
     _hookManager.OnEvent += OnActivity;
 }
@@ -127,230 +127,160 @@ private void uiTimer_Tick(object? sender, EventArgs e)
         catch { }
     }
 
-    private void RebuildLayoutModern(ThemeMode mode)
+    private void SetupModernLayout()
     {
+        var mode = ParseTheme(_cfg.Theme);
         bool dark = mode == ThemeMode.Dark || (mode == ThemeMode.System && ThemeHelper.IsSystemDark());
 
-        // Clear existing controls but preserve important ones
+        // Chỉ cập nhật vị trí và style cho các control đã có sẵn từ Designer
         this.SuspendLayout();
-        var menu = this.menuStrip1;
-        var existingControls = new List<Control>();
-        foreach (Control c in this.Controls)
-        {
-            if (c == menu || c == lblKeys || c == lblMouse || c == btnStart || c == btnStop || c == chkEnableInput)
-            {
-                existingControls.Add(c);
-            }
-        }
-        this.Controls.Clear();
         
-        // Setup menu at top
-        menu.Dock = DockStyle.Top;
-        this.Controls.Add(menu);
-        this.MainMenuStrip = menu;
-
-        // Create main container panel
-        var mainContainer = new Panel { Dock = DockStyle.Fill, AutoScroll = true };
+        // Cập nhật form size
+        this.FormBorderStyle = FormBorderStyle.Sizable;
+        this.MaximizeBox = true;
+        this.ClientSize = new Size(700, 450);
+        this.MinimumSize = new Size(600, 400);
         
-        // Optional sidebar navigation
-        if (_cfg.UseSidebarNavigation)
+        // Panel chính chứa content
+        var mainPanel = new Panel
         {
-            var sidebar = new Panel 
-            { 
-                Dock = DockStyle.Left, 
-                Width = 200, 
-                BackColor = dark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(245, 245, 245),
-                Padding = new Padding(8)
-            };
-            
-            var sidebarFlow = new FlowLayoutPanel 
-            { 
-                Dock = DockStyle.Fill, 
-                FlowDirection = FlowDirection.TopDown, 
-                AutoScroll = true
-            };
-
-            void AddSidebarButton(string text, char icon, EventHandler onClick)
-            {
-                var btn = new Button 
-                { 
-                    Text = "  " + text,
-                    TextAlign = ContentAlignment.MiddleLeft,
-                    ImageAlign = ContentAlignment.MiddleLeft,
-                    Width = 180,
-                    Height = 40,
-                    FlatStyle = FlatStyle.Flat,
-                    Margin = new Padding(0, 0, 0, 4),
-                    Cursor = Cursors.Hand
-                };
-                btn.Image = GlyphIcons.Render(icon, 16, ThemeHelper.GetAccentColor());
-                btn.FlatAppearance.BorderSize = 0;
-                btn.BackColor = Color.Transparent;
-                btn.Click += onClick;
-                ModernStyle.MakeSecondary(btn, dark);
-                sidebarFlow.Controls.Add(btn);
-            }
-
-            AddSidebarButton(UIStrings.Get("Menu.Settings"), GlyphIcons.Settings, 
-                (s,e) => { using var dlg = new SettingsForm(); dlg.ShowDialog(this); });
-            AddSidebarButton(UIStrings.Get("Menu.Reports"), GlyphIcons.Reports, 
-                (s,e) => { using var dlg = new ReportsForm(); dlg.ShowDialog(this); });
-            AddSidebarButton(UIStrings.Get("Menu.PolicyEditor"), GlyphIcons.Policy, 
-                (s,e) => { using var dlg = new PolicyEditorForm(); dlg.ShowDialog(this); });
-            
-            sidebar.Controls.Add(sidebarFlow);
-            this.Controls.Add(sidebar);
-        }
-
-        // Main content area
-        var contentPanel = new Panel 
-        { 
-            Dock = DockStyle.Fill,
-            Padding = new Padding(24),
+            Location = new Point(12, 40),
+            Size = new Size(676, 400),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
             AutoScroll = true
         };
-
-        // Title section
-        var titleLabel = new Label
+        
+        // Tiêu đề section Activity
+        var lblActivity = new Label
         {
             Text = UIStrings.Get("Form1.Section.Activity"),
-            Font = new Font("Segoe UI Variable Display", 18, FontStyle.Bold),
-            AutoSize = true,
-            Location = new Point(0, 0)
+            Font = new Font("Segoe UI", 14, FontStyle.Bold),
+            Location = new Point(0, 0),
+            AutoSize = true
         };
-        contentPanel.Controls.Add(titleLabel);
-
-        // Stats Cards Container
-        var cardsPanel = new FlowLayoutPanel
+        mainPanel.Controls.Add(lblActivity);
+        
+        // Panel chứa 2 card thống kê
+        var statsPanel = new Panel
         {
-            Location = new Point(0, 50),
-            Size = new Size(500, 100),
-            FlowDirection = FlowDirection.LeftToRight,
-            WrapContents = false
+            Location = new Point(0, 35),
+            Size = new Size(500, 90)
         };
-
-        // Keys Card
+        
+        // Card Keys
         var keyCard = new Panel
         {
-            Size = new Size(220, 80),
-            BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.White,
-            Margin = new Padding(0, 0, 16, 0)
+            Size = new Size(230, 80),
+            Location = new Point(0, 0),
+            BorderStyle = BorderStyle.FixedSingle,
+            BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.White
         };
-        if (!dark) keyCard.BorderStyle = BorderStyle.FixedSingle;
         
-        var keyIcon = new PictureBox 
-        { 
-            Image = GlyphIcons.Render(GlyphIcons.Keyboard, 24, ThemeHelper.GetAccentColor()),
+        var keyIcon = new PictureBox
+        {
+            Image = GlyphIcons.Render(GlyphIcons.Keyboard, 20, ThemeHelper.GetAccentColor()),
             SizeMode = PictureBoxSizeMode.CenterImage,
-            Size = new Size(32, 32),
-            Location = new Point(16, 24)
+            Size = new Size(30, 30),
+            Location = new Point(15, 25)
         };
+        keyCard.Controls.Add(keyIcon);
         
-        var keyLabel = new Label
+        var lblKeyText = new Label
         {
             Text = UIStrings.Get("Form1.Card.Keys"),
             Font = new Font("Segoe UI", 9),
             ForeColor = dark ? Color.LightGray : Color.Gray,
-            Location = new Point(56, 16),
+            Location = new Point(55, 15),
             AutoSize = true
         };
+        keyCard.Controls.Add(lblKeyText);
         
+        // Di chuyển lblKeys vào card
+        lblKeys.Parent = keyCard;
+        lblKeys.Location = new Point(55, 35);
+        lblKeys.Font = new Font("Segoe UI", 14, FontStyle.Bold);
         lblKeys.Text = "0";
-        lblKeys.Font = new Font("Segoe UI Variable Display", 16, FontStyle.Bold);
-        lblKeys.Location = new Point(56, 36);
-        lblKeys.AutoSize = true;
         
-        keyCard.Controls.AddRange(new Control[] { keyIcon, keyLabel, lblKeys });
+        statsPanel.Controls.Add(keyCard);
         
-        // Mouse Card  
+        // Card Mouse
         var mouseCard = new Panel
         {
-            Size = new Size(220, 80),
+            Size = new Size(230, 80),
+            Location = new Point(250, 0),
+            BorderStyle = BorderStyle.FixedSingle,
             BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.White
         };
-        if (!dark) mouseCard.BorderStyle = BorderStyle.FixedSingle;
         
         var mouseIcon = new PictureBox
         {
-            Image = GlyphIcons.Render(GlyphIcons.Mouse, 24, ThemeHelper.GetAccentColor()),
-            SizeMode = PictureBoxSizeMode.CenterImage, 
-            Size = new Size(32, 32),
-            Location = new Point(16, 24)
+            Image = GlyphIcons.Render(GlyphIcons.Mouse, 20, ThemeHelper.GetAccentColor()),
+            SizeMode = PictureBoxSizeMode.CenterImage,
+            Size = new Size(30, 30),
+            Location = new Point(15, 25)
         };
+        mouseCard.Controls.Add(mouseIcon);
         
-        var mouseLabel = new Label
+        var lblMouseText = new Label
         {
             Text = UIStrings.Get("Form1.Card.Mouse"),
             Font = new Font("Segoe UI", 9),
             ForeColor = dark ? Color.LightGray : Color.Gray,
-            Location = new Point(56, 16),
+            Location = new Point(55, 15),
             AutoSize = true
         };
+        mouseCard.Controls.Add(lblMouseText);
         
+        // Di chuyển lblMouse vào card
+        lblMouse.Parent = mouseCard;
+        lblMouse.Location = new Point(55, 35);
+        lblMouse.Font = new Font("Segoe UI", 14, FontStyle.Bold);
         lblMouse.Text = "0";
-        lblMouse.Font = new Font("Segoe UI Variable Display", 16, FontStyle.Bold);
-        lblMouse.Location = new Point(56, 36);
-        lblMouse.AutoSize = true;
         
-        mouseCard.Controls.AddRange(new Control[] { mouseIcon, mouseLabel, lblMouse });
+        statsPanel.Controls.Add(mouseCard);
+        mainPanel.Controls.Add(statsPanel);
         
-        cardsPanel.Controls.Add(keyCard);
-        cardsPanel.Controls.Add(mouseCard);
-        contentPanel.Controls.Add(cardsPanel);
-
-        // Controls Section
-        var controlsTitle = new Label
+        // Tiêu đề section Controls
+        var lblControls = new Label
         {
             Text = UIStrings.Get("Form1.Section.Controls"),
-            Font = new Font("Segoe UI Variable Display", 14, FontStyle.Bold),
-            Location = new Point(0, 160),
+            Font = new Font("Segoe UI", 14, FontStyle.Bold),
+            Location = new Point(0, 140),
             AutoSize = true
         };
-        contentPanel.Controls.Add(controlsTitle);
-
-        // Control panel
+        mainPanel.Controls.Add(lblControls);
+        
+        // Panel chứa controls
         var controlPanel = new Panel
         {
-            Location = new Point(0, 200),
-            Size = new Size(500, 60),
+            Location = new Point(0, 175),
+            Size = new Size(500, 80),
             BackColor = dark ? Color.FromArgb(40, 40, 43) : Color.FromArgb(250, 250, 250),
-            Padding = new Padding(16)
+            BorderStyle = BorderStyle.FixedSingle
         };
         
-        // Enable monitoring checkbox
-        chkEnableInput.Text = UIStrings.Get("Form1.EnableInput");
-        chkEnableInput.Location = new Point(16, 18);
-        chkEnableInput.AutoSize = true;
+        // Di chuyển checkbox
+        chkEnableInput.Parent = controlPanel;
+        chkEnableInput.Location = new Point(20, 25);
         chkEnableInput.Font = new Font("Segoe UI", 10);
         
-        // Start button
-        btnStart.Text = UIStrings.Get("Buttons.Start");
-        btnStart.Location = new Point(250, 12);
-        btnStart.Size = new Size(100, 36);
+        // Di chuyển buttons
+        btnStart.Parent = controlPanel;
+        btnStart.Location = new Point(260, 20);
+        btnStart.Size = new Size(100, 35);
         btnStart.FlatStyle = FlatStyle.Flat;
-        btnStart.Cursor = Cursors.Hand;
         ModernStyle.MakePrimary(btnStart, dark);
         
-        // Stop button  
-        btnStop.Text = UIStrings.Get("Buttons.Stop");
-        btnStop.Location = new Point(360, 12);
-        btnStop.Size = new Size(100, 36);
+        btnStop.Parent = controlPanel;
+        btnStop.Location = new Point(370, 20);
+        btnStop.Size = new Size(100, 35);
         btnStop.FlatStyle = FlatStyle.Flat;
-        btnStop.Cursor = Cursors.Hand;
         ModernStyle.MakeSecondary(btnStop, dark);
         
-        controlPanel.Controls.AddRange(new Control[] { chkEnableInput, btnStart, btnStop });
-        contentPanel.Controls.Add(controlPanel);
+        mainPanel.Controls.Add(controlPanel);
         
-        mainContainer.Controls.Add(contentPanel);
-        this.Controls.Add(mainContainer);
-        
-        // Buttons already styled above, no need to re-apply
-        
-        // Set minimum form size
-        this.MinimumSize = new Size(600, 400);
-        if (this.Width < 600) this.Width = 600;
-        if (this.Height < 400) this.Height = 400;
+        // Thêm main panel vào form
+        this.Controls.Add(mainPanel);
         
         this.ResumeLayout(true);
     }
