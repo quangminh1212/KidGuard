@@ -16,7 +16,7 @@ namespace ChildGuard.UI.Controls
         private Label placeholderLabel;
         private Label titleLabel;
         private Panel underlinePanel;
-        private Timer animationTimer;
+        private System.Windows.Forms.Timer animationTimer;
         private bool isFocused = false;
         private int animationStep = 0;
         private string placeholderText = "Enter text...";
@@ -150,7 +150,7 @@ namespace ChildGuard.UI.Controls
             UpdateLayout();
 
             // Animation timer
-            animationTimer = new Timer();
+            animationTimer = new System.Windows.Forms.Timer();
             animationTimer.Interval = 20;
             animationTimer.Tick += AnimationTimer_Tick;
         }

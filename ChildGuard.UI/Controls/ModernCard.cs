@@ -17,7 +17,7 @@ namespace ChildGuard.UI.Controls
         private bool showShadow = true;
         private Color shadowColor = ColorScheme.Modern.ShadowLight;
         private bool isHovered = false;
-        private Timer animationTimer;
+        private System.Windows.Forms.Timer animationTimer;
         private int animationStep = 0;
 
         [Category("Modern Style")]
@@ -88,7 +88,7 @@ namespace ChildGuard.UI.Controls
             UpdatePadding();
 
             // Animation timer
-            animationTimer = new Timer();
+            animationTimer = new System.Windows.Forms.Timer();
             animationTimer.Interval = 20;
             animationTimer.Tick += AnimationTimer_Tick;
         }

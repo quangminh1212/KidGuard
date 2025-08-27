@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ChildGuard.Core.Configuration;
 using ChildGuard.Core.Models;
 using ChildGuard.Hooking;
@@ -44,8 +45,8 @@ namespace ChildGuard.UI
         private long _threatsDetected;
         
         // Timers
-        private Timer updateTimer;
-        private Timer animationTimer;
+        private System.Windows.Forms.Timer updateTimer;
+        private System.Windows.Forms.Timer animationTimer;
         
         public ModernMainForm()
         {
@@ -80,12 +81,12 @@ namespace ChildGuard.UI
             CreateContentPanel();
             
             // Initialize timers
-            updateTimer = new Timer();
+            updateTimer = new System.Windows.Forms.Timer();
             updateTimer.Interval = 1000;
             updateTimer.Tick += UpdateTimer_Tick;
             updateTimer.Start();
             
-            animationTimer = new Timer();
+            animationTimer = new System.Windows.Forms.Timer();
             animationTimer.Interval = 10;
             animationTimer.Tick += AnimationTimer_Tick;
         }
@@ -175,11 +176,11 @@ namespace ChildGuard.UI
             // Create sidebar items
             sidebarItems = new List<SidebarItem>();
             
-            var dashboardItem = CreateSidebarItem("Dashboard", '🏠', 0);
-            var monitoringItem = CreateSidebarItem("Monitoring", '👁', 1);
-            var protectionItem = CreateSidebarItem("Protection", '🛡', 2);
-            var reportsItem = CreateSidebarItem("Reports", '📊', 3);
-            var settingsItem = CreateSidebarItem("Settings", '⚙', 4);
+            var dashboardItem = CreateSidebarItem("Dashboard", "\uE80F", 0); // Home icon
+            var monitoringItem = CreateSidebarItem("Monitoring", "\uE7B3", 1); // Eye icon
+            var protectionItem = CreateSidebarItem("Protection", "\uEA18", 2); // Shield icon
+            var reportsItem = CreateSidebarItem("Reports", "\uE9D9", 3); // Chart icon
+            var settingsItem = CreateSidebarItem("Settings", "\uE713", 4); // Settings icon
             
             // Set dashboard as active by default
             SetActiveSidebarItem(dashboardItem);
@@ -187,7 +188,7 @@ namespace ChildGuard.UI
             this.Controls.Add(sidebarPanel);
         }
         
-        private SidebarItem CreateSidebarItem(string text, char icon, int index)
+        private SidebarItem CreateSidebarItem(string text, string icon, int index)
         {
             var item = new SidebarItem
             {
@@ -406,7 +407,7 @@ namespace ChildGuard.UI
                 Size = new Size(48, 48),
                 Location = new Point(20, 20),
                 SizeMode = PictureBoxSizeMode.Zoom,
-                Image = CreateIcon('⌨', 40, ColorScheme.Modern.Primary)
+                Image = CreateIcon("\uE765", 40, ColorScheme.Modern.Primary) // Keyboard icon
             };
             keyboardCard.Controls.Add(keyIcon);
             
@@ -445,7 +446,7 @@ namespace ChildGuard.UI
                 Size = new Size(48, 48),
                 Location = new Point(20, 20),
                 SizeMode = PictureBoxSizeMode.Zoom,
-                Image = CreateIcon('🖱', 40, ColorScheme.Modern.Success)
+                Image = CreateIcon("\uE962", 40, ColorScheme.Modern.Success) // Mouse icon
             };
             mouseCard.Controls.Add(mouseIcon);
             
@@ -658,10 +659,10 @@ namespace ChildGuard.UI
         
         private void SetupEventHandlers()
         {
-            _protectionManager.ActivityReceived += OnActivity;
+            _protectionManager.OnActivity += OnActivity;
         }
         
-        private void OnActivity(ActivityEvent evt)
+        private void OnActivity(object? sender, ActivityEvent evt)
         {
             if (evt.Data is InputActivitySummary s)
             {
@@ -748,7 +749,7 @@ namespace ChildGuard.UI
             return bitmap;
         }
         
-        private Image CreateIcon(char icon, int size, Color color)
+        private Image CreateIcon(string icon, int size, Color color)
         {
             var bitmap = new Bitmap(size, size);
             using (var g = Graphics.FromImage(bitmap))
@@ -756,12 +757,11 @@ namespace ChildGuard.UI
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.Clear(Color.Transparent);
                 
-                using (var font = new Font("Segoe UI Emoji", size * 0.7f))
+                using (var font = new Font("Segoe MDL2 Assets", size * 0.5f))
                 using (var brush = new SolidBrush(color))
                 {
-                    var text = icon.ToString();
-                    var measured = g.MeasureString(text, font);
-                    g.DrawString(text, font, brush, (size - measured.Width) / 2, (size - measured.Height) / 2);
+                    var measured = g.MeasureString(icon, font);
+                    g.DrawString(icon, font, brush, (size - measured.Width) / 2, (size - measured.Height) / 2);
                 }
             }
             return bitmap;
@@ -775,7 +775,7 @@ namespace ChildGuard.UI
     {
         private bool isActive;
         private bool isHovered;
-        public char Icon { get; set; }
+        public string Icon { get; set; } = string.Empty;
         public int Index { get; set; }
         public new string Text { get; set; }
         
@@ -827,10 +827,11 @@ namespace ChildGuard.UI
             }
             
             // Icon
-            using (var font = new Font("Segoe UI Emoji", 16))
+            using (var font = new Font("Segoe MDL2 Assets", 14))
             using (var brush = new SolidBrush(isActive ? ColorScheme.Modern.Primary : ColorScheme.Modern.TextSecondary))
             {
-                g.DrawString(Icon.ToString(), font, brush, 20, 12);
+                if (!string.IsNullOrEmpty(Icon))
+                    g.DrawString(Icon, font, brush, 20, 14);
             }
             
             // Text
