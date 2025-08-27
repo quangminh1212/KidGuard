@@ -38,7 +38,10 @@
       },
       "ChildGuard.Core/1.0.0": {
         "runtime": {
-          "ChildGuard.Core.dll": {}
+          "ChildGuard.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "ChildGuard.Hooking/1.0.0": {
@@ -46,7 +49,10 @@
           "ChildGuard.Core": "1.0.0"
         },
         "runtime": {
-          "ChildGuard.Hooking.dll": {}
+          "ChildGuard.Hooking.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }

@@ -6,11 +6,14 @@ public class AppConfig
     public bool EnableActiveWindowTracking { get; set; } = true;
     public string DataDirectory { get; set; } = "C:/ProgramData/ChildGuard";
     
-    // UI language: "en" (default) or "vi"
-    public string UILanguage { get; set; } = "en";
+    // UI language: "en" or "vi" (default now: vi)
+    public string UILanguage { get; set; } = "vi";
 
     // UI theme preference: "System" (default), "Light", or "Dark"
     public string Theme { get; set; } = "System";
+
+    // Use sidebar navigation in main UI (Form1)
+    public bool UseSidebarNavigation { get; set; } = false;
 
     // Simple policy: list of process names to block (case-insensitive, without path, e.g., "game", "chrome")
     public string[] BlockedProcesses { get; set; } = Array.Empty<string>();
@@ -36,4 +39,10 @@ public class AppConfig
 
     // Advanced time-based rules (per day-of-week windows)
     public PolicyRule[] PolicyRules { get; set; } = Array.Empty<PolicyRule>();
+    
+    // Protection features
+    public bool EnableAudioMonitoring { get; set; } = false;
+    public bool BlockScreenshots { get; set; } = false;
+    public bool CheckUrls { get; set; } = true;
+    public bool BlockInappropriateContent { get; set; } = true;
 }

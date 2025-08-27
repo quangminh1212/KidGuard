@@ -26,6 +26,8 @@ InitializeComponent();
         // Apply theme based on config and rebuild layout for a modern look
         ModernStyle.Apply(this, ParseTheme(_config.Theme));
         ApplyLocalization();
+        EnsureThemeControls();
+        EnsureSidebarControl();
         RebuildLayoutModern(ParseTheme(_config.Theme));
 
         chkInput.Checked = _config.EnableInputMonitoring;
@@ -36,8 +38,7 @@ InitializeComponent();
         cmbLanguage.Items.AddRange(new object[] { UIStrings.Get("Settings.Language.English"), UIStrings.Get("Settings.Language.Vietnamese") });
         cmbLanguage.SelectedIndex = string.Equals(_config.UILanguage, "vi", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
         // Theme selector (created in code, placed in layout)
-        EnsureThemeControls();
-        cmbTheme.Items.Clear();
+        cmbTheme!.Items.Clear();
         cmbTheme.Items.AddRange(new object[] { UIStrings.Get("Settings.Theme.System"), UIStrings.Get("Settings.Theme.Light"), UIStrings.Get("Settings.Theme.Dark") });
         cmbTheme.SelectedIndex = (_config.Theme?.ToLowerInvariant()) switch { "light" => 1, "dark" => 2, _ => 0 };
         // Blocked list
@@ -79,6 +80,7 @@ InitializeComponent();
         btnSave.Text = UIStrings.Get("Buttons.Save");
         btnCancel.Text = UIStrings.Get("Buttons.Cancel");
         btnOpenConfig.Text = UIStrings.Get("Buttons.OpenConfig");
+        if (chkSidebar != null) chkSidebar.Text = UIStrings.Get("Settings.UseSidebarNav");
     }
 
     private static DateTime ParseTimeOrDefault(string? s, DateTime fallback)
@@ -124,6 +126,7 @@ InitializeComponent();
         // Warning seconds and max size
         _config.BlockCloseWarningSeconds = (int)numCloseWarn.Value;
         _config.LogMaxSizeMB = (int)numMaxSize.Value;
+        _config.UseSidebarNavigation = chkSidebar?.Checked ?? _config.UseSidebarNavigation;
         // Additional quiet windows
         var addQuiet = (txtAdditionalQuiet.Text ?? string.Empty)
             .Split(new[]{"\r\n","\n"}, StringSplitOptions.RemoveEmptyEntries)
@@ -163,6 +166,7 @@ InitializeComponent();
     }
     private ComboBox? cmbTheme;
     private Label? lblTheme;
+    private CheckBox? chkSidebar;
 
     private void EnsureThemeControls()
     {
@@ -176,6 +180,16 @@ InitializeComponent();
         }
         // Update localized text
         lblTheme!.Text = UIStrings.Get("Settings.Theme");
+    }
+
+    private void EnsureSidebarControl()
+    {
+        if (chkSidebar == null)
+        {
+            chkSidebar = new CheckBox { Name = "chkSidebar", AutoSize = true };
+        }
+        chkSidebar.Text = UIStrings.Get("Settings.UseSidebarNav");
+        chkSidebar.Checked = _config.UseSidebarNavigation;
     }
 
     private static ThemeMode ParseTheme(string? s)
@@ -236,6 +250,8 @@ InitializeComponent();
         flToggles.Controls.Add(chkInput);
         flToggles.Controls.Add(new Label { Width = 16 });
         flToggles.Controls.Add(chkActiveWindow);
+        flToggles.Controls.Add(new Label { Width = 16 });
+        if (chkSidebar != null) flToggles.Controls.Add(chkSidebar);
         flGeneral.Controls.Add(flLang);
         flGeneral.Controls.Add(new Label { Width = 24 });
         flGeneral.Controls.Add(flToggles);

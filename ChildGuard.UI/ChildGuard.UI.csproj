@@ -13,4 +13,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
 </Project>

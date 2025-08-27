@@ -132,12 +132,17 @@ partial class Form1
         // Form1
         // 
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-        this.ClientSize = new System.Drawing.Size(520, 300);
-        this.MinimumSize = new System.Drawing.Size(520, 300);
+        this.ClientSize = new System.Drawing.Size(700, 450);
+        this.MinimumSize = new System.Drawing.Size(600, 400);
+        this.Controls.Add(this.lblKeys);
+        this.Controls.Add(this.lblMouse);
+        this.Controls.Add(this.chkEnableInput);
+        this.Controls.Add(this.btnStart);
+        this.Controls.Add(this.btnStop);
         this.Controls.Add(this.menuStrip1);
-        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
         this.MainMenuStrip = this.menuStrip1;
-        this.MaximizeBox = false;
+        this.MaximizeBox = true;
         this.Name = "Form1";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "ChildGuard UI";

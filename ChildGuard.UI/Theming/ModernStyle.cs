@@ -5,7 +5,7 @@ public static class ModernStyle
 public static void Apply(Form form, ThemeMode mode)
     {
         bool dark = mode switch { ThemeMode.Dark => true, ThemeMode.Light => false, _ => ThemeHelper.IsSystemDark() };
-        try { form.Font = new Font("Segoe UI", 10f); } catch { }
+        try { form.Font = new Font("Segoe UI Variable", 10f); } catch { try { form.Font = new Font("Segoe UI", 10f); } catch { } }
         form.AutoScaleMode = AutoScaleMode.Dpi;
         form.BackColor = dark ? Color.FromArgb(30, 30, 30) : Color.White;
         form.ForeColor = dark ? Color.FromArgb(230, 230, 230) : SystemColors.ControlText;
@@ -21,6 +21,13 @@ public static void Apply(Form form, ThemeMode mode)
                 ms.Renderer = new ToolStripProfessionalRenderer(new AccentColorTable(accent));
                 ms.BackColor = dark ? Color.FromArgb(32,32,32) : Color.White;
                 ms.ForeColor = dark ? Color.FromArgb(235,235,235) : SystemColors.ControlText;
+            }
+            // Improve buffering for layout panels to reduce flicker
+            if (c is TableLayoutPanel or FlowLayoutPanel)
+            {
+                EnableDoubleBuffer(c);
+                c.BackColor = form.BackColor;
+                c.ForeColor = form.ForeColor;
             }
         }
 
@@ -42,7 +49,9 @@ public static void Apply(Form form, ThemeMode mode)
                         {
                             char g = mi.Text.Contains("Settings", StringComparison.OrdinalIgnoreCase) ? GlyphIcons.Settings :
                                      mi.Text.Contains("Reports", StringComparison.OrdinalIgnoreCase) ? GlyphIcons.Reports :
-                                     mi.Text.Contains("Policy", StringComparison.OrdinalIgnoreCase) ? GlyphIcons.Policy : '\0';
+                                     mi.Text.Contains("Policy", StringComparison.OrdinalIgnoreCase) ? GlyphIcons.Policy :
+                                     mi.Text.Contains("Help", StringComparison.OrdinalIgnoreCase) ? GlyphIcons.Info :
+                                     mi.Text.Contains("About", StringComparison.OrdinalIgnoreCase) ? GlyphIcons.Info : '\0';
                             if (g != '\0') mi.Image = GlyphIcons.Render(g, 16, accent);
                             mi.ImageScaling = ToolStripItemImageScaling.None;
                         }
@@ -84,7 +93,7 @@ public static void Apply(Form form, ThemeMode mode)
             {
                 case Button b:
                     b.FlatStyle = FlatStyle.System;
-                    b.Height = Math.Max(30, b.Height);
+                    b.Height = Math.Max(32, Math.Max(30, b.Height));
                     b.Margin = new Padding(6);
                     b.UseVisualStyleBackColor = true;
                     b.ForeColor = dark ? Color.FromArgb(235,235,235) : SystemColors.ControlText;
@@ -103,8 +112,39 @@ public static void Apply(Form form, ThemeMode mode)
                     tb.BackColor = dark ? Color.FromArgb(45,45,45) : Color.White;
                     tb.ForeColor = dark ? Color.FromArgb(230,230,230) : SystemColors.ControlText;
                     break;
+                case ComboBox cbx:
+                    cbx.FlatStyle = FlatStyle.System;
+                    cbx.BackColor = dark ? Color.FromArgb(45,45,45) : Color.White;
+                    cbx.ForeColor = dark ? Color.FromArgb(230,230,230) : SystemColors.ControlText;
+                    break;
+                case DateTimePicker dtp:
+                    dtp.CalendarForeColor = dark ? Color.White : SystemColors.ControlText;
+                    dtp.CalendarMonthBackground = dark ? Color.FromArgb(45,45,45) : Color.White;
+                    dtp.CalendarTitleBackColor = ThemeHelper.GetAccentColor();
+                    dtp.CalendarTitleForeColor = Color.White;
+                    dtp.BackColor = dark ? Color.FromArgb(45,45,45) : Color.White;
+                    dtp.ForeColor = dark ? Color.FromArgb(230,230,230) : SystemColors.ControlText;
+                    break;
+                case NumericUpDown nud:
+                    nud.BackColor = dark ? Color.FromArgb(45,45,45) : Color.White;
+                    nud.ForeColor = dark ? Color.FromArgb(230,230,230) : SystemColors.ControlText;
+                    break;
+                case GroupBox gb:
+                    gb.ForeColor = dark ? Color.FromArgb(235,235,235) : SystemColors.ControlText;
+                    gb.BackColor = dark ? Color.FromArgb(30,30,30) : Color.White;
+                    break;
                 case DataGridView dgv:
                     StyleGrid(dgv, dark);
+                    break;
+                case TableLayoutPanel tlp:
+                    tlp.BackColor = dark ? Color.FromArgb(30,30,30) : Color.White;
+                    tlp.ForeColor = dark ? Color.FromArgb(230,230,230) : SystemColors.ControlText;
+                    EnableDoubleBuffer(tlp);
+                    break;
+                case FlowLayoutPanel flp:
+                    flp.BackColor = dark ? Color.FromArgb(30,30,30) : Color.White;
+                    flp.ForeColor = dark ? Color.FromArgb(230,230,230) : SystemColors.ControlText;
+                    EnableDoubleBuffer(flp);
                     break;
                 case Panel pnl:
                     pnl.BackColor = dark ? Color.FromArgb(30,30,30) : Color.White;

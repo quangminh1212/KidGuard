@@ -26,12 +26,15 @@ public static class UIStrings
         ["Menu.Settings"] = ("Settings", "Cài đặt"),
         ["Menu.Reports"] = ("Reports", "Báo cáo"),
         ["Menu.PolicyEditor"] = ("Policy Editor", "Trình sửa chính sách"),
+        ["Menu.Help"] = ("Help", "Trợ giúp"),
+        ["Menu.About"] = ("About", "Giới thiệu"),
 
         // Common Buttons
         ["Buttons.Start"] = ("Start", "Bắt đầu"),
         ["Buttons.Stop"] = ("Stop", "Dừng"),
         ["Buttons.Save"] = ("Save", "Lưu"),
         ["Buttons.Cancel"] = ("Cancel", "Hủy"),
+        ["Buttons.Close"] = ("Close", "Đóng"),
         ["Buttons.ExportCsv"] = ("Export CSV", "Xuất CSV"),
         ["Buttons.ExportChart"] = ("Export Chart", "Xuất biểu đồ"),
         ["Buttons.TrendChart"] = ("Trend Chart", "Biểu đồ xu hướng"),
@@ -43,6 +46,8 @@ public static class UIStrings
         ["Labels.MouseCount"] = ("Mouse Event Count: {0}", "Số sự kiện chuột: {0}"),
         ["Form1.Section.Activity"] = ("Activity", "Hoạt động"),
         ["Form1.Section.Controls"] = ("Controls", "Điều khiển"),
+        ["Form1.Card.Keys"] = ("Keys", "Phím"),
+        ["Form1.Card.Mouse"] = ("Mouse", "Chuột"),
 
         // Settings
         ["Settings.Title"] = ("Settings", "Cài đặt"),
@@ -71,6 +76,7 @@ public static class UIStrings
         ["Settings.Section.Retention"] = ("Log retention & limits", "Lưu trữ & giới hạn log"),
         ["Settings.Section.AdditionalQuiet"] = ("Additional quiet windows", "Khung giờ bổ sung"),
         ["Settings.Section.Config"] = ("Configuration", "Cấu hình"),
+        ["Settings.UseSidebarNav"] = ("Use sidebar navigation", "Dùng thanh điều hướng bên trái"),
 
         // Reports
         ["Reports.Title"] = ("Reports", "Báo cáo"),
@@ -108,6 +114,13 @@ public static class UIStrings
         ["Policy.Title"] = ("Policy Editor", "Trình sửa chính sách"),
         ["Policy.ConfigPath"] = ("Config path: {0}", "Đường dẫn cấu hình: {0}"),
         ["Policy.InvalidJson"] = ("Invalid JSON: {0}", "JSON không hợp lệ: {0}"),
+
+        // About dialog
+        ["About.Title"] = ("About", "Giới thiệu"),
+        ["About.Product"] = ("Product", "Sản phẩm"),
+        ["About.Version"] = ("Version", "Phiên bản"),
+        ["About.Author"] = ("Author", "Tác giả"),
+        ["About.Repo"] = ("Repository", "Kho mã"),
 
         // General
         ["General.AppName"] = ("ChildGuard", "ChildGuard"),
