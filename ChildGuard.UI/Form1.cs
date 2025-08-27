@@ -132,155 +132,226 @@ private void uiTimer_Tick(object? sender, EventArgs e)
         var mode = ParseTheme(_cfg.Theme);
         bool dark = mode == ThemeMode.Dark || (mode == ThemeMode.System && ThemeHelper.IsSystemDark());
 
-        // Chỉ cập nhật vị trí và style cho các control đã có sẵn từ Designer
         this.SuspendLayout();
         
-        // Cập nhật form size
-        this.FormBorderStyle = FormBorderStyle.Sizable;
-        this.MaximizeBox = true;
-        this.ClientSize = new Size(700, 450);
-        this.MinimumSize = new Size(600, 400);
+        // Ẩn các control cũ từ Designer (chúng vẫn được thêm vào form nhưng sẽ không hiển thị)
+        lblKeys.Visible = false;
+        lblMouse.Visible = false;
+        chkEnableInput.Visible = false;
+        btnStart.Visible = false;
+        btnStop.Visible = false;
         
-        // Panel chính chứa content
+        // Panel chính chứa toàn bộ content
         var mainPanel = new Panel
         {
-            Location = new Point(12, 40),
-            Size = new Size(676, 400),
+            Name = "mainPanel",
+            Location = new Point(0, 30),
+            Size = new Size(this.ClientSize.Width, this.ClientSize.Height - 30),
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-            AutoScroll = true
+            AutoScroll = false,
+            BackColor = this.BackColor
         };
         
-        // Tiêu đề section Activity
-        var lblActivity = new Label
+        // Container bên trong với padding
+        var contentContainer = new Panel
+        {
+            Location = new Point(20, 20),
+            Size = new Size(660, 380),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            AutoScroll = false
+        };
+        
+        // Tiêu đề Activity
+        var activityTitle = new Label
         {
             Text = UIStrings.Get("Form1.Section.Activity"),
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
+            Font = new Font("Segoe UI", 16, FontStyle.Bold),
             Location = new Point(0, 0),
-            AutoSize = true
+            AutoSize = true,
+            ForeColor = this.ForeColor
         };
-        mainPanel.Controls.Add(lblActivity);
+        contentContainer.Controls.Add(activityTitle);
         
-        // Panel chứa 2 card thống kê
-        var statsPanel = new Panel
+        // Container cho 2 card
+        var cardsContainer = new Panel
         {
-            Location = new Point(0, 35),
-            Size = new Size(500, 90)
+            Location = new Point(0, 40),
+            Size = new Size(500, 100),
+            BackColor = Color.Transparent
         };
         
-        // Card Keys
-        var keyCard = new Panel
+        // Keys Card
+        var keysCard = new Panel
         {
-            Size = new Size(230, 80),
             Location = new Point(0, 0),
-            BorderStyle = BorderStyle.FixedSingle,
-            BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.White
+            Size = new Size(230, 85),
+            BackColor = dark ? Color.FromArgb(50, 50, 53) : Color.FromArgb(250, 250, 250),
+            BorderStyle = BorderStyle.None
+        };
+        keysCard.Paint += (s, e) => {
+            using var pen = new Pen(dark ? Color.FromArgb(70, 70, 73) : Color.FromArgb(220, 220, 220), 1);
+            e.Graphics.DrawRectangle(pen, 0, 0, keysCard.Width - 1, keysCard.Height - 1);
         };
         
-        var keyIcon = new PictureBox
+        var keysIcon = new PictureBox
         {
-            Image = GlyphIcons.Render(GlyphIcons.Keyboard, 20, ThemeHelper.GetAccentColor()),
+            Size = new Size(28, 28),
+            Location = new Point(15, 28),
             SizeMode = PictureBoxSizeMode.CenterImage,
-            Size = new Size(30, 30),
-            Location = new Point(15, 25)
+            Image = GlyphIcons.Render(GlyphIcons.Keyboard, 22, ThemeHelper.GetAccentColor())
         };
-        keyCard.Controls.Add(keyIcon);
+        keysCard.Controls.Add(keysIcon);
         
-        var lblKeyText = new Label
+        var keysLabel = new Label
         {
             Text = UIStrings.Get("Form1.Card.Keys"),
-            Font = new Font("Segoe UI", 9),
-            ForeColor = dark ? Color.LightGray : Color.Gray,
-            Location = new Point(55, 15),
+            Font = new Font("Segoe UI", 9, FontStyle.Regular),
+            ForeColor = dark ? Color.FromArgb(180, 180, 180) : Color.FromArgb(100, 100, 100),
+            Location = new Point(55, 20),
             AutoSize = true
         };
-        keyCard.Controls.Add(lblKeyText);
+        keysCard.Controls.Add(keysLabel);
         
-        // Di chuyển lblKeys vào card
-        lblKeys.Parent = keyCard;
-        lblKeys.Location = new Point(55, 35);
-        lblKeys.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-        lblKeys.Text = "0";
+        var keysValue = new Label
+        {
+            Name = "keysValue",
+            Text = "0",
+            Font = new Font("Segoe UI", 18, FontStyle.Bold),
+            ForeColor = this.ForeColor,
+            Location = new Point(55, 38),
+            AutoSize = true
+        };
+        keysCard.Controls.Add(keysValue);
+        cardsContainer.Controls.Add(keysCard);
         
-        statsPanel.Controls.Add(keyCard);
-        
-        // Card Mouse
+        // Mouse Card
         var mouseCard = new Panel
         {
-            Size = new Size(230, 80),
             Location = new Point(250, 0),
-            BorderStyle = BorderStyle.FixedSingle,
-            BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.White
+            Size = new Size(230, 85),
+            BackColor = dark ? Color.FromArgb(50, 50, 53) : Color.FromArgb(250, 250, 250),
+            BorderStyle = BorderStyle.None
+        };
+        mouseCard.Paint += (s, e) => {
+            using var pen = new Pen(dark ? Color.FromArgb(70, 70, 73) : Color.FromArgb(220, 220, 220), 1);
+            e.Graphics.DrawRectangle(pen, 0, 0, mouseCard.Width - 1, mouseCard.Height - 1);
         };
         
         var mouseIcon = new PictureBox
         {
-            Image = GlyphIcons.Render(GlyphIcons.Mouse, 20, ThemeHelper.GetAccentColor()),
+            Size = new Size(28, 28),
+            Location = new Point(15, 28),
             SizeMode = PictureBoxSizeMode.CenterImage,
-            Size = new Size(30, 30),
-            Location = new Point(15, 25)
+            Image = GlyphIcons.Render(GlyphIcons.Mouse, 22, ThemeHelper.GetAccentColor())
         };
         mouseCard.Controls.Add(mouseIcon);
         
-        var lblMouseText = new Label
+        var mouseLabel = new Label
         {
             Text = UIStrings.Get("Form1.Card.Mouse"),
-            Font = new Font("Segoe UI", 9),
-            ForeColor = dark ? Color.LightGray : Color.Gray,
-            Location = new Point(55, 15),
+            Font = new Font("Segoe UI", 9, FontStyle.Regular),
+            ForeColor = dark ? Color.FromArgb(180, 180, 180) : Color.FromArgb(100, 100, 100),
+            Location = new Point(55, 20),
             AutoSize = true
         };
-        mouseCard.Controls.Add(lblMouseText);
+        mouseCard.Controls.Add(mouseLabel);
         
-        // Di chuyển lblMouse vào card
-        lblMouse.Parent = mouseCard;
-        lblMouse.Location = new Point(55, 35);
-        lblMouse.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-        lblMouse.Text = "0";
+        var mouseValue = new Label
+        {
+            Name = "mouseValue",
+            Text = "0",
+            Font = new Font("Segoe UI", 18, FontStyle.Bold),
+            ForeColor = this.ForeColor,
+            Location = new Point(55, 38),
+            AutoSize = true
+        };
+        mouseCard.Controls.Add(mouseValue);
+        cardsContainer.Controls.Add(mouseCard);
         
-        statsPanel.Controls.Add(mouseCard);
-        mainPanel.Controls.Add(statsPanel);
+        contentContainer.Controls.Add(cardsContainer);
         
-        // Tiêu đề section Controls
-        var lblControls = new Label
+        // Tiêu đề Controls
+        var controlsTitle = new Label
         {
             Text = UIStrings.Get("Form1.Section.Controls"),
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            Location = new Point(0, 140),
-            AutoSize = true
+            Font = new Font("Segoe UI", 16, FontStyle.Bold),
+            Location = new Point(0, 160),
+            AutoSize = true,
+            ForeColor = this.ForeColor
         };
-        mainPanel.Controls.Add(lblControls);
+        contentContainer.Controls.Add(controlsTitle);
         
         // Panel chứa controls
-        var controlPanel = new Panel
+        var controlsPanel = new Panel
         {
-            Location = new Point(0, 175),
-            Size = new Size(500, 80),
-            BackColor = dark ? Color.FromArgb(40, 40, 43) : Color.FromArgb(250, 250, 250),
-            BorderStyle = BorderStyle.FixedSingle
+            Location = new Point(0, 200),
+            Size = new Size(500, 70),
+            BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.FromArgb(248, 248, 248),
+            BorderStyle = BorderStyle.None
+        };
+        controlsPanel.Paint += (s, e) => {
+            using var pen = new Pen(dark ? Color.FromArgb(70, 70, 73) : Color.FromArgb(220, 220, 220), 1);
+            e.Graphics.DrawRectangle(pen, 0, 0, controlsPanel.Width - 1, controlsPanel.Height - 1);
         };
         
-        // Di chuyển checkbox
-        chkEnableInput.Parent = controlPanel;
-        chkEnableInput.Location = new Point(20, 25);
-        chkEnableInput.Font = new Font("Segoe UI", 10);
+        // Checkbox mới
+        var newCheckbox = new CheckBox
+        {
+            Text = UIStrings.Get("Form1.EnableInput"),
+            Font = new Font("Segoe UI", 10),
+            Location = new Point(20, 23),
+            AutoSize = true,
+            Checked = chkEnableInput.Checked,
+            ForeColor = this.ForeColor
+        };
+        newCheckbox.CheckedChanged += (s, e) => chkEnableInput.Checked = newCheckbox.Checked;
+        controlsPanel.Controls.Add(newCheckbox);
         
-        // Di chuyển buttons
-        btnStart.Parent = controlPanel;
-        btnStart.Location = new Point(260, 20);
-        btnStart.Size = new Size(100, 35);
-        btnStart.FlatStyle = FlatStyle.Flat;
-        ModernStyle.MakePrimary(btnStart, dark);
+        // Button Start mới
+        var newStartBtn = new Button
+        {
+            Text = UIStrings.Get("Buttons.Start"),
+            Font = new Font("Segoe UI", 10),
+            Location = new Point(270, 18),
+            Size = new Size(100, 35),
+            FlatStyle = FlatStyle.Flat,
+            Cursor = Cursors.Hand
+        };
+        newStartBtn.Click += btnStart_Click;
+        ModernStyle.MakePrimary(newStartBtn, dark);
+        controlsPanel.Controls.Add(newStartBtn);
         
-        btnStop.Parent = controlPanel;
-        btnStop.Location = new Point(370, 20);
-        btnStop.Size = new Size(100, 35);
-        btnStop.FlatStyle = FlatStyle.Flat;
-        ModernStyle.MakeSecondary(btnStop, dark);
+        // Button Stop mới
+        var newStopBtn = new Button
+        {
+            Text = UIStrings.Get("Buttons.Stop"),
+            Font = new Font("Segoe UI", 10),
+            Location = new Point(380, 18),
+            Size = new Size(100, 35),
+            FlatStyle = FlatStyle.Flat,
+            Cursor = Cursors.Hand
+        };
+        newStopBtn.Click += btnStop_Click;
+        ModernStyle.MakeSecondary(newStopBtn, dark);
+        controlsPanel.Controls.Add(newStopBtn);
         
-        mainPanel.Controls.Add(controlPanel);
+        contentContainer.Controls.Add(controlsPanel);
         
-        // Thêm main panel vào form
+        // Cập nhật timer để hiển thị giá trị lên card mới
+        uiTimer.Tick -= uiTimer_Tick; // Remove old handler
+        uiTimer.Tick += (s, e) => {
+            if (contentContainer.Controls.Find("keysValue", true).FirstOrDefault() is Label kv)
+                kv.Text = _lastKeys.ToString();
+            if (contentContainer.Controls.Find("mouseValue", true).FirstOrDefault() is Label mv)
+                mv.Text = _lastMouse.ToString();
+        };
+        
+        mainPanel.Controls.Add(contentContainer);
         this.Controls.Add(mainPanel);
+        
+        // Đảm bảo mainPanel nằm dưới menuStrip
+        mainPanel.BringToFront();
+        menuStrip1.BringToFront();
         
         this.ResumeLayout(true);
     }
