@@ -20,6 +20,7 @@ public Form1()
 InitializeComponent();
     _cfg = ConfigManager.Load(out _);
     UIStrings.SetLanguage(_cfg.UILanguage);
+    EnsureHelpMenu();
     ApplyLocalization();
     ModernStyle.Apply(this, ParseTheme(_cfg.Theme));
     RebuildLayoutModern(ParseTheme(_cfg.Theme));
@@ -91,9 +92,40 @@ private void uiTimer_Tick(object? sender, EventArgs e)
         mnuSettings.Text = UIStrings.Get("Menu.Settings");
         mnuReports.Text = UIStrings.Get("Menu.Reports");
         mnuPolicy.Text = UIStrings.Get("Menu.PolicyEditor");
+        // Update help menu text if present
+        var helpItem = this.menuStrip1.Items.OfType<ToolStripMenuItem>().FirstOrDefault(i => (string?)i.Tag == "help");
+        if (helpItem != null)
+        {
+            helpItem.Text = UIStrings.Get("Menu.Help");
+            if (helpItem.DropDownItems.Count > 0)
+            {
+                var about = helpItem.DropDownItems[0] as ToolStripMenuItem;
+                if (about != null) about.Text = UIStrings.Get("Menu.About");
+            }
+        }
         chkEnableInput.Text = UIStrings.Get("Form1.EnableInput");
         btnStart.Text = UIStrings.Get("Buttons.Start");
         btnStop.Text = UIStrings.Get("Buttons.Stop");
+    }
+
+    private void EnsureHelpMenu()
+    {
+        try
+        {
+            // Avoid duplicate
+            var exists = this.menuStrip1.Items.OfType<ToolStripMenuItem>().Any(mi => (string?)mi.Tag == "help");
+            if (exists) return;
+            var help = new ToolStripMenuItem { Name = "mnuHelp", Tag = "help", Text = UIStrings.Get("Menu.Help") };
+            var about = new ToolStripMenuItem { Name = "mnuAbout", Text = UIStrings.Get("Menu.About") };
+            about.Click += (s, e) =>
+            {
+                // Placeholder - will be replaced by AboutForm dialog
+                MessageBox.Show(this, "ChildGuard", UIStrings.Get("Menu.About"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            };
+            help.DropDownItems.Add(about);
+            this.menuStrip1.Items.Add(help);
+        }
+        catch { }
     }
 
     private void RebuildLayoutModern(ThemeMode mode)
