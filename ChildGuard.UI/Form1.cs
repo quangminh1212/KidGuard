@@ -57,8 +57,8 @@ InitializeComponent();
 
 private void uiTimer_Tick(object? sender, EventArgs e)
 {
-    lblKeys.Text = UIStrings.Format("Labels.KeysCount", _lastKeys);
-    lblMouse.Text = UIStrings.Format("Labels.MouseCount", _lastMouse);
+    lblKeys.Text = _lastKeys.ToString();
+    lblMouse.Text = _lastMouse.ToString();
 }
 
     private void btnStart_Click(object? sender, EventArgs e)
@@ -131,111 +131,227 @@ private void uiTimer_Tick(object? sender, EventArgs e)
     {
         bool dark = mode == ThemeMode.Dark || (mode == ThemeMode.System && ThemeHelper.IsSystemDark());
 
-        // Prepare controls appearance
-        lblKeys.Font = new Font(this.Font, FontStyle.Regular);
-        lblMouse.Font = new Font(this.Font, FontStyle.Regular);
-        btnStart.Width = Math.Max(96, btnStart.Width);
-        btnStop.Width = Math.Max(96, btnStop.Width);
-        // Primary/secondary styles
-        ModernStyle.MakePrimary(btnStart, dark);
-        ModernStyle.MakeSecondary(btnStop, dark);
-
-        // Sections builder
-        RoundedPanel MakeSection(string title)
-        {
-            var rp = new RoundedPanel { Dock = DockStyle.Top, Padding = new Padding(12), Margin = new Padding(0, 0, 0, 12) };
-            rp.Dark = dark;
-            var header = new Label { Text = title, AutoSize = true, Font = new Font(this.Font, FontStyle.Bold), Margin = new Padding(0, 0, 0, 8) };
-            rp.Controls.Add(header);
-            header.Location = new Point(8, 8);
-            return rp;
-        }
-
-        // Build root layout with Menu on top
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 0, Padding = new Padding(12) };
-        root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-
-        // Optional sidebar navigation
-        Panel? side = null;
-        if (_cfg.UseSidebarNavigation)
-        {
-            side = new Panel { Dock = DockStyle.Left, Width = 180, Padding = new Padding(12) };
-            side.BackColor = this.BackColor;
-            side.ForeColor = this.ForeColor;
-            var stack = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
-
-            Button MakeSideBtn(string text, char glyph, EventHandler onClick)
-            {
-                var b = new Button { Text = text, TextAlign = ContentAlignment.MiddleLeft, Width = 156, Height = 36, ImageAlign = ContentAlignment.MiddleLeft, Padding = new Padding(8,0,8,0), Margin = new Padding(0,0,0,8) };
-                b.Image = GlyphIcons.Render(glyph, 16, ThemeHelper.GetAccentColor());
-                b.Click += onClick;
-                ModernStyle.MakeSecondary(b, dark);
-                return b;
-            }
-
-            var btnSettings = MakeSideBtn(UIStrings.Get("Menu.Settings"), GlyphIcons.Settings, (s,e)=> { using var dlg = new SettingsForm(); dlg.ShowDialog(this); });
-            var btnReports = MakeSideBtn(UIStrings.Get("Menu.Reports"), GlyphIcons.Reports, (s,e)=> { using var dlg = new ReportsForm(); dlg.ShowDialog(this); });
-            var btnPolicy  = MakeSideBtn(UIStrings.Get("Menu.PolicyEditor"), GlyphIcons.Policy, (s,e)=> { using var dlg = new PolicyEditorForm(); dlg.ShowDialog(this); });
-
-            stack.Controls.Add(btnSettings);
-            stack.Controls.Add(btnReports);
-            stack.Controls.Add(btnPolicy);
-            side.Controls.Add(stack);
-        }
-
-        // Activity section (stats)
-        var secActivity = MakeSection(UIStrings.Get("Form1.Section.Activity"));
-        var cards = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(8, 32, 8, 8), WrapContents = true };
-        // Key card
-        var keyCard = new RoundedPanel { Width = 220, Height = 72, Padding = new Padding(12), Margin = new Padding(0,0,12,0), Dark = dark };
-        var keyIcon = new PictureBox { Image = GlyphIcons.Render(GlyphIcons.Keyboard, 18, ThemeHelper.GetAccentColor()), SizeMode = PictureBoxSizeMode.CenterImage, Width = 24, Height = 24, Location = new Point(8, 10) };
-        var keyTitle = new Label { Text = UIStrings.Get("Form1.Card.Keys"), AutoSize = true, Location = new Point(38, 10) };
-        var keyValue = new Label { Text = "0", AutoSize = true, Font = new Font(this.Font.FontFamily, 14, FontStyle.Bold), Location = new Point(38, 32) };
-        keyCard.Controls.Add(keyIcon); keyCard.Controls.Add(keyTitle); keyCard.Controls.Add(keyValue);
-        // Mouse card
-        var mouseCard = new RoundedPanel { Width = 220, Height = 72, Padding = new Padding(12), Dark = dark };
-        var mouseIcon = new PictureBox { Image = GlyphIcons.Render(GlyphIcons.Mouse, 18, ThemeHelper.GetAccentColor()), SizeMode = PictureBoxSizeMode.CenterImage, Width = 24, Height = 24, Location = new Point(8, 10) };
-        var mouseTitle = new Label { Text = UIStrings.Get("Form1.Card.Mouse"), AutoSize = true, Location = new Point(38, 10) };
-        var mouseValue = new Label { Text = "0", AutoSize = true, Font = new Font(this.Font.FontFamily, 14, FontStyle.Bold), Location = new Point(38, 32) };
-        mouseCard.Controls.Add(mouseIcon); mouseCard.Controls.Add(mouseTitle); mouseCard.Controls.Add(mouseValue);
-        cards.Controls.Add(keyCard);
-        cards.Controls.Add(mouseCard);
-        secActivity.Controls.Add(cards);
-        // Bind dynamic updates
-        uiTimer.Tick += (_, __) => { keyValue.Text = _lastKeys.ToString(); mouseValue.Text = _lastMouse.ToString(); };
-        root.Controls.Add(secActivity);
-        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-        // Controls section
-        var secControls = MakeSection(UIStrings.Get("Form1.Section.Controls"));
-        var flCtrls = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(8, 32, 8, 8), WrapContents = true };
-        // Toggle switch + label
-        var toggle = new ToggleSwitch { Name = "toggleInput", Checked = chkEnableInput.Checked, Width = 50, Height = 28, Margin = new Padding(0, 2, 8, 0) };
-        toggle.CheckedChanged += (_, __) => chkEnableInput.Checked = toggle.Checked;
-        var lblToggle = new Label { AutoSize = true, Text = UIStrings.Get("Form1.EnableInput"), Margin = new Padding(0, 6, 16, 0) };
-        flCtrls.Controls.Add(toggle);
-        flCtrls.Controls.Add(lblToggle);
-        // Buttons
-        flCtrls.Controls.Add(btnStart);
-        flCtrls.Controls.Add(btnStop);
-        secControls.Controls.Add(flCtrls);
-        root.Controls.Add(secControls);
-        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-        // Place into form: keep menu, then root
+        // Clear existing controls but preserve important ones
         this.SuspendLayout();
         var menu = this.menuStrip1;
+        var existingControls = new List<Control>();
+        foreach (Control c in this.Controls)
+        {
+            if (c == menu || c == lblKeys || c == lblMouse || c == btnStart || c == btnStop || c == chkEnableInput)
+            {
+                existingControls.Add(c);
+            }
+        }
         this.Controls.Clear();
+        
+        // Setup menu at top
         menu.Dock = DockStyle.Top;
         this.Controls.Add(menu);
         this.MainMenuStrip = menu;
-        if (side != null) this.Controls.Add(side);
-        this.Controls.Add(root);
-        root.BringToFront();
-        this.ResumeLayout(true);
 
-        // Window sizing
-        this.MinimumSize = new Size(520, 300);
-        this.ClientSize = new Size(Math.Max(520, this.ClientSize.Width), Math.Max(300, this.ClientSize.Height));
+        // Create main container panel
+        var mainContainer = new Panel { Dock = DockStyle.Fill, AutoScroll = true };
+        
+        // Optional sidebar navigation
+        if (_cfg.UseSidebarNavigation)
+        {
+            var sidebar = new Panel 
+            { 
+                Dock = DockStyle.Left, 
+                Width = 200, 
+                BackColor = dark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(245, 245, 245),
+                Padding = new Padding(8)
+            };
+            
+            var sidebarFlow = new FlowLayoutPanel 
+            { 
+                Dock = DockStyle.Fill, 
+                FlowDirection = FlowDirection.TopDown, 
+                AutoScroll = true
+            };
+
+            void AddSidebarButton(string text, char icon, EventHandler onClick)
+            {
+                var btn = new Button 
+                { 
+                    Text = "  " + text,
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    ImageAlign = ContentAlignment.MiddleLeft,
+                    Width = 180,
+                    Height = 40,
+                    FlatStyle = FlatStyle.Flat,
+                    Margin = new Padding(0, 0, 0, 4),
+                    Cursor = Cursors.Hand
+                };
+                btn.Image = GlyphIcons.Render(icon, 16, ThemeHelper.GetAccentColor());
+                btn.FlatAppearance.BorderSize = 0;
+                btn.BackColor = Color.Transparent;
+                btn.Click += onClick;
+                ModernStyle.MakeSecondary(btn, dark);
+                sidebarFlow.Controls.Add(btn);
+            }
+
+            AddSidebarButton(UIStrings.Get("Menu.Settings"), GlyphIcons.Settings, 
+                (s,e) => { using var dlg = new SettingsForm(); dlg.ShowDialog(this); });
+            AddSidebarButton(UIStrings.Get("Menu.Reports"), GlyphIcons.Reports, 
+                (s,e) => { using var dlg = new ReportsForm(); dlg.ShowDialog(this); });
+            AddSidebarButton(UIStrings.Get("Menu.PolicyEditor"), GlyphIcons.Policy, 
+                (s,e) => { using var dlg = new PolicyEditorForm(); dlg.ShowDialog(this); });
+            
+            sidebar.Controls.Add(sidebarFlow);
+            this.Controls.Add(sidebar);
+        }
+
+        // Main content area
+        var contentPanel = new Panel 
+        { 
+            Dock = DockStyle.Fill,
+            Padding = new Padding(24),
+            AutoScroll = true
+        };
+
+        // Title section
+        var titleLabel = new Label
+        {
+            Text = UIStrings.Get("Form1.Section.Activity"),
+            Font = new Font("Segoe UI Variable Display", 18, FontStyle.Bold),
+            AutoSize = true,
+            Location = new Point(0, 0)
+        };
+        contentPanel.Controls.Add(titleLabel);
+
+        // Stats Cards Container
+        var cardsPanel = new FlowLayoutPanel
+        {
+            Location = new Point(0, 50),
+            Size = new Size(500, 100),
+            FlowDirection = FlowDirection.LeftToRight,
+            WrapContents = false
+        };
+
+        // Keys Card
+        var keyCard = new Panel
+        {
+            Size = new Size(220, 80),
+            BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.White,
+            Margin = new Padding(0, 0, 16, 0)
+        };
+        if (!dark) keyCard.BorderStyle = BorderStyle.FixedSingle;
+        
+        var keyIcon = new PictureBox 
+        { 
+            Image = GlyphIcons.Render(GlyphIcons.Keyboard, 24, ThemeHelper.GetAccentColor()),
+            SizeMode = PictureBoxSizeMode.CenterImage,
+            Size = new Size(32, 32),
+            Location = new Point(16, 24)
+        };
+        
+        var keyLabel = new Label
+        {
+            Text = UIStrings.Get("Form1.Card.Keys"),
+            Font = new Font("Segoe UI", 9),
+            ForeColor = dark ? Color.LightGray : Color.Gray,
+            Location = new Point(56, 16),
+            AutoSize = true
+        };
+        
+        lblKeys.Text = "0";
+        lblKeys.Font = new Font("Segoe UI Variable Display", 16, FontStyle.Bold);
+        lblKeys.Location = new Point(56, 36);
+        lblKeys.AutoSize = true;
+        
+        keyCard.Controls.AddRange(new Control[] { keyIcon, keyLabel, lblKeys });
+        
+        // Mouse Card  
+        var mouseCard = new Panel
+        {
+            Size = new Size(220, 80),
+            BackColor = dark ? Color.FromArgb(45, 45, 48) : Color.White
+        };
+        if (!dark) mouseCard.BorderStyle = BorderStyle.FixedSingle;
+        
+        var mouseIcon = new PictureBox
+        {
+            Image = GlyphIcons.Render(GlyphIcons.Mouse, 24, ThemeHelper.GetAccentColor()),
+            SizeMode = PictureBoxSizeMode.CenterImage, 
+            Size = new Size(32, 32),
+            Location = new Point(16, 24)
+        };
+        
+        var mouseLabel = new Label
+        {
+            Text = UIStrings.Get("Form1.Card.Mouse"),
+            Font = new Font("Segoe UI", 9),
+            ForeColor = dark ? Color.LightGray : Color.Gray,
+            Location = new Point(56, 16),
+            AutoSize = true
+        };
+        
+        lblMouse.Text = "0";
+        lblMouse.Font = new Font("Segoe UI Variable Display", 16, FontStyle.Bold);
+        lblMouse.Location = new Point(56, 36);
+        lblMouse.AutoSize = true;
+        
+        mouseCard.Controls.AddRange(new Control[] { mouseIcon, mouseLabel, lblMouse });
+        
+        cardsPanel.Controls.Add(keyCard);
+        cardsPanel.Controls.Add(mouseCard);
+        contentPanel.Controls.Add(cardsPanel);
+
+        // Controls Section
+        var controlsTitle = new Label
+        {
+            Text = UIStrings.Get("Form1.Section.Controls"),
+            Font = new Font("Segoe UI Variable Display", 14, FontStyle.Bold),
+            Location = new Point(0, 160),
+            AutoSize = true
+        };
+        contentPanel.Controls.Add(controlsTitle);
+
+        // Control panel
+        var controlPanel = new Panel
+        {
+            Location = new Point(0, 200),
+            Size = new Size(500, 60),
+            BackColor = dark ? Color.FromArgb(40, 40, 43) : Color.FromArgb(250, 250, 250),
+            Padding = new Padding(16)
+        };
+        
+        // Enable monitoring checkbox
+        chkEnableInput.Text = UIStrings.Get("Form1.EnableInput");
+        chkEnableInput.Location = new Point(16, 18);
+        chkEnableInput.AutoSize = true;
+        chkEnableInput.Font = new Font("Segoe UI", 10);
+        
+        // Start button
+        btnStart.Text = UIStrings.Get("Buttons.Start");
+        btnStart.Location = new Point(250, 12);
+        btnStart.Size = new Size(100, 36);
+        btnStart.FlatStyle = FlatStyle.Flat;
+        btnStart.Cursor = Cursors.Hand;
+        ModernStyle.MakePrimary(btnStart, dark);
+        
+        // Stop button  
+        btnStop.Text = UIStrings.Get("Buttons.Stop");
+        btnStop.Location = new Point(360, 12);
+        btnStop.Size = new Size(100, 36);
+        btnStop.FlatStyle = FlatStyle.Flat;
+        btnStop.Cursor = Cursors.Hand;
+        ModernStyle.MakeSecondary(btnStop, dark);
+        
+        controlPanel.Controls.AddRange(new Control[] { chkEnableInput, btnStart, btnStop });
+        contentPanel.Controls.Add(controlPanel);
+        
+        mainContainer.Controls.Add(contentPanel);
+        this.Controls.Add(mainContainer);
+        
+        // Buttons already styled above, no need to re-apply
+        
+        // Set minimum form size
+        this.MinimumSize = new Size(600, 400);
+        if (this.Width < 600) this.Width = 600;
+        if (this.Height < 400) this.Height = 400;
+        
+        this.ResumeLayout(true);
     }
 }
