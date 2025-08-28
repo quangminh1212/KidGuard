@@ -27,6 +27,20 @@ public ReportsForm()
         ModernStyle.Apply(this, theme);
         RebuildLayoutModern(theme);
 
+        // Anchors for responsive layout
+        try
+        {
+            grid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlChart.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlTrend.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtProcFilter.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnExport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnLoad.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            btnExportChart.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnExportTrendChart.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        }
+        catch { }
+
         // Combo items with display labels but stable keys for logic
         cmbType.DisplayMember = "Value"; // label
         cmbType.ValueMember = "Key";     // actual key used in logic
