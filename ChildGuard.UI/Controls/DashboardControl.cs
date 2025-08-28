@@ -130,9 +130,9 @@ namespace ChildGuard.UI.Controls
             {
                 Title = "Total Events",
                 Value = "0",
-                Icon = "📊",
+                Icon = "▣",  // Simple square icon
                 BackgroundColor = ColorScheme.Modern.Primary,
-                Size = new Size(220, 100),
+                Size = new Size(200, 90),
                 Location = new Point(20, 10)
             };
 
@@ -140,30 +140,30 @@ namespace ChildGuard.UI.Controls
             {
                 Title = "Threats Detected",
                 Value = "0",
-                Icon = "⚠️",
+                Icon = "▲",  // Simple triangle warning icon
                 BackgroundColor = Color.FromArgb(220, 53, 69),
-                Size = new Size(220, 100),
-                Location = new Point(260, 10)
+                Size = new Size(200, 90),
+                Location = new Point(240, 10)
             };
 
             _blockedProcessesCard = new StatCard
             {
                 Title = "Blocked Processes",
                 Value = "0",
-                Icon = "🛡️",
+                Icon = "■",  // Simple shield/block icon
                 BackgroundColor = Color.FromArgb(255, 152, 0),
-                Size = new Size(220, 100),
-                Location = new Point(500, 10)
+                Size = new Size(200, 90),
+                Location = new Point(460, 10)
             };
 
             _screenshotsCard = new StatCard
             {
                 Title = "Screenshots",
                 Value = "0",
-                Icon = "📸",
+                Icon = "◉",  // Simple camera icon
                 BackgroundColor = Color.FromArgb(76, 175, 80),
-                Size = new Size(220, 100),
-                Location = new Point(740, 10)
+                Size = new Size(200, 90),
+                Location = new Point(680, 10)
             };
 
             _statsPanel.Controls.AddRange(new Control[] { 
@@ -507,28 +507,35 @@ namespace ChildGuard.UI.Controls
         {
             BackColor = ColorScheme.Modern.Primary;
             ForeColor = Color.White;
-            Padding = new Padding(15);
+            Padding = new Padding(10);
             
+            // Icon positioned at top-right
             _iconLabel = new Label
             {
-                Font = new Font("Segoe UI Emoji", 24),
-                AutoSize = true,
-                Location = new Point(15, 15)
+                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                Size = new Size(40, 40),
+                Location = new Point(this.Width - 50, 10),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             
+            // Title at top-left
             _titleLabel = new Label
             {
-                Font = new Font("Segoe UI", 10),
+                Font = new Font("Segoe UI", 9),
                 ForeColor = Color.FromArgb(200, 255, 255, 255),
-                AutoSize = true,
-                Location = new Point(15, 50)
+                Location = new Point(10, 10),
+                Size = new Size(120, 20),
+                TextAlign = ContentAlignment.MiddleLeft
             };
             
+            // Value below title
             _valueLabel = new Label
             {
-                Font = new Font("Segoe UI", 18, FontStyle.Bold),
-                AutoSize = true,
-                Location = new Point(15, 70)
+                Font = new Font("Segoe UI", 22, FontStyle.Bold),
+                Location = new Point(10, 35),
+                Size = new Size(120, 40),
+                TextAlign = ContentAlignment.MiddleLeft
             };
             
             Controls.AddRange(new Control[] { _iconLabel, _titleLabel, _valueLabel });
