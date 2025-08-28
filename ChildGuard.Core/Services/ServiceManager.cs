@@ -140,7 +140,7 @@ namespace ChildGuard.Core.Services
             // Handler để lưu BadWordDetectedEvent vào database
             _eventDispatcher.Subscribe<BadWordDetectedEvent>(async (evt) =>
             {
-                var eventLog = new EventLog(
+                var eventLog = new Models.EventLog(
                     EventType.BadWordDetected,
                     evt.Severity,
                     $"Phát hiện từ nhạy cảm: {evt.Word}",
@@ -157,7 +157,7 @@ namespace ChildGuard.Core.Services
                 var severity = evt.IsSafe ? EventSeverity.Info : EventSeverity.High;
                 var title = evt.IsSafe ? $"Truy cập URL: {evt.Url}" : $"Phát hiện URL nguy hiểm: {evt.Url}";
                 
-                var eventLog = new EventLog(
+                var eventLog = new Models.EventLog(
                     eventType,
                     severity,
                     title,
@@ -170,7 +170,7 @@ namespace ChildGuard.Core.Services
             // Handler để lưu ProcessBlockedEvent vào database
             _eventDispatcher.Subscribe<ProcessBlockedEvent>(async (evt) =>
             {
-                var eventLog = new EventLog(
+                var eventLog = new Models.EventLog(
                     EventType.ProcessBlocked,
                     EventSeverity.High,
                     $"Chặn process: {evt.ProcessName}",
@@ -183,7 +183,7 @@ namespace ChildGuard.Core.Services
             // Handler để lưu ScreenshotCapturedEvent vào database
             _eventDispatcher.Subscribe<ScreenshotCapturedEvent>(async (evt) =>
             {
-                var eventLog = new EventLog(
+                var eventLog = new Models.EventLog(
                     EventType.ScreenshotCaptured,
                     EventSeverity.Info,
                     "Chụp màn hình",
@@ -199,7 +199,7 @@ namespace ChildGuard.Core.Services
             // Handler để lưu AudioCapturedEvent vào database
             _eventDispatcher.Subscribe<AudioCapturedEvent>(async (evt) =>
             {
-                var eventLog = new EventLog(
+                var eventLog = new Models.EventLog(
                     EventType.AudioCaptured,
                     EventSeverity.Info,
                     "Ghi âm",
