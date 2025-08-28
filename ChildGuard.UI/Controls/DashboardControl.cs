@@ -58,14 +58,30 @@ namespace ChildGuard.UI.Controls
 
         private void InitializeComponent()
         {
+            this.SuspendLayout();
             Size = new Size(1000, 700);
             BackColor = ColorScheme.Modern.BackgroundPrimary;
+            AutoScroll = true;
+            
+            // Main container with TableLayoutPanel for better layout management
+            var mainContainer = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                RowCount = 4,
+                ColumnCount = 1,
+                AutoScroll = true,
+                Padding = new Padding(0),
+                BackColor = ColorScheme.Modern.BackgroundPrimary
+            };
+            mainContainer.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F)); // Header
+            mainContainer.RowStyles.Add(new RowStyle(SizeType.Absolute, 130F)); // Stats
+            mainContainer.RowStyles.Add(new RowStyle(SizeType.Absolute, 320F)); // Charts
+            mainContainer.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Recent Events
             
             // Header Panel
             _headerPanel = new Panel
             {
-                Dock = DockStyle.Top,
-                Height = 60,
+                Dock = DockStyle.Fill,
                 BackColor = ColorScheme.Modern.BackgroundPrimary,
                 Padding = new Padding(20, 15, 20, 15)
             };
@@ -105,8 +121,7 @@ namespace ChildGuard.UI.Controls
             // Stats Panel
             _statsPanel = new Panel
             {
-                Dock = DockStyle.Top,
-                Height = 120,
+                Dock = DockStyle.Fill,
                 BackColor = ColorScheme.Modern.BackgroundPrimary,
                 Padding = new Padding(20, 0, 20, 10)
             };
@@ -158,8 +173,7 @@ namespace ChildGuard.UI.Controls
             // Charts Panel
             _chartsPanel = new Panel
             {
-                Dock = DockStyle.Top,
-                Height = 300,
+                Dock = DockStyle.Fill,
                 BackColor = ColorScheme.Modern.BackgroundPrimary,
                 Padding = new Padding(20, 0, 20, 10)
             };
@@ -233,10 +247,15 @@ namespace ChildGuard.UI.Controls
 
             _recentEventsPanel.Controls.AddRange(new Control[] { recentLabel, _recentEventsList });
 
-            // Add all panels to control
-            Controls.AddRange(new Control[] { 
-                _recentEventsPanel, _chartsPanel, _statsPanel, _headerPanel 
-            });
+            // Add panels to TableLayoutPanel in correct order
+            mainContainer.Controls.Add(_headerPanel, 0, 0);
+            mainContainer.Controls.Add(_statsPanel, 0, 1);
+            mainContainer.Controls.Add(_chartsPanel, 0, 2);
+            mainContainer.Controls.Add(_recentEventsPanel, 0, 3);
+            
+            // Add main container to control
+            Controls.Add(mainContainer);
+            this.ResumeLayout(false);
         }
 
         private void UpdateTimeRange()
