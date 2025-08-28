@@ -62,6 +62,14 @@ namespace ChildGuard.UI.Services
             _mainForm = mainForm;
             SetupSystemTray();
             
+            // Reposition toasts when form moves or resizes
+            try
+            {
+                _mainForm.SizeChanged += (s, e) => RepositionToasts();
+                _mainForm.Move += (s, e) => RepositionToasts();
+            }
+            catch { }
+            
             // Register for Windows 10 toast notifications
             // Note: ToastNotificationManagerCompat requires additional setup
             // For now, we'll use system tray and in-app toasts
@@ -307,14 +315,15 @@ namespace ChildGuard.UI.Services
                     var toast = new ModernToast();
                     toast.Show(title, message, ConvertToToastType(type));
                     
-                    // Position toast
-                    var yPos = 20;
+                    // Position toast under header area
+                    var yPos = GetTopReservedHeight();
                     foreach (var existingToast in _toastQueue)
                     {
                         yPos += existingToast.Height + 10;
                     }
                     
-                    toast.Location = new Point(_mainForm.Width - toast.Width - 20, yPos);
+                    var x = Math.Max(10, _mainForm.ClientSize.Width - toast.Width - 20);
+                    toast.Location = new Point(x, yPos);
                     toast.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                     
                     // Add to form
@@ -349,12 +358,28 @@ namespace ChildGuard.UI.Services
         
         private void RepositionToasts()
         {
-            var yPos = 20;
+            if (_mainForm == null) return;
+            var yPos = GetTopReservedHeight();
+            var x = Math.Max(10, _mainForm.ClientSize.Width - (_toastQueue.FirstOrDefault()?.Width ?? 350) - 20);
             foreach (var toast in _toastQueue)
             {
-                toast.Location = new Point(toast.Location.X, yPos);
+                toast.Location = new Point(x, yPos);
                 yPos += toast.Height + 10;
             }
+        }
+
+        private int GetTopReservedHeight()
+        {
+            if (_mainForm == null) return 80;
+            int maxBottom = 0;
+            foreach (Control c in _mainForm.Controls)
+            {
+                if (c.Dock == DockStyle.Top)
+                {
+                    maxBottom = Math.Max(maxBottom, c.Bottom);
+                }
+            }
+            return Math.Max(80, maxBottom + 10);
         }
         
         private ModernToast.ToastType ConvertToToastType(NotificationType type)
