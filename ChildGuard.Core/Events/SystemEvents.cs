@@ -297,6 +297,26 @@ namespace ChildGuard.Core.Events
     }
     
     /// <summary>
+    /// Event khi phát hiện URL nguy hiểm
+    /// </summary>
+    public class UrlThreatEvent : BaseEvent
+    {
+        public string Url { get; set; } = string.Empty;
+        public string Domain { get; set; } = string.Empty;
+        public string ThreatReason { get; set; } = string.Empty;
+        public string RiskLevel { get; set; } = string.Empty;
+        public new string Source { get; set; } = string.Empty;
+        public string WindowTitle { get; set; } = string.Empty;
+        public new DateTime Timestamp { get; set; }
+        
+        public UrlThreatEvent()
+            : base("UrlSafetyChecker")
+        {
+            Timestamp = DateTime.UtcNow;
+        }
+    }
+    
+    /// <summary>
     /// Event level enum
     /// </summary>
     public enum EventLevel

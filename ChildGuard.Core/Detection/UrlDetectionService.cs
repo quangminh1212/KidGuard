@@ -271,7 +271,18 @@ namespace ChildGuard.Core.Detection
             UrlDetected?.Invoke(this, args);
             
             // Publish to event bus
-            Dispatcher?.PublishAsync(new UrlDetectedEvent(url.NormalizedUrl, url.Domain));
+            if (Dispatcher != null)
+            {
+                var windowTitle = "Unknown"; // Would need to get from system
+                var processName = "Unknown"; // Would need to get from system
+                Dispatcher.PublishAsync(new UrlDetectedEvent(
+                    url.NormalizedUrl,
+                    windowTitle,
+                    processName,
+                    true, // Assume safe unless checked
+                    null
+                ));
+            }
         }
         
         private async Task OnUrlVisitedAsync(DetectedUrl url)
@@ -287,7 +298,17 @@ namespace ChildGuard.Core.Detection
             // Publish to event bus
             if (Dispatcher != null)
             {
-                await Dispatcher.PublishAsync(new UrlVisitedEvent(url.NormalizedUrl, url.Domain));
+                // Note: UrlVisitedEvent is not defined in SystemEvents.cs
+                // We can create a KeystrokeEvent or use the existing events
+                var windowTitle = "Unknown";
+                var processName = "Unknown";
+                await Dispatcher.PublishAsync(new UrlDetectedEvent(
+                    url.NormalizedUrl,
+                    windowTitle,
+                    processName,
+                    true,
+                    null
+                ));
             }
         }
     }

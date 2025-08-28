@@ -29,6 +29,8 @@ namespace ChildGuard.UI.Services
         private bool _isMonitoring;
         private readonly ServiceManager _serviceManager;
         private BadWordsService? _badWordsService;
+        private UrlDetectionService? _urlDetectionService;
+        private UrlSafetyChecker? _urlSafetyChecker;
         
         // Configuration
         private const int MaxBufferSize = 1000;
@@ -52,6 +54,9 @@ namespace ChildGuard.UI.Services
             
             // Initialize bad words service
             InitializeBadWordsService();
+            
+            // Initialize URL detection services
+            InitializeUrlServices();
         }
 
         public bool IsMonitoring => _isMonitoring;
@@ -264,6 +269,9 @@ namespace ChildGuard.UI.Services
                     // Check for URL patterns
                     CheckForUrlPattern(lastWord);
                     
+                    // Check URLs with safety checker
+                    CheckUrlSafety(lastWord);
+                    
                     // Check for bad words in recent text
                     CheckForBadWords();
                 }
@@ -274,7 +282,18 @@ namespace ChildGuard.UI.Services
         {
             var text = _keyBuffer.ToString();
             
-            // Check for URLs
+            // Check for URLs using URL detection service
+            if (_urlDetectionService != null)
+            {
+                var detectedUrls = _urlDetectionService.DetectUrls(text);
+                foreach (var url in detectedUrls)
+                {
+                    // Check safety asynchronously
+                    Task.Run(async () => await CheckUrlSafetyAsync(url.NormalizedUrl, url.Domain));
+                }
+            }
+            
+            // Also check with old pattern matching
             var urlPatterns = new[] { "http://", "https://", "www.", ".com", ".org", ".net" };
             foreach (var pattern in urlPatterns)
             {
@@ -559,6 +578,105 @@ namespace ChildGuard.UI.Services
             });
         }
         
+        private void InitializeUrlServices()
+        {
+            try
+            {
+                _urlDetectionService = new UrlDetectionService();
+                _urlDetectionService.Dispatcher = _serviceManager.EventDispatcher;
+                
+                _urlSafetyChecker = new UrlSafetyChecker();
+                
+                // Subscribe to URL detection events
+                _urlDetectionService.UrlDetected += OnUrlDetected;
+                _urlDetectionService.UrlVisited += OnUrlVisited;
+            }
+            catch (Exception ex)
+            {
+                _serviceManager.EventDispatcher?.PublishAsync(new SystemEvent
+                {
+                    Message = $"Failed to initialize URL services: {ex.Message}",
+                    Level = EventLevel.Warning
+                });
+            }
+        }
+        
+        private void CheckUrlSafety(string text)
+        {
+            if (_urlDetectionService == null || _urlSafetyChecker == null) return;
+            
+            // Check if text looks like a URL
+            if (text.Contains('.') || text.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                Task.Run(async () => await CheckUrlSafetyAsync(text, ExtractDomain(text)));
+            }
+        }
+        
+        private async Task CheckUrlSafetyAsync(string url, string domain)
+        {
+            if (_urlSafetyChecker == null) return;
+            
+            try
+            {
+                var result = await _urlSafetyChecker.CheckUrlAsync(url);
+                
+                if (!result.IsSafe)
+                {
+                    // Publish threat event
+                    _serviceManager.EventDispatcher?.PublishAsync(new UrlThreatEvent
+                    {
+                        Url = url,
+                        Domain = domain,
+                        ThreatReason = result.Reason,
+                        RiskLevel = result.RiskLevel.ToString(),
+                        Source = "Keyboard Input",
+                        WindowTitle = GetActiveWindowTitle(),
+                        Timestamp = DateTime.UtcNow
+                    });
+                    
+                    // Log warning
+                    _serviceManager.EventDispatcher?.PublishAsync(new SystemEvent
+                    {
+                        Message = $"URL Threat detected: {domain} - {result.Reason}",
+                        Level = result.RiskLevel == RiskLevel.High ? EventLevel.Critical : EventLevel.Warning
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error checking URL safety: {ex.Message}");
+            }
+        }
+        
+        private void OnUrlDetected(object? sender, UrlDetectedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"URL detected: {e.Url.NormalizedUrl}");
+        }
+        
+        private void OnUrlVisited(object? sender, UrlVisitedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"URL visited: {e.Url.NormalizedUrl}");
+            
+            // Check safety when URL is visited
+            Task.Run(async () => await CheckUrlSafetyAsync(e.Url.NormalizedUrl, e.Url.Domain));
+        }
+        
+        private string ExtractDomain(string text)
+        {
+            try
+            {
+                if (!text.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                    text = "http://" + text;
+                
+                var uri = new Uri(text);
+                return uri.Host;
+            }
+            catch
+            {
+                return text;
+            }
+        }
+        
         private string GetActiveWindowTitle()
         {
             try
@@ -593,6 +711,12 @@ namespace ChildGuard.UI.Services
             {
                 _badWordsService.WordDetected -= OnBadWordDetected;
                 _badWordsService.Dispose();
+            }
+            
+            if (_urlDetectionService != null)
+            {
+                _urlDetectionService.UrlDetected -= OnUrlDetected;
+                _urlDetectionService.UrlVisited -= OnUrlVisited;
             }
         }
     }
