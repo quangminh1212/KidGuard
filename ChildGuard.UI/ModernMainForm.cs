@@ -112,12 +112,13 @@ namespace ChildGuard.UI
         {
             headerPanel = new Panel
             {
+                Name = "HeaderPanel",
                 Height = 60,
                 Dock = DockStyle.Top,
                 BackColor = ColorScheme.Modern.Surface
             };
-            
-            // Add shadow
+
+            // Add shadow at bottom of header
             headerPanel.Paint += (s, e) =>
             {
                 var g = e.Graphics;
@@ -130,43 +131,57 @@ namespace ChildGuard.UI
                     g.FillRectangle(shadowBrush, 0, headerPanel.Height - 4, headerPanel.Width, 4);
                 }
             };
-            
+
+            // Layout: [logo][title.............][profile]
+            var headerLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 3,
+                RowCount = 1,
+                Padding = new Padding(15, 10, 15, 10),
+            };
+            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));      // logo
+            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); // title expands
+            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));      // profile button
+
             // Logo
             logoImage = new PictureBox
             {
                 Size = new Size(40, 40),
-                Location = new Point(15, 10),
+                Margin = new Padding(0, 0, 10, 0),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BackColor = Color.Transparent
             };
-            // Tạo logo tạm thời
             logoImage.Image = CreateLogo();
-            headerPanel.Controls.Add(logoImage);
-            
+
             // Title
             titleLabel = new Label
             {
                 Text = "ChildGuard Protection",
                 Font = new Font("Segoe UI", 14, FontStyle.Bold),
                 ForeColor = ColorScheme.Modern.TextPrimary,
-                Location = new Point(65, 18),
-                AutoSize = true,
+                Dock = DockStyle.Fill,
+                AutoEllipsis = true,
+                TextAlign = ContentAlignment.MiddleLeft,
                 BackColor = Color.Transparent
             };
-            headerPanel.Controls.Add(titleLabel);
-            
+
             // Profile button (right side)
             profileButton = new ModernButton
             {
                 Text = "Admin",
                 Size = new Size(100, 36),
-                Location = new Point(headerPanel.Width - 120, 12),
                 Style = ModernButton.ButtonStyle.Ghost,
-                Anchor = AnchorStyles.Top | AnchorStyles.Right
+                Dock = DockStyle.Fill,
+                Margin = new Padding(0)
             };
             profileButton.Click += ProfileButton_Click;
-            headerPanel.Controls.Add(profileButton);
-            
+
+            headerLayout.Controls.Add(logoImage, 0, 0);
+            headerLayout.Controls.Add(titleLabel, 1, 0);
+            headerLayout.Controls.Add(profileButton, 2, 0);
+            headerPanel.Controls.Add(headerLayout);
+
             this.Controls.Add(headerPanel);
         }
         
@@ -177,7 +192,8 @@ namespace ChildGuard.UI
                 Width = 240,
                 Dock = DockStyle.Left,
                 BackColor = ColorScheme.Modern.Surface,
-                Padding = new Padding(0, 10, 0, 10)
+                Padding = new Padding(0, 10, 0, 10),
+                AutoScroll = true
             };
             
             // Add separator line
