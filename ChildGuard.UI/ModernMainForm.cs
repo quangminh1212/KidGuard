@@ -87,10 +87,15 @@ namespace ChildGuard.UI
         
         private void InitializeComponents()
         {
-            // Create main layout panels
-            CreateHeaderPanel();
-            CreateSidebarPanel();
+            // IMPORTANT: Create panels in correct order for proper layout
+            // 1. First create content panel (will fill remaining space)
             CreateContentPanel();
+            
+            // 2. Then create sidebar (will dock to left)
+            CreateSidebarPanel();
+            
+            // 3. Finally create header (will dock to top)
+            CreateHeaderPanel();
             
             // Initialize timers
             updateTimer = new System.Windows.Forms.Timer();
