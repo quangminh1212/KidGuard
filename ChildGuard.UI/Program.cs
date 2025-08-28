@@ -10,8 +10,8 @@ static class Program
     [STAThread]
     static void Main()
     {
-        // Enable high DPI support
-        Application.SetHighDpiMode(HighDpiMode.SystemAware);
+        // Enable high DPI support (Per-Monitor V2)
+        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         
