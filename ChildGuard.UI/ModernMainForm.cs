@@ -27,7 +27,6 @@ namespace ChildGuard.UI
         private Panel sidebarPanel;
         private Panel headerPanel;
         private Panel contentPanel;
-        private Panel currentContentPanel;
         
         // Header controls
         private Label titleLabel;
@@ -192,8 +191,9 @@ namespace ChildGuard.UI
             var dashboardItem = CreateSidebarItem("Dashboard", "\uE80F", 0); // Home icon
             var monitoringItem = CreateSidebarItem("Monitoring", "\uE7B3", 1); // Eye icon
             var protectionItem = CreateSidebarItem("Protection", "\uEA18", 2); // Shield icon
-            var reportsItem = CreateSidebarItem("Reports", "\uE9D9", 3); // Chart icon
-            var settingsItem = CreateSidebarItem("Settings", "\uE713", 4); // Settings icon
+            var attachmentsItem = CreateSidebarItem("Attachments", "\uE896", 3); // Attachment icon
+            var reportsItem = CreateSidebarItem("Reports", "\uE9D9", 4); // Chart icon
+            var settingsItem = CreateSidebarItem("Settings", "\uE713", 5); // Settings icon
             
             // Set dashboard as active by default
             SetActiveSidebarItem(dashboardItem);
@@ -248,6 +248,10 @@ namespace ChildGuard.UI
         
         private void LoadContent(string section)
         {
+            // Check if contentPanel is initialized
+            if (contentPanel == null)
+                return;
+                
             // Clear current content
             contentPanel.Controls.Clear();
             
@@ -262,6 +266,9 @@ namespace ChildGuard.UI
                 case "Protection":
                     LoadProtectionContent();
                     break;
+                case "Attachments":
+                    LoadAttachmentsContent();
+                    break;
                 case "Reports":
                     LoadReportsContent();
                     break;
@@ -273,114 +280,22 @@ namespace ChildGuard.UI
         
         private void LoadDashboardContent()
         {
-            var dashboardPanel = new Panel
+            // Use the new DashboardControl
+            var dashboardControl = new DashboardControl
             {
-                Dock = DockStyle.Fill,
-                AutoScroll = true
+                Dock = DockStyle.Fill
             };
             
-            // Title
-            var titleLabel = new Label
+            // Update protection status
+            dashboardControl.UpdateProtectionStatus(_running);
+            
+            contentPanel.Controls.Add(dashboardControl);
+            
+            // Refresh data asynchronously
+            Task.Run(async () =>
             {
-                Text = "Dashboard",
-                Font = new Font("Segoe UI", 24, FontStyle.Bold),
-                ForeColor = ColorScheme.Modern.TextPrimary,
-                Location = new Point(0, 0),
-                AutoSize = true
-            };
-            dashboardPanel.Controls.Add(titleLabel);
-            
-            // Status cards
-            var cardsPanel = new FlowLayoutPanel
-            {
-                Location = new Point(0, 60),
-                Size = new Size(800, 120),
-                FlowDirection = FlowDirection.LeftToRight,
-                AutoSize = true
-            };
-            
-            // Protection Status Card
-            var statusCard = new ModernHeaderCard
-            {
-                Title = "Protection Status",
-                Subtitle = _running ? "Active" : "Inactive",
-                Size = new Size(250, 100),
-                Margin = new Padding(0, 0, 20, 0)
-            };
-            cardsPanel.Controls.Add(statusCard);
-            
-            // Threats Detected Card
-            var threatsCard = new ModernHeaderCard
-            {
-                Title = "Threats Detected",
-                Subtitle = _threatsDetected.ToString(),
-                Size = new Size(250, 100),
-                Margin = new Padding(0, 0, 20, 0)
-            };
-            cardsPanel.Controls.Add(threatsCard);
-            
-            // Activity Card
-            var activityCard = new ModernHeaderCard
-            {
-                Title = "System Activity",
-                Subtitle = "Normal",
-                Size = new Size(250, 100),
-                Margin = new Padding(0, 0, 20, 0)
-            };
-            cardsPanel.Controls.Add(activityCard);
-            
-            dashboardPanel.Controls.Add(cardsPanel);
-            
-            // Quick Actions
-            var actionsLabel = new Label
-            {
-                Text = "Quick Actions",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                ForeColor = ColorScheme.Modern.TextPrimary,
-                Location = new Point(0, 200),
-                AutoSize = true
-            };
-            dashboardPanel.Controls.Add(actionsLabel);
-            
-            var actionsPanel = new FlowLayoutPanel
-            {
-                Location = new Point(0, 240),
-                Size = new Size(800, 60),
-                FlowDirection = FlowDirection.LeftToRight
-            };
-            
-            var startButton = new ModernButton
-            {
-                Text = "Start Protection",
-                Size = new Size(150, 40),
-                Style = ModernButton.ButtonStyle.Primary,
-                Margin = new Padding(0, 0, 10, 0)
-            };
-            startButton.Click += (s, e) => StartProtection();
-            actionsPanel.Controls.Add(startButton);
-            
-            var stopButton = new ModernButton
-            {
-                Text = "Stop Protection",
-                Size = new Size(150, 40),
-                Style = ModernButton.ButtonStyle.Danger,
-                Margin = new Padding(0, 0, 10, 0)
-            };
-            stopButton.Click += (s, e) => StopProtection();
-            actionsPanel.Controls.Add(stopButton);
-            
-            var scanButton = new ModernButton
-            {
-                Text = "Quick Scan",
-                Size = new Size(150, 40),
-                Style = ModernButton.ButtonStyle.Secondary,
-                Margin = new Padding(0, 0, 10, 0)
-            };
-            actionsPanel.Controls.Add(scanButton);
-            
-            dashboardPanel.Controls.Add(actionsPanel);
-            
-            contentPanel.Controls.Add(dashboardPanel);
+                await dashboardControl.RefreshDataAsync();
+            });
         }
         
         private void LoadMonitoringContent()
@@ -599,6 +514,17 @@ namespace ChildGuard.UI
             contentPanel.Controls.Add(protectionPanel);
         }
         
+        private void LoadAttachmentsContent()
+        {
+            // Use the new AttachmentsManager control
+            var attachmentsManager = new AttachmentsManager()
+            {
+                Dock = DockStyle.Fill
+            };
+            
+            contentPanel.Controls.Add(attachmentsManager);
+        }
+        
         private void LoadReportsContent()
         {
             var reportsPanel = new Panel
@@ -621,22 +547,34 @@ namespace ChildGuard.UI
         
         private void LoadSettingsContent()
         {
-            var settingsPanel = new Panel
+            // Use the new SettingsControl
+            var settingsControl = new SettingsControl
             {
                 Dock = DockStyle.Fill
             };
             
-            var titleLabel = new Label
+            // Handle settings change event
+            settingsControl.OnSettingsChanged += (settings) =>
             {
-                Text = "Settings",
-                Font = new Font("Segoe UI", 24, FontStyle.Bold),
-                ForeColor = ColorScheme.Modern.TextPrimary,
-                Location = new Point(0, 0),
-                AutoSize = true
+                // Apply new settings to protection manager
+                _config.EnableInputMonitoring = settings.ContainsKey("EnableKeyboard") && (bool)settings["EnableKeyboard"];
+                _config.EnableAudioMonitoring = settings.ContainsKey("EnableAudio") && (bool)settings["EnableAudio"];
+                _config.BlockScreenshots = settings.ContainsKey("BlockScreenshots") && (bool)settings["BlockScreenshots"];
+                _config.CheckUrls = settings.ContainsKey("EnableUrlCheck") && (bool)settings["EnableUrlCheck"];
+                _config.BlockInappropriateContent = settings.ContainsKey("EnableBadWords") && (bool)settings["EnableBadWords"];
+                
+                // Save configuration
+                ConfigManager.Save(_config, out _);
+                
+                // Restart protection if running to apply new settings
+                if (_running)
+                {
+                    StopProtection();
+                    StartProtection();
+                }
             };
-            settingsPanel.Controls.Add(titleLabel);
             
-            contentPanel.Controls.Add(settingsPanel);
+            contentPanel.Controls.Add(settingsControl);
         }
         
         private void LoadConfiguration()
@@ -654,9 +592,12 @@ namespace ChildGuard.UI
             {
                 // Apply dark theme colors
                 this.BackColor = ColorScheme.Windows11Dark.Background;
-                headerPanel.BackColor = ColorScheme.Windows11Dark.Surface;
-                sidebarPanel.BackColor = ColorScheme.Windows11Dark.Surface;
-                contentPanel.BackColor = ColorScheme.Windows11Dark.Background;
+                if (headerPanel != null)
+                    headerPanel.BackColor = ColorScheme.Windows11Dark.Surface;
+                if (sidebarPanel != null)
+                    sidebarPanel.BackColor = ColorScheme.Windows11Dark.Surface;
+                if (contentPanel != null)
+                    contentPanel.BackColor = ColorScheme.Windows11Dark.Background;
             }
         }
         
@@ -703,10 +644,17 @@ namespace ChildGuard.UI
         private void UpdateStatus()
         {
             // Update UI based on protection status
-            this.BeginInvoke(new Action(() =>
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new Action(() =>
+                {
+                    LoadContent(activeSidebarItem?.Text ?? "Dashboard");
+                }));
+            }
+            else
             {
                 LoadContent(activeSidebarItem?.Text ?? "Dashboard");
-            }));
+            }
         }
         
         private void ProfileButton_Click(object sender, EventArgs e)

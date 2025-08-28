@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bO/zRuhKAjQ=",
+  "dgSpecHash": "7pD7j2pq43w=",
   "success": true,
   "projectFilePath": "C:\\VF\\ChildGuard\\ChildGuard.Core\\ChildGuard.Core.csproj",
   "expectedPackageFiles": [
@@ -8,8 +8,18 @@
     "C:\\Users\\GHC\\.nuget\\packages\\dapper\\2.1.66\\dapper.2.1.66.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.data.sqlite\\9.0.8\\microsoft.data.sqlite.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.data.sqlite.core\\9.0.8\\microsoft.data.sqlite.core.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.entityframeworkcore\\9.0.8\\microsoft.entityframeworkcore.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\9.0.8\\microsoft.entityframeworkcore.abstractions.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\9.0.8\\microsoft.entityframeworkcore.analyzers.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\9.0.8\\microsoft.entityframeworkcore.relational.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\9.0.8\\microsoft.entityframeworkcore.sqlite.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\9.0.8\\microsoft.entityframeworkcore.sqlite.core.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\9.0.8\\microsoft.extensions.caching.abstractions.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.8\\microsoft.extensions.caching.memory.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.8\\microsoft.extensions.configuration.abstractions.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\9.0.8\\microsoft.extensions.dependencyinjection.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.8\\microsoft.extensions.dependencyinjection.abstractions.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.dependencymodel\\9.0.8\\microsoft.extensions.dependencymodel.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.logging\\9.0.8\\microsoft.extensions.logging.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.8\\microsoft.extensions.logging.abstractions.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.extensions.options\\9.0.8\\microsoft.extensions.options.9.0.8.nupkg.sha512",
@@ -32,11 +42,14 @@
     "C:\\Users\\GHC\\.nuget\\packages\\system.codedom\\9.0.8\\system.codedom.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\system.diagnostics.diagnosticsource\\9.0.8\\system.diagnostics.diagnosticsource.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\system.drawing.common\\9.0.8\\system.drawing.common.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\system.io.pipelines\\9.0.8\\system.io.pipelines.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\system.management\\9.0.8\\system.management.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\system.security.accesscontrol\\4.7.0\\system.security.accesscontrol.4.7.0.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\system.security.principal.windows\\4.7.0\\system.security.principal.windows.4.7.0.nupkg.sha512",
-    "C:\\Users\\GHC\\.nuget\\packages\\system.speech\\8.0.0\\system.speech.8.0.0.nupkg.sha512"
+    "C:\\Users\\GHC\\.nuget\\packages\\system.speech\\8.0.0\\system.speech.8.0.0.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\system.text.encodings.web\\9.0.8\\system.text.encodings.web.9.0.8.nupkg.sha512",
+    "C:\\Users\\GHC\\.nuget\\packages\\system.text.json\\9.0.8\\system.text.json.9.0.8.nupkg.sha512"
   ],
   "logs": []
 }

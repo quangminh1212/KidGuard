@@ -93,6 +93,8 @@ namespace ChildGuard.UI.Theming
 
             // Surface colors
             public static readonly Color Background = ColorTranslator.FromHtml("#F8F9FA");
+            public static readonly Color BackgroundPrimary = ColorTranslator.FromHtml("#FFFFFF");
+            public static readonly Color BackgroundSecondary = ColorTranslator.FromHtml("#F0F2F5");
             public static readonly Color Surface = Color.White;
             public static readonly Color SurfaceVariant = ColorTranslator.FromHtml("#F5F6F7");
             

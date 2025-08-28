@@ -145,6 +145,10 @@
               "target": "Package",
               "version": "[9.0.8, )"
             },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.8, )"
+            },
             "Microsoft.Extensions.Logging": {
               "target": "Package",
               "version": "[9.0.8, )"
