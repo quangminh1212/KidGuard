@@ -341,7 +341,11 @@ namespace ChildGuard.UI
             {
                 Location = new Point(0, 60),
                 Size = new Size(800, 150),
-                FlowDirection = FlowDirection.LeftToRight
+                FlowDirection = FlowDirection.LeftToRight,
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                WrapContents = true,
+                AutoScroll = false
             };
             
             // Keyboard activity
@@ -438,11 +442,13 @@ namespace ChildGuard.UI
             var logCard = new ModernCard
             {
                 Location = new Point(0, 270),
-                Size = new Size(500, 200)
+                Size = new Size(500, 200),
+                Dock = DockStyle.Fill
             };
             
             var logListBox = new ListBox
             {
+                Name = "activityLog",
                 Dock = DockStyle.Fill,
                 BorderStyle = BorderStyle.None,
                 Font = new Font("Consolas", 9),
@@ -477,7 +483,9 @@ namespace ChildGuard.UI
             var optionsCard = new ModernCard
             {
                 Location = new Point(0, 60),
-                Size = new Size(600, 400)
+                Size = new Size(600, 400),
+                Dock = DockStyle.Top,
+                AutoSize = true
             };
             
             // Options list
@@ -496,7 +504,9 @@ namespace ChildGuard.UI
                 var optionPanel = new Panel
                 {
                     Location = new Point(20, y),
-                    Size = new Size(560, 60)
+                    Size = new Size(560, 60),
+                    Dock = DockStyle.Top,
+                    Margin = new Padding(0, 0, 0, 10)
                 };
                 
                 var toggle = new ToggleSwitch
@@ -886,6 +896,13 @@ namespace ChildGuard.UI
             }
         }
         
+        public void NavigateTo(string section)
+        {
+            if (sidebarItems == null) return;
+            var item = sidebarItems.FirstOrDefault(x => string.Equals(x.Text, section, StringComparison.OrdinalIgnoreCase));
+            if (item != null) SetActiveSidebarItem(item);
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
