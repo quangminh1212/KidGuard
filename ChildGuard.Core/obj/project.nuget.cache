@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "5fRNP1rir9E=",
+  "dgSpecHash": "Ta43fmTzLWE=",
   "success": true,
   "projectFilePath": "C:\\VF\\ChildGuard\\ChildGuard.Core\\ChildGuard.Core.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\GHC\\.nuget\\packages\\ahocorasick\\2.0.279\\ahocorasick.2.0.279.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\dapper\\2.1.66\\dapper.2.1.66.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.data.sqlite\\9.0.8\\microsoft.data.sqlite.9.0.8.nupkg.sha512",
     "C:\\Users\\GHC\\.nuget\\packages\\microsoft.data.sqlite.core\\9.0.8\\microsoft.data.sqlite.core.9.0.8.nupkg.sha512",

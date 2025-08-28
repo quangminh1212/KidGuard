@@ -1,0 +1,96 @@
+# Bad Words List - ChildGuard Protection
+# Format: word|severity (1=low, 2=medium, 3=high)
+# Lines starting with # are comments
+
+# English - High severity
+fuck|3
+shit|3
+bitch|3
+asshole|3
+bastard|3
+dick|3
+pussy|3
+cock|3
+cunt|3
+whore|3
+slut|3
+faggot|3
+nigger|3
+
+# English - Medium severity
+damn|2
+hell|2
+crap|2
+piss|2
+suck|2
+stupid|2
+idiot|2
+moron|2
+dumb|2
+retard|2
+
+# English - Low severity
+darn|1
+heck|1
+frick|1
+shoot|1
+dang|1
+
+# Vietnamese - High severity
+địt|3
+đụ|3
+lồn|3
+cặc|3
+buồi|3
+dái|3
+đéo|3
+đĩ|3
+điếm|3
+chó|3
+cứt|3
+mẹ mày|3
+đồ chó|3
+
+# Vietnamese - Medium severity
+ngu|2
+khốn|2
+đần|2
+chết tiệt|2
+vãi|2
+đểu|2
+
+# Vietnamese - Low severity
+xấu|1
+dở|1
+tệ|1
+
+# Violence related
+kill|3
+murder|3
+suicide|3
+bomb|3
+gun|3
+knife|3
+weapon|3
+giết|3
+chết|3
+đánh|2
+đập|2
+
+# Adult content
+porn|3
+sex|3
+nude|3
+xxx|3
+hentai|3
+
+# Drugs
+cocaine|3
+heroin|3
+meth|3
+marijuana|2
+weed|2
+drug|2
+ma túy|3
+thuốc phiện|3
+cần sa|2

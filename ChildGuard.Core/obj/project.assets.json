@@ -2,6 +2,19 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "AhoCorasick/2.0.279": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/AhoCorasick.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/AhoCorasick.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Dapper/2.1.66": {
         "type": "package",
         "compile": {
@@ -404,6 +417,22 @@
     }
   },
   "libraries": {
+    "AhoCorasick/2.0.279": {
+      "sha512": "uSpY0Gf6RDCsYak90jXwUxFoU506gYgt5TQtJExQg6bP8yw59DteCWk4Xq1ml8gj7nr5qLnuFBiL9VEkVRwg7A==",
+      "type": "package",
+      "path": "ahocorasick/2.0.279",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "ahocorasick.2.0.279.nupkg.sha512",
+        "ahocorasick.nuspec",
+        "lib/net40/AhoCorasick.dll",
+        "lib/net40/AhoCorasick.xml",
+        "lib/netstandard2.0/AhoCorasick.dll",
+        "lib/netstandard2.0/AhoCorasick.xml"
+      ]
+    },
     "Dapper/2.1.66": {
       "sha512": "/q77jUgDOS+bzkmk3Vy9SiWMaetTw+NOoPAV0xPBsGVAyljd5S6P+4RUW7R3ZUGGr9lDRyPKgAMj2UAOwvqZYw==",
       "type": "package",
@@ -886,6 +915,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "AhoCorasick >= 2.0.279",
       "Dapper >= 2.1.66",
       "Microsoft.Data.Sqlite >= 9.0.8",
       "NAudio >= 2.2.1",
@@ -944,6 +974,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "AhoCorasick": {
+            "target": "Package",
+            "version": "[2.0.279, )"
+          },
           "Dapper": {
             "target": "Package",
             "version": "[2.1.66, )"
