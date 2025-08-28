@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AhoCorasick;
 using ChildGuard.Core.Events;
 using ChildGuard.Core.Models;
 
@@ -16,7 +15,7 @@ namespace ChildGuard.Core.Detection
     /// </summary>
     public class BadWordsService : IEventSource, IDisposable
     {
-        private readonly Trie _trie;
+        private SimpleTrie _trie;
         private readonly Dictionary<string, BadWord> _badWords;
         private readonly object _lockObject = new object();
         private bool _isEnabled = true;
@@ -51,7 +50,7 @@ namespace ChildGuard.Core.Detection
         
         public BadWordsService()
         {
-            _trie = new Trie();
+            _trie = new SimpleTrie();
             _badWords = new Dictionary<string, BadWord>(StringComparer.OrdinalIgnoreCase);
         }
         
@@ -103,7 +102,7 @@ namespace ChildGuard.Core.Detection
             lock (_lockObject)
             {
                 _badWords.Clear();
-                _trie.RemoveAll();
+                _trie.Clear();
                 
                 foreach (var word in words)
                 {
@@ -112,10 +111,16 @@ namespace ChildGuard.Core.Detection
                     _trie.Add(key);
                     
                     // Add variations (leet speak, spaces removed, etc.)
-                    AddVariations(word);
+                    var variations = GenerateVariations(key);
+                    foreach (var variation in variations)
+                    {
+                        if (!_badWords.ContainsKey(variation))
+                        {
+                            _trie.Add(variation);
+                            _badWords[variation] = word;
+                        }
+                    }
                 }
-                
-                _trie.Build();
             }
         }
         
@@ -134,11 +139,11 @@ namespace ChildGuard.Core.Detection
             
             lock (_lockObject)
             {
-                var matches = _trie.Find(normalizedText).ToList();
+                var matches = _trie.FindAllMatches(normalizedText);
                 
                 foreach (var match in matches)
                 {
-                    var keyword = match.Keyword;
+                    var keyword = match.Word;
                     var position = match.Position;
                     
                     // Check if whole word matching is required
@@ -250,22 +255,10 @@ namespace ChildGuard.Core.Detection
             lock (_lockObject)
             {
                 _badWords.Clear();
-                _trie.RemoveAll();
+                _trie.Clear();
             }
         }
         
-        private void AddVariations(BadWord word)
-        {
-            var variations = GenerateVariations(word.Word);
-            foreach (var variation in variations)
-            {
-                if (!_badWords.ContainsKey(variation))
-                {
-                    _trie.Add(variation);
-                    _badWords[variation] = word;
-                }
-            }
-        }
         
         private IEnumerable<string> GenerateVariations(string word)
         {

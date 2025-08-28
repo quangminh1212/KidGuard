@@ -133,6 +133,18 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AhoCorasick": {
+              "target": "Package",
+              "version": "[2.0.279, )"
+            },
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.66, )"
+            },
+            "Microsoft.Data.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.8, )"
+            },
             "NAudio": {
               "target": "Package",
               "version": "[2.2.1, )"

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
+using ChildGuard.Core.Detection;
 using ChildGuard.Core.Events;
 using ChildGuard.Core.Models;
 using ChildGuard.Core.Services;
@@ -26,12 +28,14 @@ namespace ChildGuard.UI.Services
         private readonly object _bufferLock = new object();
         private bool _isMonitoring;
         private readonly ServiceManager _serviceManager;
+        private BadWordsService? _badWordsService;
         
         // Configuration
         private const int MaxBufferSize = 1000;
         private const int MaxWordHistory = 50;
         private const int FlushIntervalMs = 5000;
         private const int InactivityThresholdMs = 3000;
+        private const int BadWordsCheckIntervalMs = 500;
 
         // Events
         public event EventHandler<KeystrokeEventArgs>? KeystrokeDetected;
@@ -45,6 +49,9 @@ namespace ChildGuard.UI.Services
             _recentWords = new Queue<string>();
             _lastKeystrokeTime = DateTime.UtcNow;
             _isMonitoring = false;
+            
+            // Initialize bad words service
+            InitializeBadWordsService();
         }
 
         public bool IsMonitoring => _isMonitoring;
@@ -256,6 +263,9 @@ namespace ChildGuard.UI.Services
                     
                     // Check for URL patterns
                     CheckForUrlPattern(lastWord);
+                    
+                    // Check for bad words in recent text
+                    CheckForBadWords();
                 }
             }
         }
@@ -442,9 +452,148 @@ namespace ChildGuard.UI.Services
             }
         }
         
+        private void InitializeBadWordsService()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    _badWordsService = new BadWordsService();
+                    _badWordsService.Dispatcher = _serviceManager.EventDispatcher;
+                    
+                    // Load bad words from file
+                    var badWordsPath = Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "Assets",
+                        "badwords.txt"
+                    );
+                    
+                    if (File.Exists(badWordsPath))
+                    {
+                        await _badWordsService.LoadFromFileAsync(badWordsPath);
+                    }
+                    else
+                    {
+                        // Load default bad words if file not found
+                        LoadDefaultBadWords();
+                    }
+                    
+                    // Subscribe to bad word detection events
+                    _badWordsService.WordDetected += OnBadWordDetected;
+                }
+                catch (Exception ex)
+                {
+                    _serviceManager.EventDispatcher?.PublishAsync(new SystemEvent
+                    {
+                        Message = $"Failed to initialize bad words service: {ex.Message}",
+                        Level = EventLevel.Warning
+                    });
+                }
+            });
+        }
+        
+        private void LoadDefaultBadWords()
+        {
+            if (_badWordsService == null) return;
+            
+            // Load some basic bad words as fallback
+            var defaultWords = new[]
+            {
+                new BadWord { Word = "fuck", Severity = 3, Category = "Profanity" },
+                new BadWord { Word = "shit", Severity = 3, Category = "Profanity" },
+                new BadWord { Word = "bitch", Severity = 3, Category = "Profanity" },
+                new BadWord { Word = "damn", Severity = 2, Category = "Profanity" },
+                new BadWord { Word = "hell", Severity = 2, Category = "Profanity" },
+                new BadWord { Word = "kill", Severity = 3, Category = "Violence" },
+                new BadWord { Word = "suicide", Severity = 3, Category = "Violence" },
+                new BadWord { Word = "drug", Severity = 2, Category = "Drugs" },
+                new BadWord { Word = "porn", Severity = 3, Category = "Adult" },
+                new BadWord { Word = "sex", Severity = 3, Category = "Adult" },
+            };
+            
+            _badWordsService.LoadWords(defaultWords);
+        }
+        
+        private void CheckForBadWords()
+        {
+            if (_badWordsService == null || !_badWordsService.IsEnabled) return;
+            
+            lock (_bufferLock)
+            {
+                // Check the recent buffer content
+                var recentText = _keyBuffer.ToString();
+                if (recentText.Length > 0)
+                {
+                    // Get current window title
+                    var windowTitle = GetActiveWindowTitle();
+                    
+                    // Check for bad words asynchronously
+                    Task.Run(() =>
+                    {
+                        var result = _badWordsService.CheckText(
+                            recentText, 
+                            "Keyboard Input", 
+                            windowTitle
+                        );
+                        
+                        if (!result.IsClean && result.HasHighSeverity)
+                        {
+                            // Clear buffer after detecting high severity bad words
+                            lock (_bufferLock)
+                            {
+                                _keyBuffer.Clear();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        
+        private void OnBadWordDetected(object? sender, BadWordDetectedEventArgs e)
+        {
+            // Log the detection
+            _serviceManager.EventDispatcher?.PublishAsync(new SystemEvent
+            {
+                Message = $"Bad word detected: {e.Word.Category} - Severity: {e.Word.Severity}",
+                Level = e.Word.Severity >= 3 ? EventLevel.Critical : EventLevel.Warning
+            });
+        }
+        
+        private string GetActiveWindowTitle()
+        {
+            try
+            {
+                var handle = GetForegroundWindow();
+                if (handle != IntPtr.Zero)
+                {
+                    var title = new StringBuilder(256);
+                    if (GetWindowText(handle, title, 256) > 0)
+                    {
+                        return title.ToString();
+                    }
+                }
+            }
+            catch { }
+            
+            return "Unknown";
+        }
+        
+        // P/Invoke declarations for getting window title
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+        
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+        
         public void Dispose()
         {
             StopMonitoring();
+            
+            if (_badWordsService != null)
+            {
+                _badWordsService.WordDetected -= OnBadWordDetected;
+                _badWordsService.Dispose();
+            }
         }
     }
     
