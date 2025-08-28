@@ -86,22 +86,39 @@ namespace ChildGuard.UI.Controls
                 Padding = new Padding(20, 15, 20, 15)
             };
 
+            // Layout: [Title][spacer][Actions(panel)]
+            var headerLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 3,
+                RowCount = 1
+            };
+            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+
             var titleLabel = new Label
             {
                 Text = "Dashboard",
                 Font = new Font("Segoe UI", 20, FontStyle.Bold),
                 ForeColor = ColorScheme.Modern.TextPrimary,
                 AutoSize = true,
-                Location = new Point(20, 15)
+                Dock = DockStyle.Left
+            };
+
+            var actionsPanel = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                WrapContents = false
             };
 
             _timeRangeCombo = new ComboBox
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 10),
-                Width = 150,
-                Location = new Point(Width - 320, 18),
-                Anchor = AnchorStyles.Top | AnchorStyles.Right
+                Width = 150
             };
             _timeRangeCombo.Items.AddRange(new[] { "Last 24 Hours", "Last 7 Days", "Last 30 Days", "All Time" });
             _timeRangeCombo.SelectedIndex = 1;
@@ -110,101 +127,76 @@ namespace ChildGuard.UI.Controls
             _refreshButton = new ModernButton
             {
                 Text = "Refresh",
-                Size = new Size(100, 35),
-                Location = new Point(Width - 140, 15),
-                Anchor = AnchorStyles.Top | AnchorStyles.Right
+                Size = new Size(100, 35)
             };
             _refreshButton.Click += (s, e) => LoadData();
 
-            _headerPanel.Controls.AddRange(new Control[] { titleLabel, _timeRangeCombo, _refreshButton });
+            actionsPanel.Controls.Add(_timeRangeCombo);
+            actionsPanel.Controls.Add(_refreshButton);
 
-            // Stats Panel
-            _statsPanel = new Panel
+            headerLayout.Controls.Add(titleLabel, 0, 0);
+            headerLayout.Controls.Add(new Panel() { Dock = DockStyle.Fill }, 1, 0);
+            headerLayout.Controls.Add(actionsPanel, 2, 0);
+
+            _headerPanel.Controls.Add(headerLayout);
+
+            // Stats Panel using TableLayoutPanel (4 columns)
+            var statsLayout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 BackColor = ColorScheme.Modern.BackgroundPrimary,
-                Padding = new Padding(20, 0, 20, 10)
+                Padding = new Padding(20, 0, 20, 10),
+                ColumnCount = 4,
+                RowCount = 1
             };
+            statsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
+            statsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
+            statsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
+            statsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
 
-            _totalEventsCard = new StatCard
-            {
-                Title = "Total Events",
-                Value = "0",
-                Icon = "▣",  // Simple square icon
-                BackgroundColor = ColorScheme.Modern.Primary,
-                Size = new Size(200, 90),
-                Location = new Point(20, 10)
-            };
+            _statsPanel = statsLayout;
 
-            _threatsCard = new StatCard
-            {
-                Title = "Threats Detected",
-                Value = "0",
-                Icon = "▲",  // Simple triangle warning icon
-                BackgroundColor = Color.FromArgb(220, 53, 69),
-                Size = new Size(200, 90),
-                Location = new Point(240, 10)
-            };
+            _totalEventsCard = new StatCard { Title = "Total Events", Value = "0", Icon = "▣", BackgroundColor = ColorScheme.Modern.Primary, Dock = DockStyle.Fill, Margin = new Padding(0,10,20,10) };
+            _threatsCard = new StatCard { Title = "Threats Detected", Value = "0", Icon = "▲", BackgroundColor = Color.FromArgb(220, 53, 69), Dock = DockStyle.Fill, Margin = new Padding(0,10,20,10) };
+            _blockedProcessesCard = new StatCard { Title = "Blocked Processes", Value = "0", Icon = "■", BackgroundColor = Color.FromArgb(255, 152, 0), Dock = DockStyle.Fill, Margin = new Padding(0,10,20,10) };
+            _screenshotsCard = new StatCard { Title = "Screenshots", Value = "0", Icon = "◉", BackgroundColor = Color.FromArgb(76, 175, 80), Dock = DockStyle.Fill, Margin = new Padding(0,10,0,10) };
 
-            _blockedProcessesCard = new StatCard
-            {
-                Title = "Blocked Processes",
-                Value = "0",
-                Icon = "■",  // Simple shield/block icon
-                BackgroundColor = Color.FromArgb(255, 152, 0),
-                Size = new Size(200, 90),
-                Location = new Point(460, 10)
-            };
+            statsLayout.Controls.Add(_totalEventsCard, 0, 0);
+            statsLayout.Controls.Add(_threatsCard, 1, 0);
+            statsLayout.Controls.Add(_blockedProcessesCard, 2, 0);
+            statsLayout.Controls.Add(_screenshotsCard, 3, 0);
 
-            _screenshotsCard = new StatCard
-            {
-                Title = "Screenshots",
-                Value = "0",
-                Icon = "◉",  // Simple camera icon
-                BackgroundColor = Color.FromArgb(76, 175, 80),
-                Size = new Size(200, 90),
-                Location = new Point(680, 10)
-            };
-
-            _statsPanel.Controls.AddRange(new Control[] { 
-                _totalEventsCard, _threatsCard, _blockedProcessesCard, _screenshotsCard 
-            });
-
-            // Charts Panel
-            _chartsPanel = new Panel
+            // Charts Panel using split layout (55% / 45%), right split 50/50
+            var chartsLayout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 BackColor = ColorScheme.Modern.BackgroundPrimary,
-                Padding = new Padding(20, 0, 20, 10)
+                Padding = new Padding(20, 0, 20, 10),
+                ColumnCount = 2,
+                RowCount = 1
             };
+            chartsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55));
+            chartsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45));
 
-            _eventsChart = new ChartPanel
+            var rightSplit = new TableLayoutPanel
             {
-                Title = "Events Over Time",
-                ChartType = ChartType.Line,
-                Size = new Size(460, 280),
-                Location = new Point(20, 10)
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 2
             };
+            rightSplit.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            rightSplit.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
 
-            _threatTypesChart = new ChartPanel
-            {
-                Title = "Threat Types",
-                ChartType = ChartType.Pie,
-                Size = new Size(230, 280),
-                Location = new Point(500, 10)
-            };
+            _chartsPanel = chartsLayout;
 
-            _hourlyActivityChart = new ChartPanel
-            {
-                Title = "Hourly Activity",
-                ChartType = ChartType.Bar,
-                Size = new Size(230, 280),
-                Location = new Point(740, 10)
-            };
+            _eventsChart = new ChartPanel { Title = "Events Over Time", ChartType = ChartType.Line, Dock = DockStyle.Fill };
+            _threatTypesChart = new ChartPanel { Title = "Threat Types", ChartType = ChartType.Pie, Dock = DockStyle.Fill };
+            _hourlyActivityChart = new ChartPanel { Title = "Hourly Activity", ChartType = ChartType.Bar, Dock = DockStyle.Fill };
 
-            _chartsPanel.Controls.AddRange(new Control[] { 
-                _eventsChart, _threatTypesChart, _hourlyActivityChart 
-            });
+            chartsLayout.Controls.Add(_eventsChart, 0, 0);
+            rightSplit.Controls.Add(_threatTypesChart, 0, 0);
+            rightSplit.Controls.Add(_hourlyActivityChart, 0, 1);
+            chartsLayout.Controls.Add(rightSplit, 1, 0);
 
             // Recent Events Panel
             _recentEventsPanel = new Panel
@@ -244,6 +236,19 @@ namespace ChildGuard.UI.Controls
                 new ColumnHeader { Text = "Title", Width = 300 },
                 new ColumnHeader { Text = "Source", Width = 150 }
             });
+
+            // Auto-resize columns on control resize
+            _recentEventsList.Resize += (s, e) =>
+            {
+                if (_recentEventsList.Columns.Count < 5) return;
+                int w = _recentEventsList.ClientSize.Width - SystemInformation.VerticalScrollBarWidth - 10;
+                if (w <= 300) return;
+                _recentEventsList.Columns[0].Width = (int)(w * 0.16); // Time
+                _recentEventsList.Columns[1].Width = (int)(w * 0.12); // Type
+                _recentEventsList.Columns[2].Width = (int)(w * 0.10); // Severity
+                _recentEventsList.Columns[3].Width = (int)(w * 0.42); // Title
+                _recentEventsList.Columns[4].Width = w - (_recentEventsList.Columns[0].Width + _recentEventsList.Columns[1].Width + _recentEventsList.Columns[2].Width + _recentEventsList.Columns[3].Width); // Source
+            };
 
             _recentEventsPanel.Controls.AddRange(new Control[] { recentLabel, _recentEventsList });
 
