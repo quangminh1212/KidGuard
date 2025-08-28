@@ -494,8 +494,8 @@ namespace ChildGuard.UI
                 {
                     Text = title,
                     Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                    Location = new Point(70, 10),
-                    AutoSize = true,
+                    Location = new Point(80, 10),  // Moved right from 70 to 80
+                    Size = new Size(450, 20),  // Set fixed width instead of AutoSize
                     ForeColor = ColorScheme.Modern.TextPrimary
                 };
                 optionPanel.Controls.Add(titleLbl);
@@ -504,8 +504,8 @@ namespace ChildGuard.UI
                 {
                     Text = description,
                     Font = new Font("Segoe UI", 9),
-                    Location = new Point(70, 32),
-                    AutoSize = true,
+                    Location = new Point(80, 32),  // Moved right from 70 to 80
+                    Size = new Size(450, 20),  // Set fixed width instead of AutoSize
                     ForeColor = ColorScheme.Modern.TextSecondary
                 };
                 optionPanel.Controls.Add(descLbl);
