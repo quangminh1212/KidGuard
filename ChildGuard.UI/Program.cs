@@ -44,28 +44,24 @@ static class Program
             {
                 try 
                 { 
-                    // Navigate to Settings panel in ModernMainForm
-                    // The form already has navigation, so we can trigger it
-                    // This would need a public method in ModernMainForm to navigate programmatically
-                    // For now, we'll open the standalone form as a fallback
-                    new SettingsForm().Show(mainForm); 
+                    // Prefer in-shell navigation if available
+                    mainForm.NavigateTo("Settings");
                 } 
-                catch (Exception ex) 
+                catch 
                 { 
-                    Debug.WriteLine($"Error opening settings: {ex.Message}");
+                    // Fallback: open standalone form
+                    try { new SettingsForm().Show(mainForm); } catch (Exception ex) { Debug.WriteLine($"Error opening settings: {ex.Message}"); }
                 }
             }
             if (openReports)
             {
                 try 
                 { 
-                    // Navigate to Reports panel in ModernMainForm  
-                    // For now, we'll open the standalone form as a fallback
-                    new ReportsForm().Show(mainForm); 
+                    mainForm.NavigateTo("Reports");
                 } 
-                catch (Exception ex) 
+                catch 
                 { 
-                    Debug.WriteLine($"Error opening reports: {ex.Message}");
+                    try { new ReportsForm().Show(mainForm); } catch (Exception ex) { Debug.WriteLine($"Error opening reports: {ex.Message}"); }
                 }
             }
         };
