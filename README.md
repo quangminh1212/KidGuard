@@ -21,11 +21,18 @@ ChildGuard là một hệ thống bảo vệ trẻ em tiên tiến được thi�
 - **Tuân thủ COPPA/GDPR**: Thiết kế theo các tiêu chuẩn bảo vệ trẻ em quốc tế
 - **Kiểm soát truy cập**: Xác thực phụ huynh và phân quyền người dùng
 
+### 🎨 Giao diện hiện đại
+- **Thiết kế Glassmorphism**: Hiệu ứng kính mờ với backdrop blur chuyên nghiệp
+- **Gradient và Animation**: Màu sắc gradient đẹp mắt với animation mượt mà
+- **Dark/Light Mode**: Chuyển đổi theme linh hoạt theo sở thích người dùng
+- **Responsive Design**: Tối ưu cho mọi kích thước màn hình
+- **Component Library**: Thư viện component tái sử dụng với styling nhất quán
+
 ### Dashboard quản lý
-- **Giao diện trực quan**: Dashboard hiện đại với Material-UI
-- **Báo cáo chi tiết**: Báo cáo hàng ngày, tuần, tháng
-- **Quản lý hồ sơ trẻ**: Tạo và quản lý nhiều hồ sơ trẻ em
-- **Cài đặt linh hoạt**: Tùy chỉnh mức độ giám sát cho từng trẻ
+- **Dashboard chuyên nghiệp**: Thống kê trực quan với animated cards
+- **Báo cáo chi tiết**: Báo cáo hàng ngày, tuần, tháng với biểu đồ đẹp
+- **Quản lý hồ sơ trẻ**: Interface trực quan để tạo và quản lý hồ sơ
+- **Cài đặt linh hoạt**: Form hiện đại với glassmorphism effects
 
 ## 🚀 Cài đặt và sử dụng
 
@@ -86,9 +93,10 @@ src/
 ```
 
 ### Tech Stack
-- **Frontend**: React 18, TypeScript, Material-UI
+- **Frontend**: React 18, TypeScript, Material-UI v5, Framer Motion
+- **Design**: Glassmorphism, Inter Font, Custom Theme System
 - **Backend**: Electron, Node.js
-- **Database**: SQLite với mã hóa
+- **Database**: SQLite với mã hóa AES-256
 - **Build**: Webpack, Electron Builder
 - **Security**: bcrypt, crypto, node-forge
 
