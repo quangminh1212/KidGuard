@@ -54,3 +54,4 @@ Notes and constraints:
 
 ## Maintenance
 - Keep this file updated as components evolve (e.g., add per-user agent, device policy enforcement, process/web activity collectors, and richer tests).
+- nhớ commit các thay đổi của dự án mỗi khi có thay đổi 
