@@ -17,74 +17,48 @@ import {
   Menu,
   MenuItem,
   Badge,
-  Tooltip
+  Tooltip,
+  Paper,
+  Chip,
+  Stack
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   Dashboard,
   MonitorHeart,
   ChildCare,
-  Warning,
+  Notifications,
   Assessment,
   Settings,
-  AccountCircle,
   Logout,
+  AccountCircle,
   Security,
-  Notifications
+  Shield,
+  Close,
+  Palette
 } from '@mui/icons-material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
-import { useMonitoring } from '../../contexts/MonitoringContext';
+import { useNotification } from '../../contexts/NotificationContext';
 
-const drawerWidth = 240;
-
-interface NavigationItem {
-  text: string;
-  icon: React.ReactElement;
-  path: string;
-  badge?: number;
-}
+const drawerWidth = 280;
 
 const DashboardLayout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { isActive, stats } = useMonitoring();
+  const { showSuccess } = useNotification();
 
-  const navigationItems: NavigationItem[] = [
-    {
-      text: 'Dashboard',
-      icon: <Dashboard />,
-      path: '/dashboard'
-    },
-    {
-      text: 'Monitoring',
-      icon: <MonitorHeart color={isActive ? 'success' : 'disabled'} />,
-      path: '/monitoring'
-    },
-    {
-      text: 'Children',
-      icon: <ChildCare />,
-      path: '/children'
-    },
-    {
-      text: 'Alerts',
-      icon: <Warning />,
-      path: '/alerts',
-      badge: stats?.alertsToday || 0
-    },
-    {
-      text: 'Reports',
-      icon: <Assessment />,
-      path: '/reports'
-    },
-    {
-      text: 'Settings',
-      icon: <Settings />,
-      path: '/settings'
-    }
+  const menuItems = [
+    { text: 'Dashboard', icon: Dashboard, path: '/dashboard' },
+    { text: 'Monitoring', icon: MonitorHeart, path: '/monitoring' },
+    { text: 'Children', icon: ChildCare, path: '/children' },
+    { text: 'Alerts', icon: Notifications, path: '/alerts', badge: 3 },
+    { text: 'Reports', icon: Assessment, path: '/reports' },
+    { text: 'Settings', icon: Settings, path: '/settings' },
+    { text: 'UI Test', icon: Palette, path: '/ui-test' },
   ];
 
   const handleDrawerToggle = () => {
@@ -102,108 +76,170 @@ const DashboardLayout: React.FC = () => {
   const handleLogout = async () => {
     handleMenuClose();
     await logout();
+    showSuccess('Logged out successfully');
+    navigate('/login');
   };
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
-    setMobileOpen(false);
+  const isActive = (path: string) => location.pathname === path;
+
+  const sidebarVariants = {
+    hidden: { x: -drawerWidth },
+    visible: { 
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.3
+      }
+    })
   };
 
   const drawer = (
-    <Box>
-      {/* Logo and Title */}
-      <Box sx={{ p: 2, textAlign: 'center' }}>
+    <motion.div
+      variants={sidebarVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* Logo Section */}
         <Box
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: '50%',
-            backgroundColor: 'primary.main',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 8px',
-            color: 'white'
+            p: 3,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            textAlign: 'center',
           }}
         >
-          <Security />
-        </Box>
-        <Typography variant="h6" fontWeight="bold" color="primary">
-          ChildGuard
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Child Protection System
-        </Typography>
-      </Box>
-
-      <Divider />
-
-      {/* Navigation Items */}
-      <List>
-        {navigationItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => handleNavigate(item.path)}
-              sx={{
-                mx: 1,
-                borderRadius: 1,
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'primary.dark'
-                  },
-                  '& .MuiListItemIcon-root': {
-                    color: 'white'
-                  }
-                }
-              }}
-            >
-              <ListItemIcon>
-                {item.badge && item.badge > 0 ? (
-                  <Badge badgeContent={item.badge} color="error">
-                    {item.icon}
-                  </Badge>
-                ) : (
-                  item.icon
-                )}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-
-      <Divider sx={{ mt: 'auto' }} />
-
-      {/* Monitoring Status */}
-      <Box sx={{ p: 2 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            p: 1,
-            borderRadius: 1,
-            backgroundColor: isActive ? 'success.light' : 'grey.100',
-            color: isActive ? 'success.contrastText' : 'text.secondary'
-          }}
-        >
-          <Box
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              backgroundColor: isActive ? 'success.main' : 'grey.400',
-              mr: 1
-            }}
-          />
-          <Typography variant="caption">
-            {isActive ? 'Monitoring Active' : 'Monitoring Inactive'}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          >
+            <Shield sx={{ fontSize: 40, mb: 1 }} />
+          </motion.div>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            ChildGuard
+          </Typography>
+          <Typography variant="caption" sx={{ opacity: 0.9 }}>
+            Child Protection System
           </Typography>
         </Box>
+
+        {/* Navigation Menu */}
+        <Box sx={{ flex: 1, p: 2 }}>
+          <List sx={{ p: 0 }}>
+            {menuItems.map((item, index) => (
+              <motion.div
+                key={item.text}
+                custom={index}
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <ListItem disablePadding sx={{ mb: 0.5 }}>
+                  <ListItemButton
+                    onClick={() => navigate(item.path)}
+                    selected={isActive(item.path)}
+                    sx={{
+                      borderRadius: 2,
+                      mx: 1,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        background: 'rgba(102, 126, 234, 0.08)',
+                        transform: 'translateX(4px)',
+                      },
+                      '&.Mui-selected': {
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                        },
+                        '& .MuiListItemIcon-root': {
+                          color: 'white',
+                        },
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 40,
+                        color: isActive(item.path) ? 'white' : 'text.secondary',
+                      }}
+                    >
+                      {item.badge ? (
+                        <Badge badgeContent={item.badge} color="error">
+                          <item.icon />
+                        </Badge>
+                      ) : (
+                        <item.icon />
+                      )}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.text}
+                      primaryTypographyProps={{
+                        fontSize: '0.875rem',
+                        fontWeight: isActive(item.path) ? 600 : 500,
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </motion.div>
+            ))}
+          </List>
+        </Box>
+
+        {/* User Info */}
+        <Box sx={{ p: 2 }}>
+          <Paper
+            sx={{
+              p: 2,
+              background: 'rgba(102, 126, 234, 0.05)',
+              border: '1px solid rgba(102, 126, 234, 0.1)',
+              borderRadius: 2,
+            }}
+          >
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Avatar
+                sx={{
+                  width: 40,
+                  height: 40,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                }}
+              >
+                <AccountCircle />
+              </Avatar>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {user?.username || 'Admin'}
+                </Typography>
+                <Chip
+                  label="Administrator"
+                  size="small"
+                  sx={{
+                    height: 20,
+                    fontSize: '0.7rem',
+                    background: 'rgba(102, 126, 234, 0.1)',
+                    color: 'primary.main',
+                  }}
+                />
+              </Box>
+            </Stack>
+          </Paper>
+        </Box>
       </Box>
-    </Box>
+    </motion.div>
   );
 
   return (
@@ -214,9 +250,11 @@ const DashboardLayout: React.FC = () => {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          backgroundColor: 'white',
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+          boxShadow: 'none',
           color: 'text.primary',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
         }}
       >
         <Toolbar>
@@ -229,59 +267,62 @@ const DashboardLayout: React.FC = () => {
           >
             <MenuIcon />
           </IconButton>
-
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {navigationItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
-          </Typography>
-
-          {/* Notifications */}
-          <Tooltip title="Notifications">
-            <IconButton color="inherit" sx={{ mr: 1 }}>
-              <Badge badgeContent={stats?.alertsToday || 0} color="error">
-                <Notifications />
-              </Badge>
-            </IconButton>
-          </Tooltip>
-
+          
+          <Box sx={{ flexGrow: 1 }} />
+          
           {/* User Menu */}
-          <Tooltip title="Account">
+          <Tooltip title="Account settings">
             <IconButton
               onClick={handleMenuClick}
-              color="inherit"
+              sx={{
+                background: 'rgba(102, 126, 234, 0.1)',
+                '&:hover': {
+                  background: 'rgba(102, 126, 234, 0.2)',
+                },
+              }}
             >
-              <Avatar sx={{ width: 32, height: 32, backgroundColor: 'primary.main' }}>
-                {user?.username?.charAt(0).toUpperCase() || 'U'}
-              </Avatar>
+              <AccountCircle />
             </IconButton>
           </Tooltip>
-
+          
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
+            PaperProps={{
+              sx: {
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                borderRadius: 2,
+                mt: 1,
+              },
             }}
           >
-            <MenuItem disabled>
-              <AccountCircle sx={{ mr: 1 }} />
-              {user?.username || 'User'}
+            <MenuItem onClick={handleMenuClose}>
+              <ListItemIcon>
+                <AccountCircle fontSize="small" />
+              </ListItemIcon>
+              Profile
+            </MenuItem>
+            <MenuItem onClick={() => { handleMenuClose(); navigate('/settings'); }}>
+              <ListItemIcon>
+                <Settings fontSize="small" />
+              </ListItemIcon>
+              Settings
             </MenuItem>
             <Divider />
             <MenuItem onClick={handleLogout}>
-              <Logout sx={{ mr: 1 }} />
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
               Logout
             </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
 
-      {/* Drawer */}
+      {/* Sidebar */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -291,20 +332,26 @@ const DashboardLayout: React.FC = () => {
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true // Better open performance on mobile
-          }}
+          ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
-              width: drawerWidth
-            }
+              width: drawerWidth,
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              borderRight: '1px solid rgba(0, 0, 0, 0.08)',
+            },
           }}
         >
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+            <IconButton onClick={handleDrawerToggle}>
+              <Close />
+            </IconButton>
+          </Box>
           {drawer}
         </Drawer>
-
+        
         {/* Desktop drawer */}
         <Drawer
           variant="permanent"
@@ -313,9 +360,10 @@ const DashboardLayout: React.FC = () => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
-              borderRight: '1px solid',
-              borderColor: 'divider'
-            }
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              borderRight: '1px solid rgba(0, 0, 0, 0.08)',
+            },
           }}
           open
         >
@@ -323,19 +371,29 @@ const DashboardLayout: React.FC = () => {
         </Drawer>
       </Box>
 
-      {/* Main Content */}
+      {/* Main content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: '64px', // AppBar height
-          height: 'calc(100vh - 64px)',
+          mt: 8,
           overflow: 'auto',
-          backgroundColor: 'background.default'
+          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+          minHeight: 'calc(100vh - 64px)',
         }}
       >
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </Box>
     </Box>
   );

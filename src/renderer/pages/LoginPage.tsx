@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   TextField,
-  Button,
   Typography,
   Alert,
   InputAdornment,
   IconButton,
-  Divider,
-  Link
+  Container,
+  Stack,
+  Chip,
+  Paper
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   Person,
   Lock,
-  Security
+  Security,
+  Shield
 } from '@mui/icons-material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
+import GradientButton from '../components/common/GradientButton';
+import GlassCard from '../components/common/GlassCard';
+import FadeInUp from '../components/animations/FadeInUp';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -48,188 +52,256 @@ const LoginPage: React.FC = () => {
     
     try {
       const success = await login(username.trim(), password);
-      
       if (!success) {
-        // Error is handled by the auth context
-        setPassword(''); // Clear password on failed login
+        showError('Login failed. Please check your credentials.');
       }
-    } catch (error) {
-      showError('An unexpected error occurred. Please try again.');
+    } catch (err) {
+      showError('An error occurred during login. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleTogglePasswordVisibility = () => {
+  const handleTogglePassword = () => {
     setShowPassword(!showPassword);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSubmit(e as any);
-    }
   };
 
   return (
     <Box
       sx={{
-        height: '100vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
-        padding: 2
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+        
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3), transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1), transparent 50%)',
+        },
+        
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+        },
       }}
     >
-      <Card
-        sx={{
-          width: '100%',
-          maxWidth: 400,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-          borderRadius: 3
-        }}
-      >
-        <CardContent sx={{ p: 4 }}>
-          {/* Logo and Title */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Box
-              sx={{
-                width: 64,
-                height: 64,
-                borderRadius: '50%',
-                backgroundColor: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px',
-                color: 'white',
-                fontSize: '24px',
-                fontWeight: 'bold'
-              }}
+      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
+        <FadeInUp delay={0.2}>
+          <GlassCard
+            sx={{
+              p: 4,
+              maxWidth: 450,
+              mx: 'auto',
+              textAlign: 'center',
+            }}
+          >
+            {/* Logo and Header */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
             >
-              <Security fontSize="large" />
-            </Box>
-            <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
-              ChildGuard
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Child Protection System
-            </Typography>
-          </Box>
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 3,
+                  boxShadow: '0 8px 32px rgba(102, 126, 234, 0.4)',
+                }}
+              >
+                <Shield sx={{ fontSize: 40, color: 'white' }} />
+              </Box>
+            </motion.div>
 
-          {/* Error Alert */}
-          {error && (
-            <Alert 
-              severity="error" 
-              sx={{ mb: 3 }}
-              onClose={clearError}
-            >
-              {error}
-            </Alert>
-          )}
-
-          {/* Login Form */}
-          <Box component="form" onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Username"
-              variant="outlined"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Person color="action" />
-                  </InputAdornment>
-                )
-              }}
-              sx={{ mb: 3 }}
-              autoComplete="username"
-              autoFocus
-            />
-
-            <TextField
-              fullWidth
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              variant="outlined"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock color="action" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleTogglePasswordVisibility}
-                      edge="end"
-                      disabled={isLoading}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-              sx={{ mb: 4 }}
-              autoComplete="current-password"
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              disabled={isLoading || !username.trim() || !password.trim()}
-              sx={{
-                py: 1.5,
-                fontSize: '1rem',
-                fontWeight: 600,
-                mb: 3
-              }}
-            >
-              {isLoading ? 'Signing In...' : 'Sign In'}
-            </Button>
-          </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Default Credentials Info */}
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Default Administrator Account
-            </Typography>
-            <Box sx={{ 
-              backgroundColor: 'grey.50', 
-              p: 2, 
-              borderRadius: 1,
-              border: '1px solid',
-              borderColor: 'grey.200'
-            }}>
-              <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                Username: <strong>admin</strong><br />
-                Password: <strong>admin123</strong>
+            <FadeInUp delay={0.4}>
+              <Typography
+                variant="h4"
+                component="h1"
+                sx={{
+                  mb: 1,
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                ChildGuard
               </Typography>
-            </Box>
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-              Please change the default password after first login
-            </Typography>
-          </Box>
+            </FadeInUp>
 
-          {/* Footer */}
-          <Box sx={{ textAlign: 'center', mt: 4 }}>
-            <Typography variant="caption" color="text.secondary">
-              ChildGuard v1.0.0 - Protecting Children Online
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
+            <FadeInUp delay={0.5}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ mb: 4, fontSize: '1.1rem' }}
+              >
+                Child Protection System
+              </Typography>
+            </FadeInUp>
+
+            {/* Login Form */}
+            <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+              <Stack spacing={3}>
+                <FadeInUp delay={0.6}>
+                  <TextField
+                    fullWidth
+                    label="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={isLoading}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Person color="action" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        background: 'rgba(255, 255, 255, 0.8)',
+                        backdropFilter: 'blur(10px)',
+                      },
+                    }}
+                  />
+                </FadeInUp>
+
+                <FadeInUp delay={0.7}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock color="action" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleTogglePassword}
+                            edge="end"
+                            disabled={isLoading}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        background: 'rgba(255, 255, 255, 0.8)',
+                        backdropFilter: 'blur(10px)',
+                      },
+                    }}
+                  />
+                </FadeInUp>
+
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Alert severity="error" sx={{ borderRadius: 2 }}>
+                        {error}
+                      </Alert>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <FadeInUp delay={0.8}>
+                  <GradientButton
+                    type="submit"
+                    fullWidth
+                    size="large"
+                    disabled={isLoading || !username.trim() || !password.trim()}
+                    sx={{ py: 1.5, fontSize: '1rem' }}
+                  >
+                    {isLoading ? 'Signing In...' : 'Sign In'}
+                  </GradientButton>
+                </FadeInUp>
+              </Stack>
+            </Box>
+
+            {/* Default Credentials Info */}
+            <FadeInUp delay={0.9}>
+              <Paper
+                sx={{
+                  mt: 4,
+                  p: 2,
+                  background: 'rgba(255, 255, 255, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: 2,
+                }}
+              >
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  Default Login Credentials:
+                </Typography>
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  <Chip
+                    label="admin"
+                    size="small"
+                    sx={{
+                      background: 'rgba(102, 126, 234, 0.1)',
+                      color: 'primary.main',
+                      fontWeight: 600,
+                    }}
+                  />
+                  <Chip
+                    label="admin123"
+                    size="small"
+                    sx={{
+                      background: 'rgba(102, 126, 234, 0.1)',
+                      color: 'primary.main',
+                      fontWeight: 600,
+                    }}
+                  />
+                </Stack>
+                <Typography variant="caption" color="warning.main" sx={{ mt: 1, display: 'block' }}>
+                  ⚠️ Change password after first login
+                </Typography>
+              </Paper>
+            </FadeInUp>
+
+            {/* Security Badge */}
+            <FadeInUp delay={1.0}>
+              <Box sx={{ mt: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                <Security sx={{ fontSize: 16, color: 'text.secondary' }} />
+                <Typography variant="caption" color="text.secondary">
+                  Secured with AES-256 encryption
+                </Typography>
+              </Box>
+            </FadeInUp>
+          </GlassCard>
+        </FadeInUp>
+      </Container>
     </Box>
   );
 };

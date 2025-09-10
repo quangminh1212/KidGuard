@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Grid,
-  Card,
-  CardContent,
   Typography,
-  Button,
   Chip,
   LinearProgress,
   List,
@@ -13,6 +10,8 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
+  Stack,
+  Paper,
   Alert
 } from '@mui/material';
 import {
@@ -23,318 +22,343 @@ import {
   PlayArrow,
   Stop,
   Schedule,
-  Security
+  Security,
+  Assessment,
+  Shield,
+  Computer,
+  Notifications
 } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 import { useMonitoring } from '../contexts/MonitoringContext';
 import { useNotification } from '../contexts/NotificationContext';
+import StatCard from '../components/common/StatCard';
+import GlassCard from '../components/common/GlassCard';
+import GradientButton from '../components/common/GradientButton';
+import FadeInUp from '../components/animations/FadeInUp';
+import AnimatedCard from '../components/animations/AnimatedCard';
 
-// Stats Card Component
-interface StatsCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactElement;
-  color: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success';
-  subtitle?: string;
-}
-
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, subtitle }) => (
-  <Card sx={{ height: '100%' }}>
-    <CardContent>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Box
-          sx={{
-            p: 1,
-            borderRadius: 1,
-            backgroundColor: `${color}.light`,
-            color: `${color}.contrastText`,
-            mr: 2
-          }}
-        >
-          {icon}
-        </Box>
-        <Box>
-          <Typography variant="h4" component="div" fontWeight="bold">
-            {value}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {title}
-          </Typography>
-          {subtitle && (
-            <Typography variant="caption" color="text.secondary">
-              {subtitle}
-            </Typography>
-          )}
-        </Box>
-      </Box>
-    </CardContent>
-  </Card>
-);
-
-// Quick Actions Component
-const QuickActions: React.FC = () => {
-  const { isActive, currentChild, children, startMonitoring, stopMonitoring } = useMonitoring();
+const DashboardPage: React.FC = () => {
+  const {
+    isActive,
+    currentChild,
+    children,
+    startMonitoring,
+    stopMonitoring,
+    loadChildren
+  } = useMonitoring();
+  
   const { showSuccess, showError } = useNotification();
+  const [stats, setStats] = useState({
+    totalKeystrokes: 1247,
+    alertsToday: 3,
+    activeTime: '4h 32m',
+    securityLevel: 'High'
+  });
 
-  const handleStartMonitoring = async () => {
+  const [recentAlerts] = useState([
+    {
+      id: 1,
+      type: 'inappropriate_content',
+      message: 'Inappropriate content detected',
+      time: '2 minutes ago',
+      severity: 'high'
+    },
+    {
+      id: 2,
+      type: 'time_violation',
+      message: 'Usage outside allowed hours',
+      time: '1 hour ago',
+      severity: 'medium'
+    },
+    {
+      id: 3,
+      type: 'application_blocked',
+      message: 'Blocked application access',
+      time: '3 hours ago',
+      severity: 'low'
+    }
+  ]);
+
+  useEffect(() => {
+    loadChildren();
+  }, [loadChildren]);
+
+  const handleQuickStart = async () => {
     if (children.length === 0) {
-      showError('No children profiles found. Please add a child profile first.');
+      showError('No children profiles found. Please add a child first.');
       return;
     }
 
-    // Use first child if no current child selected
-    const childId = currentChild?.id || children[0]?.id;
-    if (childId) {
-      const success = await startMonitoring(childId);
+    if (isActive) {
+      const success = await stopMonitoring();
       if (success) {
-        showSuccess('Monitoring started successfully');
+        showSuccess('Monitoring stopped');
+      }
+    } else {
+      const success = await startMonitoring(children[0].id);
+      if (success) {
+        showSuccess('Monitoring started');
       }
     }
   };
 
-  const handleStopMonitoring = async () => {
-    const success = await stopMonitoring();
-    if (success) {
-      showSuccess('Monitoring stopped');
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'high': return 'error';
+      case 'medium': return 'warning';
+      case 'low': return 'info';
+      default: return 'default';
     }
   };
 
-  return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Quick Actions
-        </Typography>
-        
-        <Box sx={{ mb: 2 }}>
-          <Chip
-            icon={<MonitorHeart />}
-            label={isActive ? 'Monitoring Active' : 'Monitoring Inactive'}
-            color={isActive ? 'success' : 'default'}
-            variant={isActive ? 'filled' : 'outlined'}
-          />
-          {currentChild && (
-            <Chip
-              icon={<ChildCare />}
-              label={`Monitoring: ${currentChild.name}`}
-              color="primary"
-              variant="outlined"
-              sx={{ ml: 1 }}
-            />
-          )}
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {!isActive ? (
-            <Button
-              variant="contained"
-              startIcon={<PlayArrow />}
-              onClick={handleStartMonitoring}
-              disabled={children.length === 0}
-            >
-              Start Monitoring
-            </Button>
-          ) : (
-            <Button
-              variant="outlined"
-              startIcon={<Stop />}
-              onClick={handleStopMonitoring}
-              color="error"
-            >
-              Stop Monitoring
-            </Button>
-          )}
-        </Box>
-
-        {children.length === 0 && (
-          <Alert severity="info" sx={{ mt: 2 }}>
-            No children profiles found. Add a child profile to start monitoring.
-          </Alert>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
-
-// Recent Activity Component
-const RecentActivity: React.FC = () => {
-  const recentActivities = [
-    {
-      id: 1,
-      type: 'monitoring_started',
-      message: 'Monitoring started for Emma',
-      time: '2 minutes ago',
-      icon: <PlayArrow color="success" />
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
     },
-    {
-      id: 2,
-      type: 'alert',
-      message: 'Inappropriate content detected',
-      time: '15 minutes ago',
-      icon: <Warning color="error" />
-    },
-    {
-      id: 3,
-      type: 'system',
-      message: 'Daily report generated',
-      time: '1 hour ago',
-      icon: <TrendingUp color="info" />
-    }
-  ];
+  };
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Recent Activity
-        </Typography>
-        
-        <List dense>
-          {recentActivities.map((activity, index) => (
-            <React.Fragment key={activity.id}>
-              <ListItem>
-                <ListItemIcon>
-                  {activity.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={activity.message}
-                  secondary={activity.time}
-                />
-              </ListItem>
-              {index < recentActivities.length - 1 && <Divider />}
-            </React.Fragment>
-          ))}
-        </List>
-      </CardContent>
-    </Card>
-  );
-};
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <Box sx={{ p: 3 }}>
+        {/* Header */}
+        <FadeInUp delay={0.1}>
+          <Box sx={{ mb: 4 }}>
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{
+                mb: 1,
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Dashboard
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Welcome back! Here's your child protection overview.
+            </Typography>
+          </Box>
+        </FadeInUp>
 
-const DashboardPage: React.FC = () => {
-  const { stats, loadStats, children, loadChildren } = useMonitoring();
-
-  useEffect(() => {
-    loadStats();
-    loadChildren();
-  }, [loadStats, loadChildren]);
-
-  return (
-    <Box sx={{ p: 3 }}>
-      {/* Welcome Section */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Dashboard
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Welcome to ChildGuard. Monitor and protect your children's digital activities.
-        </Typography>
-      </Box>
-
-      {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Keystrokes Today"
-            value={stats?.totalKeystrokesToday || 0}
-            icon={<Schedule />}
-            color="primary"
-            subtitle="Total activity"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Alerts Today"
-            value={stats?.alertsToday || 0}
-            icon={<Warning />}
-            color="error"
-            subtitle="Requires attention"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Children Profiles"
-            value={children.length}
-            icon={<ChildCare />}
-            color="success"
-            subtitle="Active profiles"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Active Time"
-            value={`${Math.floor((stats?.activeMonitoringTime || 0) / 60)}h`}
-            icon={<MonitorHeart />}
-            color="info"
-            subtitle="Monitoring time"
-          />
-        </Grid>
-      </Grid>
-
-      {/* Main Content */}
-      <Grid container spacing={3}>
-        {/* Quick Actions */}
-        <Grid item xs={12} md={6}>
-          <QuickActions />
-        </Grid>
-
-        {/* Recent Activity */}
-        <Grid item xs={12} md={6}>
-          <RecentActivity />
-        </Grid>
-
-        {/* System Status */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                System Status
+        {/* Status Alert */}
+        {isActive && currentChild && (
+          <FadeInUp delay={0.2}>
+            <Alert
+              severity="success"
+              sx={{
+                mb: 3,
+                borderRadius: 2,
+                background: 'rgba(76, 175, 80, 0.1)',
+                border: '1px solid rgba(76, 175, 80, 0.2)',
+              }}
+            >
+              <Typography variant="body2">
+                <strong>Monitoring Active:</strong> Currently monitoring {currentChild.name}'s activities
               </Typography>
-              
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ textAlign: 'center', p: 2 }}>
-                    <Security color="success" sx={{ fontSize: 40, mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
-                      Security Engine
-                    </Typography>
-                    <Chip label="Active" color="success" size="small" />
-                  </Box>
-                </Grid>
-                
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ textAlign: 'center', p: 2 }}>
-                    <MonitorHeart color="success" sx={{ fontSize: 40, mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
-                      Content Filter
-                    </Typography>
-                    <Chip label="Active" color="success" size="small" />
-                  </Box>
-                </Grid>
-                
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ textAlign: 'center', p: 2 }}>
-                    <TrendingUp color="success" sx={{ fontSize: 40, mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
-                      Analytics
-                    </Typography>
-                    <Chip label="Active" color="success" size="small" />
-                  </Box>
-                </Grid>
-                
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ textAlign: 'center', p: 2 }}>
-                    <Warning color="success" sx={{ fontSize: 40, mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
-                      Alert System
-                    </Typography>
-                    <Chip label="Active" color="success" size="small" />
-                  </Box>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+            </Alert>
+          </FadeInUp>
+        )}
+
+        {/* Stats Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <FadeInUp delay={0.3}>
+              <StatCard
+                title="Keystrokes Today"
+                value={stats.totalKeystrokes.toLocaleString()}
+                icon={Computer}
+                color="primary"
+                change={{ value: '+12%', positive: true }}
+              />
+            </FadeInUp>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={3}>
+            <FadeInUp delay={0.4}>
+              <StatCard
+                title="Alerts Today"
+                value={stats.alertsToday}
+                icon={Warning}
+                color="warning"
+                change={{ value: '-25%', positive: true }}
+              />
+            </FadeInUp>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={3}>
+            <FadeInUp delay={0.5}>
+              <StatCard
+                title="Active Time"
+                value={stats.activeTime}
+                icon={Schedule}
+                color="secondary"
+                change={{ value: '+8%', positive: false }}
+              />
+            </FadeInUp>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={3}>
+            <FadeInUp delay={0.6}>
+              <StatCard
+                title="Security Level"
+                value={stats.securityLevel}
+                icon={Shield}
+                color="success"
+              />
+            </FadeInUp>
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+
+        <Grid container spacing={3}>
+          {/* Quick Actions */}
+          <Grid item xs={12} md={6}>
+            <FadeInUp delay={0.7}>
+              <GlassCard>
+                <Box sx={{ p: 3 }}>
+                  <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <MonitorHeart color="primary" />
+                    Quick Actions
+                  </Typography>
+                  
+                  <Stack spacing={2}>
+                    <GradientButton
+                      fullWidth
+                      size="large"
+                      startIcon={isActive ? <Stop /> : <PlayArrow />}
+                      onClick={handleQuickStart}
+                      color={isActive ? 'error' : 'primary'}
+                      sx={{ py: 1.5 }}
+                    >
+                      {isActive ? 'Stop Monitoring' : 'Start Monitoring'}
+                    </GradientButton>
+                    
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <GradientButton
+                        variant="outlined"
+                        startIcon={<ChildCare />}
+                        sx={{ flex: 1 }}
+                      >
+                        Manage Children
+                      </GradientButton>
+                      
+                      <GradientButton
+                        variant="outlined"
+                        startIcon={<Assessment />}
+                        sx={{ flex: 1 }}
+                      >
+                        View Reports
+                      </GradientButton>
+                    </Box>
+                  </Stack>
+
+                  {/* Current Status */}
+                  <Paper
+                    sx={{
+                      mt: 3,
+                      p: 2,
+                      background: 'rgba(102, 126, 234, 0.05)',
+                      border: '1px solid rgba(102, 126, 234, 0.1)',
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      Current Status:
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Chip
+                        icon={<MonitorHeart />}
+                        label={isActive ? 'Active' : 'Inactive'}
+                        color={isActive ? 'success' : 'default'}
+                        size="small"
+                      />
+                      {currentChild && (
+                        <Chip
+                          icon={<ChildCare />}
+                          label={currentChild.name}
+                          color="primary"
+                          variant="outlined"
+                          size="small"
+                        />
+                      )}
+                    </Box>
+                  </Paper>
+                </Box>
+              </GlassCard>
+            </FadeInUp>
+          </Grid>
+
+          {/* Recent Alerts */}
+          <Grid item xs={12} md={6}>
+            <FadeInUp delay={0.8}>
+              <GlassCard>
+                <Box sx={{ p: 3 }}>
+                  <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Notifications color="primary" />
+                    Recent Alerts
+                  </Typography>
+                  
+                  <List sx={{ p: 0 }}>
+                    {recentAlerts.map((alert, index) => (
+                      <motion.div
+                        key={alert.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.9 + index * 0.1 }}
+                      >
+                        <ListItem
+                          sx={{
+                            px: 0,
+                            py: 1,
+                            borderRadius: 1,
+                            '&:hover': {
+                              background: 'rgba(102, 126, 234, 0.05)',
+                            },
+                          }}
+                        >
+                          <ListItemIcon>
+                            <Warning color={getSeverityColor(alert.severity) as any} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={alert.message}
+                            secondary={alert.time}
+                            primaryTypographyProps={{ fontSize: '0.875rem' }}
+                            secondaryTypographyProps={{ fontSize: '0.75rem' }}
+                          />
+                          <Chip
+                            label={alert.severity}
+                            size="small"
+                            color={getSeverityColor(alert.severity) as any}
+                            sx={{ ml: 1 }}
+                          />
+                        </ListItem>
+                        {index < recentAlerts.length - 1 && <Divider />}
+                      </motion.div>
+                    ))}
+                  </List>
+                  
+                  <Box sx={{ mt: 2, textAlign: 'center' }}>
+                    <GradientButton variant="outlined" size="small">
+                      View All Alerts
+                    </GradientButton>
+                  </Box>
+                </Box>
+              </GlassCard>
+            </FadeInUp>
+          </Grid>
+        </Grid>
+      </Box>
+    </motion.div>
   );
 };
 
