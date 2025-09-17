@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using KidGuard.Core.Models;
 using KidGuard.Core.Services;
 using KidGuard.Infrastructure.Data;
+using KidGuard.Infrastructure.Logging;
 
 namespace KidGuard.Infrastructure.Services
 {
@@ -30,18 +32,31 @@ namespace KidGuard.Infrastructure.Services
 
         public async Task<AuthenticationResult> LoginAsync(string username, string password)
         {
+            LoggingService.LogMethodEntry(new { username });
+            var stopwatch = Stopwatch.StartNew();
+            
             try
             {
+                LoggingService.LogDebug($"Attempting login for user: {username}");
+                
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
+                
+                LoggingService.LogDebug($"User lookup completed. User found: {user != null}");
 
                 if (user == null)
                 {
-                    return new AuthenticationResult 
+                    LoggingService.LogWarning($"Login failed: User {username} not found or inactive");
+                    LoggingService.LogSecurity($"Failed login attempt for username: {username}");
+                    
+                    var result = new AuthenticationResult 
                     { 
                         Success = false, 
                         ErrorMessage = "Invalid username or password" 
                     };
+                    
+                    LoggingService.LogMethodExit(result);
+                    return result;
                 }
 
                 var passwordHash = HashPassword(password);
