@@ -1,0 +1,559 @@
+<Page x:Class="KidGuard.WPF.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="720" d:DesignWidth="1020"
+      Title="Settings">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{DynamicResource PrimaryHueDarkBrush}" Padding="30,25">
+            <Grid>
+                <TextBlock Text="Cài đặt" FontSize="32" FontWeight="Light" Foreground="White"/>
+                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                      HorizontalAlignment="Right" Foreground="White">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentSave" Margin="0,0,8,0"/>
+                        <TextBlock Text="Lưu thay đổi" FontWeight="Bold"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Settings Tabs -->
+        <TabControl Grid.Row="1" Style="{StaticResource MaterialDesignNavigationRailTabControl}"
+                  TabStripPlacement="Left" materialDesign:ColorZoneAssist.Mode="PrimaryMid">
+            
+            <!-- General Settings -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Width="120" Height="80">
+                        <materialDesign:PackIcon Kind="CogOutline" Width="24" Height="24" 
+                                               HorizontalAlignment="Center" Margin="0,8"/>
+                        <TextBlock Text="Chung" HorizontalAlignment="Center" FontSize="12"/>
+                    </StackPanel>
+                </TabItem.Header>
+                
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="40,30">
+                        <!-- Application Settings -->
+                        <TextBlock Text="CÀI ĐẶT ỨNG DỤNG" FontWeight="Bold" FontSize="14" 
+                                 Foreground="#757575" Margin="0,0,0,20"/>
+                        
+                        <materialDesign:Card Padding="25" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Khởi động cùng Windows" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Tự động chạy KidGuard khi khởi động máy" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                IsChecked="True"/>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chạy ẩn trong system tray" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Thu nhỏ ứng dụng vào khay hệ thống thay vì thanh taskbar" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"/>
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="200"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Ngôn ngữ" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Chọn ngôn ngữ hiển thị cho ứng dụng" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1" materialDesign:HintAssist.Hint="Chọn ngôn ngữ">
+                                        <ComboBoxItem IsSelected="True">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Width="20" Height="20" Margin="0,0,10,0"/>
+                                                <TextBlock Text="Tiếng Việt"/>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Width="20" Height="20" Margin="0,0,10,0"/>
+                                                <TextBlock Text="English"/>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <!-- Data Management -->
+                        <TextBlock Text="QUẢN LÝ DỮ LIỆU" FontWeight="Bold" FontSize="14" 
+                                 Foreground="#757575" Margin="0,20,0,20"/>
+                        
+                        <materialDesign:Card Padding="25">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Tự động sao lưu" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Sao lưu dữ liệu định kỳ hàng tuần" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                IsChecked="True"/>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Vị trí lưu trữ" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="C:\Users\GHC\Documents\KidGuard\Backups" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FolderOpen" Margin="0,0,8,0"/>
+                                            <TextBlock Text="Thay đổi"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                                          Background="#4CAF50" Margin="0,0,10,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="CloudUpload" Margin="0,0,8,0"/>
+                                            <TextBlock Text="Sao lưu ngay"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="CloudDownload" Margin="0,0,8,0"/>
+                                            <TextBlock Text="Khôi phục"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Appearance Settings -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Width="120" Height="80">
+                        <materialDesign:PackIcon Kind="Palette" Width="24" Height="24" 
+                                               HorizontalAlignment="Center" Margin="0,8"/>
+                        <TextBlock Text="Giao diện" HorizontalAlignment="Center" FontSize="12"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="40,30">
+                        <!-- Theme Settings -->
+                        <TextBlock Text="CHỦ ĐỀ" FontWeight="Bold" FontSize="14" 
+                                 Foreground="#757575" Margin="0,0,0,20"/>
+                        
+                        <materialDesign:Card Padding="25" Margin="0,0,0,20">
+                            <StackPanel>
+                                <TextBlock Text="Chọn chế độ hiển thị" FontSize="16" FontWeight="Bold" 
+                                         Margin="0,0,0,15"/>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Light Theme -->
+                                    <RadioButton Grid.Column="0" GroupName="Theme" IsChecked="True" 
+                                               Margin="0,0,10,0">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <materialDesign:Card Width="180" Height="150" Cursor="Hand">
+                                                    <Grid>
+                                                        <Border Background="White" CornerRadius="4">
+                                                            <Grid>
+                                                                <Rectangle Fill="#F5F5F5" Height="40" 
+                                                                         VerticalAlignment="Top"/>
+                                                                <TextBlock Text="Sáng" FontWeight="Bold" 
+                                                                         HorizontalAlignment="Center" 
+                                                                         VerticalAlignment="Center" FontSize="16"/>
+                                                            </Grid>
+                                                        </Border>
+                                                        <materialDesign:PackIcon Kind="Check" Width="24" Height="24"
+                                                                               Foreground="#4CAF50" 
+                                                                               HorizontalAlignment="Right"
+                                                                               VerticalAlignment="Top" Margin="10"
+                                                                               Visibility="Visible"/>
+                                                    </Grid>
+                                                </materialDesign:Card>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+
+                                    <!-- Dark Theme -->
+                                    <RadioButton Grid.Column="1" GroupName="Theme" Margin="5,0">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <materialDesign:Card Width="180" Height="150" Cursor="Hand">
+                                                    <Grid>
+                                                        <Border Background="#212121" CornerRadius="4">
+                                                            <Grid>
+                                                                <Rectangle Fill="#424242" Height="40" 
+                                                                         VerticalAlignment="Top"/>
+                                                                <TextBlock Text="Tối" FontWeight="Bold" 
+                                                                         Foreground="White"
+                                                                         HorizontalAlignment="Center" 
+                                                                         VerticalAlignment="Center" FontSize="16"/>
+                                                            </Grid>
+                                                        </Border>
+                                                    </Grid>
+                                                </materialDesign:Card>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+
+                                    <!-- Auto Theme -->
+                                    <RadioButton Grid.Column="2" GroupName="Theme" Margin="10,0,0,0">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <materialDesign:Card Width="180" Height="150" Cursor="Hand">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Grid.Column="0" Background="White"/>
+                                                        <Border Grid.Column="1" Background="#212121"/>
+                                                        <TextBlock Text="Tự động" FontWeight="Bold" 
+                                                                 HorizontalAlignment="Center" 
+                                                                 VerticalAlignment="Center" FontSize="16"
+                                                                 Grid.ColumnSpan="2"/>
+                                                    </Grid>
+                                                </materialDesign:Card>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <!-- Color Settings -->
+                        <TextBlock Text="MÀU CHỦ ĐẠO" FontWeight="Bold" FontSize="14" 
+                                 Foreground="#757575" Margin="0,20,0,20"/>
+                        
+                        <materialDesign:Card Padding="25" Margin="0,0,0,20">
+                            <StackPanel>
+                                <TextBlock Text="Chọn màu chủ đạo cho ứng dụng" FontSize="16" FontWeight="Bold" 
+                                         Margin="0,0,0,15"/>
+                                
+                                <WrapPanel>
+                                    <RadioButton GroupName="Color" Margin="0,0,15,15">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <Border Width="60" Height="60" Background="#2196F3" 
+                                                      CornerRadius="30" Cursor="Hand">
+                                                    <materialDesign:PackIcon Kind="Check" Width="24" Height="24"
+                                                                           Foreground="White" 
+                                                                           HorizontalAlignment="Center"
+                                                                           VerticalAlignment="Center"
+                                                                           Visibility="Collapsed"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+                                    
+                                    <RadioButton GroupName="Color" Margin="0,0,15,15">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <Border Width="60" Height="60" Background="#4CAF50" 
+                                                      CornerRadius="30" Cursor="Hand"/>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+                                    
+                                    <RadioButton GroupName="Color" Margin="0,0,15,15">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <Border Width="60" Height="60" Background="#FF5722" 
+                                                      CornerRadius="30" Cursor="Hand"/>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+                                    
+                                    <RadioButton GroupName="Color" Margin="0,0,15,15">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <Border Width="60" Height="60" Background="#9C27B0" 
+                                                      CornerRadius="30" Cursor="Hand"/>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+                                    
+                                    <RadioButton GroupName="Color" Margin="0,0,15,15">
+                                        <RadioButton.Template>
+                                            <ControlTemplate>
+                                                <Border Width="60" Height="60" Background="#E91E63" 
+                                                      CornerRadius="30" Cursor="Hand"/>
+                                            </ControlTemplate>
+                                        </RadioButton.Template>
+                                    </RadioButton>
+                                </WrapPanel>
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <!-- Font Settings -->
+                        <TextBlock Text="PHÔNG CHỮ" FontWeight="Bold" FontSize="14" 
+                                 Foreground="#757575" Margin="0,20,0,20"/>
+                        
+                        <materialDesign:Card Padding="25">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="200"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Kích thước chữ" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Điều chỉnh kích thước chữ hiển thị" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <Slider Grid.Column="1" Value="14" Minimum="12" Maximum="20" 
+                                          TickFrequency="1" IsSnapToTickEnabled="True"
+                                          VerticalAlignment="Center"/>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Notification Settings -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Width="120" Height="80">
+                        <materialDesign:PackIcon Kind="Bell" Width="24" Height="24" 
+                                               HorizontalAlignment="Center" Margin="0,8"/>
+                        <TextBlock Text="Thông báo" HorizontalAlignment="Center" FontSize="12"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="40,30">
+                        <TextBlock Text="CÀI ĐẶT THÔNG BÁO" FontWeight="Bold" FontSize="14" 
+                                 Foreground="#757575" Margin="0,0,0,20"/>
+                        
+                        <materialDesign:Card Padding="25">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Thông báo trên desktop" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Hiển thị thông báo popup trên màn hình" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                IsChecked="True"/>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Âm thanh thông báo" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Phát âm thanh khi có thông báo mới" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"/>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Email thông báo" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Gửi thông báo quan trọng qua email" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                IsChecked="True"/>
+                                </Grid>
+
+                                <Separator Margin="0,10,0,20"/>
+
+                                <TextBlock Text="Loại thông báo" FontSize="16" FontWeight="Bold" 
+                                         Margin="0,0,0,15"/>
+                                
+                                <CheckBox Content="Vượt giới hạn thời gian" IsChecked="True" Margin="0,0,0,10"/>
+                                <CheckBox Content="Truy cập website bị chặn" IsChecked="True" Margin="0,0,0,10"/>
+                                <CheckBox Content="Mở ứng dụng bị cấm" IsChecked="True" Margin="0,0,0,10"/>
+                                <CheckBox Content="Thời gian nghỉ ngơi" IsChecked="True" Margin="0,0,0,10"/>
+                                <CheckBox Content="Báo cáo hàng ngày" Margin="0,0,0,10"/>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Security Settings -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Width="120" Height="80">
+                        <materialDesign:PackIcon Kind="Shield" Width="24" Height="24" 
+                                               HorizontalAlignment="Center" Margin="0,8"/>
+                        <TextBlock Text="Bảo mật" HorizontalAlignment="Center" FontSize="12"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="40,30">
+                        <TextBlock Text="BẢO MẬT" FontWeight="Bold" FontSize="14" 
+                                 Foreground="#757575" Margin="0,0,0,20"/>
+                        
+                        <materialDesign:Card Padding="25">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Yêu cầu mật khẩu" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Yêu cầu mật khẩu khi thay đổi cài đặt" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                IsChecked="True"/>
+                                </Grid>
+
+                                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                                      HorizontalAlignment="Left" Margin="0,0,0,20">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Key" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Đổi mật khẩu quản trị"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Separator Margin="0,0,0,20"/>
+
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chống gỡ bỏ" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Ngăn chặn việc gỡ bỏ ứng dụng không có mật khẩu" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                IsChecked="True"/>
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chế độ ẩn danh" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Ẩn KidGuard khỏi danh sách ứng dụng" 
+                                                 FontSize="13" Foreground="#757575" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignSwitchToggleButton}"/>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- About -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Width="120" Height="80">
+                        <materialDesign:PackIcon Kind="Information" Width="24" Height="24" 
+                                               HorizontalAlignment="Center" Margin="0,8"/>
+                        <TextBlock Text="Giới thiệu" HorizontalAlignment="Center" FontSize="12"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <StackPanel Margin="40,30" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="ShieldCheck" Width="100" Height="100" 
+                                           Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                           HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    
+                    <TextBlock Text="KidGuard" FontSize="32" FontWeight="Bold" 
+                             HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="Phiên bản 1.0.0" FontSize="16" 
+                             HorizontalAlignment="Center" Foreground="#757575" Margin="0,0,0,20"/>
+                    
+                    <TextBlock Text="Phần mềm quản lý và bảo vệ trẻ em" FontSize="14" 
+                             HorizontalAlignment="Center" Margin="0,0,0,30"/>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                        <Button Style="{StaticResource MaterialDesignFlatButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Update" Margin="0,0,8,0"/>
+                                <TextBlock Text="Kiểm tra cập nhật"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Margin="10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="BookOpen" Margin="0,0,8,0"/>
+                                <TextBlock Text="Hướng dẫn"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Style="{StaticResource MaterialDesignFlatButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Lifebuoy" Margin="0,0,8,0"/>
+                                <TextBlock Text="Hỗ trợ"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    
+                    <TextBlock Text="© 2024 KidGuard. All rights reserved." FontSize="12" 
+                             HorizontalAlignment="Center" Foreground="#BDBDBD"/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Page>

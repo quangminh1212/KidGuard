@@ -1,0 +1,245 @@
+<Page x:Class="KidGuard.WPF.Pages.ApplicationManagementPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="720" d:DesignWidth="1020"
+      Title="Application Management">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with Title and Actions -->
+        <Grid Grid.Row="0" Margin="30,25,30,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Quản lý ứng dụng" FontSize="28" FontWeight="Bold" Foreground="#212121"/>
+                <TextBlock Text="Kiểm soát và giới hạn thời gian sử dụng cho từng ứng dụng" 
+                         FontSize="14" Foreground="#757575" Margin="0,5,0,0"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                      materialDesign:ButtonAssist.CornerRadius="20"
+                      Margin="0,0,10,0" Background="#4CAF50">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Refresh" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Text="Quét lại"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                      materialDesign:ButtonAssist.CornerRadius="20">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FileExport" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Text="Xuất danh sách"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Filter and Search Bar -->
+        <Grid Grid.Row="1" Margin="30,0,30,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Search Box -->
+            <materialDesign:Card Grid.Column="0" Padding="0" materialDesign:ShadowAssist.ShadowDepth="Depth1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Kind="Magnify" Grid.Column="0" 
+                                           VerticalAlignment="Center" Margin="15,0,0,0" 
+                                           Foreground="#757575" Width="20" Height="20"/>
+                    <TextBox Grid.Column="1" 
+                           materialDesign:HintAssist.Hint="Tìm kiếm ứng dụng..."
+                           materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+                           BorderThickness="0" Padding="10,12" FontSize="14"
+                           Name="SearchBox"/>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- Filter Chips -->
+            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled" Margin="15,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:Chip Content="Tất cả" IsChecked="True" 
+                                       Margin="0,0,8,0" Background="#E3F2FD" Foreground="#1976D2"/>
+                    <materialDesign:Chip Content="Đang chạy" Icon="Play" 
+                                       Margin="0,0,8,0" Background="#E8F5E9" Foreground="#388E3C"/>
+                    <materialDesign:Chip Content="Bị chặn" Icon="Block" 
+                                       Margin="0,0,8,0" Background="#FFEBEE" Foreground="#D32F2F"/>
+                    <materialDesign:Chip Content="Giới hạn thời gian" Icon="Timer" 
+                                       Margin="0,0,8,0" Background="#FFF3E0" Foreground="#F57C00"/>
+                    <materialDesign:Chip Content="Game" Icon="GamepadVariant" 
+                                       Margin="0,0,8,0" Background="#F3E5F5" Foreground="#7B1FA2"/>
+                    <materialDesign:Chip Content="Học tập" Icon="School" 
+                                       Margin="0,0,8,0" Background="#E0F2F1" Foreground="#00796B"/>
+                    <materialDesign:Chip Content="Mạng xã hội" Icon="AccountGroup" 
+                                       Margin="0,0,8,0" Background="#FCE4EC" Foreground="#C2185B"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- View Mode Toggle -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}" 
+                           IsChecked="True" Name="GridViewButton">
+                    <materialDesign:PackIcon Kind="ViewGrid" Width="22" Height="22"/>
+                </RadioButton>
+                <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}"
+                           Margin="5,0,0,0" Name="ListViewButton">
+                    <materialDesign:PackIcon Kind="ViewList" Width="22" Height="22"/>
+                </RadioButton>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main Content Area -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" 
+                    HorizontalScrollBarVisibility="Disabled">
+            <!-- Grid View -->
+            <ItemsControl Name="AppsGrid" Margin="20,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <materialDesign:Card Width="230" Height="280" Margin="10" 
+                                           materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                           materialDesign:ElevationAssist.Elevation="Dp4">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- App Header -->
+                                <Border Grid.Row="0" Background="{Binding ColorBrush}" Height="80">
+                                    <Grid>
+                                        <Image Source="{Binding Icon}" Width="48" Height="48" 
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <materialDesign:Chip Content="{Binding Category}" 
+                                                           HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                           Margin="0,10,10,0" Height="24" FontSize="10"
+                                                           Background="White" Foreground="#424242"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- App Info -->
+                                <StackPanel Grid.Row="1" Margin="15,15,15,10">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" 
+                                             FontSize="16" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding ProcessName}" FontSize="11" 
+                                             Foreground="#757575" Margin="0,2,0,0"/>
+                                    
+                                    <Grid Margin="0,15,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Hôm nay" FontSize="11" Foreground="#9E9E9E"/>
+                                            <TextBlock Text="{Binding TodayUsage}" FontSize="18" 
+                                                     FontWeight="Bold" Foreground="#424242"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="Giới hạn" FontSize="11" Foreground="#9E9E9E" 
+                                                     HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding TimeLimit}" FontSize="14" 
+                                                     Foreground="#FF5722" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <ProgressBar Value="{Binding UsagePercent}" Height="4" 
+                                               Margin="0,10,0,0" Foreground="{Binding ProgressColor}"/>
+                                </StackPanel>
+
+                                <!-- App Actions -->
+                                <Border Grid.Row="2" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0">
+                                    <Grid Height="45">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ToggleButton Grid.Column="0" Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                    IsChecked="{Binding IsAllowed}" ToolTip="Cho phép/Chặn"
+                                                    HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                        
+                                        <Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
+                                              ToolTip="Cài đặt giới hạn" Width="35" Height="35" Padding="0">
+                                            <materialDesign:PackIcon Kind="TimerSettings" Width="18" Height="18"/>
+                                        </Button>
+                                        
+                                        <Button Grid.Column="2" Style="{StaticResource MaterialDesignFlatButton}"
+                                              ToolTip="Thêm tùy chọn" Width="35" Height="35" Padding="0">
+                                            <materialDesign:PackIcon Kind="DotsVertical" Width="18" Height="18"/>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </materialDesign:Card>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <!-- Sample Data -->
+                <ItemsControl.Items>
+                    <!-- Chrome -->
+                    <Grid>
+                        <Grid.Tag>
+                            <x:String>Chrome|chrome.exe|2h 15m|3h|75|Browser|#4285F4|Green</x:String>
+                        </Grid.Tag>
+                    </Grid>
+                    
+                    <!-- Discord -->
+                    <Grid>
+                        <Grid.Tag>
+                            <x:String>Discord|discord.exe|45m|1h|45|Social|#7289DA|Green</x:String>
+                        </Grid.Tag>
+                    </Grid>
+                    
+                    <!-- Minecraft -->
+                    <Grid>
+                        <Grid.Tag>
+                            <x:String>Minecraft|minecraft.exe|3h 30m|2h|175|Game|#62B363|Red</x:String>
+                        </Grid.Tag>
+                    </Grid>
+                    
+                    <!-- VS Code -->
+                    <Grid>
+                        <Grid.Tag>
+                            <x:String>VS Code|code.exe|1h 20m|Không giới hạn|0|Development|#007ACC|Green</x:String>
+                        </Grid.Tag>
+                    </Grid>
+                </ItemsControl.Items>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Floating Action Button -->
+        <Button Style="{StaticResource MaterialDesignFloatingActionButton}"
+              HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Margin="0,0,40,40" Width="56" Height="56"
+              Background="#FF5722" BorderBrush="#FF5722"
+              ToolTip="Thêm ứng dụng thủ công">
+            <materialDesign:PackIcon Kind="Plus" Width="24" Height="24"/>
+        </Button>
+    </Grid>
+</Page>
