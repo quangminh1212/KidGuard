@@ -1,0 +1,317 @@
+<Page x:Class="KidGuard.WPF.Pages.ReportsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="720" d:DesignWidth="1020"
+      Title="Reports">
+
+    <Grid Background="#F8F9FA">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with Export Options -->
+        <materialDesign:Card Grid.Row="0" Margin="20,20,20,15" Padding="25">
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="Báo cáo thống kê" FontSize="28" FontWeight="Bold" Foreground="#1A237E"/>
+                    <TextBlock Text="Phân tích chi tiết hoạt động và xu hướng sử dụng máy tính" 
+                             FontSize="14" Foreground="#5C6BC0" Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                          Background="#4CAF50" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FileExcel" Margin="0,0,5,0"/>
+                            <TextBlock Text="Xuất Excel"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                          Background="#F44336" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FilePdf" Margin="0,0,5,0"/>
+                            <TextBlock Text="Xuất PDF"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Email" Margin="0,0,5,0"/>
+                            <TextBlock Text="Gửi Email"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20,0,20,20">
+                
+                <!-- Date Range Selector -->
+                <materialDesign:Card Padding="20" Margin="0,0,0,15">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Khoảng thời gian:" VerticalAlignment="Center" Margin="0,0,15,0" FontWeight="Bold"/>
+                            <DatePicker materialDesign:HintAssist.Hint="Từ ngày" Margin="0,0,10,0"/>
+                            <DatePicker materialDesign:HintAssist.Hint="Đến ngày" Margin="0,0,20,0"/>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" Content="Tuần này"/>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" Content="Tháng này"/>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" Content="Năm này"/>
+                        </StackPanel>
+                        
+                        <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                              HorizontalAlignment="Right" Background="#2196F3">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Refresh" Margin="0,0,5,0"/>
+                                <TextBlock Text="Cập nhật"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </materialDesign:Card>
+
+                <!-- Summary Cards -->
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <materialDesign:Card Grid.Column="0" Margin="0,0,7.5,0" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Grid.Row="0" Kind="ClockOutline" Width="40" Height="40" 
+                                                   Foreground="#2196F3" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="156h 30m" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Margin="0,10,0,5"/>
+                            <TextBlock Grid.Row="2" Text="Tổng thời gian" HorizontalAlignment="Center" 
+                                     Foreground="#757575" FontSize="12"/>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <materialDesign:Card Grid.Column="1" Margin="7.5" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Grid.Row="0" Kind="TrendingUp" Width="40" Height="40" 
+                                                   Foreground="#4CAF50" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="+12.5%" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Margin="0,10,0,5" Foreground="#4CAF50"/>
+                            <TextBlock Grid.Row="2" Text="So với tuần trước" HorizontalAlignment="Center" 
+                                     Foreground="#757575" FontSize="12"/>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <materialDesign:Card Grid.Column="2" Margin="7.5" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Grid.Row="0" Kind="Alert" Width="40" Height="40" 
+                                                   Foreground="#FF9800" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="47" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Margin="0,10,0,5"/>
+                            <TextBlock Grid.Row="2" Text="Cảnh báo" HorizontalAlignment="Center" 
+                                     Foreground="#757575" FontSize="12"/>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <materialDesign:Card Grid.Column="3" Margin="7.5,0,0,0" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Grid.Row="0" Kind="Block" Width="40" Height="40" 
+                                                   Foreground="#F44336" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="124" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Margin="0,10,0,5"/>
+                            <TextBlock Grid.Row="2" Text="Lần chặn" HorizontalAlignment="Center" 
+                                     Foreground="#757575" FontSize="12"/>
+                        </Grid>
+                    </materialDesign:Card>
+                </Grid>
+
+                <!-- Time Usage Chart -->
+                <materialDesign:Card Padding="25" Margin="0,0,0,15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="300"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Row="0" Text="THỜI GIAN SỬ DỤNG THEO NGÀY" FontWeight="Bold" 
+                                 FontSize="14" Foreground="#757575" Margin="0,0,0,20"/>
+                        
+                        <!-- Chart Placeholder - Replace with actual chart control -->
+                        <Grid Grid.Row="1" Background="#FAFAFA">
+                            <TextBlock Text="[Biểu đồ cột thời gian sử dụng 7 ngày]" 
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                                     Foreground="#BDBDBD" FontSize="16"/>
+                        </Grid>
+                    </Grid>
+                </materialDesign:Card>
+
+                <!-- Two Column Layout -->
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Top Applications -->
+                    <materialDesign:Card Grid.Column="0" Margin="0,0,7.5,0" Padding="25">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Text="ỨNG DỤNG SỬ DỤNG NHIỀU NHẤT" FontWeight="Bold" 
+                                     FontSize="14" Foreground="#757575" Margin="0,0,0,20"/>
+                            
+                            <StackPanel Grid.Row="1">
+                                <!-- App 1 -->
+                                <Grid Margin="0,0,0,15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20" 
+                                          Background="#E3F2FD" Margin="0,0,15,0">
+                                        <TextBlock Text="1" FontWeight="Bold" FontSize="16" 
+                                                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                 Foreground="#2196F3"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Google Chrome" FontWeight="Bold"/>
+                                        <ProgressBar Value="75" Height="6" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="45h 20m" FontWeight="Bold" Foreground="#2196F3"/>
+                                </Grid>
+                                
+                                <!-- App 2 -->
+                                <Grid Margin="0,0,0,15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20" 
+                                          Background="#E8F5E9" Margin="0,0,15,0">
+                                        <TextBlock Text="2" FontWeight="Bold" FontSize="16" 
+                                                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                 Foreground="#4CAF50"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Minecraft" FontWeight="Bold"/>
+                                        <ProgressBar Value="60" Height="6" Margin="0,5,0,0" Foreground="#4CAF50"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="36h 15m" FontWeight="Bold" Foreground="#4CAF50"/>
+                                </Grid>
+                                
+                                <!-- App 3 -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20" 
+                                          Background="#FFF3E0" Margin="0,0,15,0">
+                                        <TextBlock Text="3" FontWeight="Bold" FontSize="16" 
+                                                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                 Foreground="#FF9800"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Discord" FontWeight="Bold"/>
+                                        <ProgressBar Value="45" Height="6" Margin="0,5,0,0" Foreground="#FF9800"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="27h 40m" FontWeight="Bold" Foreground="#FF9800"/>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <!-- Category Distribution -->
+                    <materialDesign:Card Grid.Column="1" Margin="7.5,0,0,0" Padding="25">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Text="PHÂN BỐ THEO DANH MỤC" FontWeight="Bold" 
+                                     FontSize="14" Foreground="#757575" Margin="0,0,0,20"/>
+                            
+                            <!-- Pie Chart Placeholder -->
+                            <Grid Grid.Row="1" Height="200">
+                                <TextBlock Text="[Biểu đồ tròn phân bố danh mục]" 
+                                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                                         Foreground="#BDBDBD" FontSize="14"/>
+                                
+                                <!-- Legend -->
+                                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" 
+                                          Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
+                                        <Border Width="12" Height="12" Background="#2196F3" CornerRadius="2" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Học tập" FontSize="11"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
+                                        <Border Width="12" Height="12" Background="#4CAF50" CornerRadius="2" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Game" FontSize="11"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="12" Height="12" Background="#FF9800" CornerRadius="2" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Mạng xã hội" FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </materialDesign:Card>
+                </Grid>
+
+                <!-- Activity Table -->
+                <materialDesign:Card Padding="25">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Row="0" Text="CHI TIẾT HOẠT ĐỘNG" FontWeight="Bold" 
+                                 FontSize="14" Foreground="#757575" Margin="0,0,0,20"/>
+                        
+                        <DataGrid Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False"
+                                materialDesign:DataGridAssist.CellPadding="15,10">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Ngày" Binding="{Binding Date}" Width="100"/>
+                                <DataGridTextColumn Header="Ứng dụng" Binding="{Binding App}" Width="150"/>
+                                <DataGridTextColumn Header="Thời gian" Binding="{Binding Time}" Width="100"/>
+                                <DataGridTextColumn Header="Website truy cập" Binding="{Binding Websites}" Width="*"/>
+                                <DataGridTextColumn Header="Cảnh báo" Binding="{Binding Warnings}" Width="80"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </materialDesign:Card>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
