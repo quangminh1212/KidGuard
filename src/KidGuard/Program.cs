@@ -55,8 +55,21 @@ internal static class Program
             var host = CreateHostBuilder().Build();
             ServiceProvider = host.Services;
             
-            var mainForm = ServiceProvider.GetRequiredService<MainForm>();
-            Application.Run(mainForm);
+            // Khởi tạo database
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<KidGuardDbContext>();
+                dbContext.Database.EnsureCreated();
+            }
+            
+            // Hiển thị form đăng nhập trước
+            var loginForm = ServiceProvider.GetRequiredService<LoginForm>();
+            if (loginForm.ShowDialog() == DialogResult.OK)
+            {
+                // Nếu đăng nhập thành công, mở form chính
+                var mainForm = ServiceProvider.GetRequiredService<MainForm>();
+                Application.Run(mainForm);
+            }
         }
         catch (Exception ex)
         {
@@ -94,6 +107,7 @@ internal static class Program
                 
                 // Register forms
                 services.AddSingleton<MainForm>();
+                services.AddTransient<LoginForm>();
                 
                 // Add logging
                 services.AddLogging(loggingBuilder =>

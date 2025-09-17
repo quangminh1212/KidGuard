@@ -1,5 +1,6 @@
 using KidGuard.Core.Interfaces;
 using KidGuard.Core.Models;
+using KidGuard.Helpers;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 
@@ -23,12 +24,19 @@ public partial class MainForm : Form
     private DataGridView dgvBlockedWebsites = null!;
     private ToolStripStatusLabel lblStatus = null!;
     
+    // Tray icon manager
+    private TrayIconManager? _trayIconManager;
+    
     public MainForm(IWebsiteBlockingService websiteBlockingService, ILogger<MainForm> logger)
     {
         _websiteBlockingService = websiteBlockingService;
         _logger = logger;
         
         InitializeComponent();
+        
+        // Khởi tạo tray icon
+        _trayIconManager = new TrayIconManager(this);
+        
         _ = LoadBlockedWebsites();
     }
     
