@@ -76,6 +76,8 @@ internal static class Program
             {
                 // Register services
                 services.AddSingleton<IWebsiteBlockingService, WebsiteBlockingService>();
+                services.AddSingleton<IApplicationMonitoringService, ApplicationMonitoringService>();
+                services.AddSingleton<IActivityLoggerService, ActivityLoggerService>();
                 
                 // Register forms
                 services.AddSingleton<MainForm>();

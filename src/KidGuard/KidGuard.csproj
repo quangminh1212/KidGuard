@@ -22,4 +22,10 @@
     <PackageReference Include="MaterialSkin.2" Version="2.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
