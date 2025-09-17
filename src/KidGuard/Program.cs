@@ -1,6 +1,8 @@
+using KidGuard.Core.Data;
 using KidGuard.Core.Interfaces;
 using KidGuard.Forms;
 using KidGuard.Services.Implementation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -74,10 +76,21 @@ internal static class Program
         return Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
+                // Database Context
+                var dbPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "KidGuard", "Data", "kidguard.db"
+                );
+                Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
+                
+                services.AddDbContext<KidGuardDbContext>(options =>
+                    options.UseSqlite($"Data Source={dbPath}"));
+                
                 // Register services
                 services.AddSingleton<IWebsiteBlockingService, WebsiteBlockingService>();
                 services.AddSingleton<IApplicationMonitoringService, ApplicationMonitoringService>();
                 services.AddSingleton<IActivityLoggerService, ActivityLoggerService>();
+                services.AddScoped<IAuthenticationService, AuthenticationService>();
                 
                 // Register forms
                 services.AddSingleton<MainForm>();
